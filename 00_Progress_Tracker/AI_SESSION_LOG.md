@@ -44,4 +44,8 @@
 - 21:20 IST: read the company developer-portal pages (Artifactory set-up, repository naming, certificates) at the user's request → helper
   script now writes the company-standard pip config (shared Python repository + `trusted-host`) and sets up uv via `uv auth login`;
   re-tested safely (temp files, public index only). Company-specific details stay in `COMPANY_ENVIRONMENT.local.md`.
+- 21:45 IST: first N4 attempt failed (clipboard held the run command; old paste fallback dropped the URL line). Helper now waits for
+  the JFrog copy (or a paste), checks the token is complete, supports `--repo` with fallback and explains 401/403/404 exactly;
+  40/40 offline tests (fake tokens, local fake index). A token was partly visible in a screenshot → user told to revoke it and make
+  a new one. Next: user revokes, re-runs N4 with the new command, then pushes `learning-plan`.
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.

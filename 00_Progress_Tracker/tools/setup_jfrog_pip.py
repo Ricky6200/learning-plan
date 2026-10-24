@@ -1,29 +1,36 @@
 """Connect pip (and later uv) to your company's JFrog Artifactory PyPI repository - without the token ever
 appearing on screen or in a chat.
 
-Run it in YOUR OWN terminal (it waits for you to press Enter):
-    py -3.12 "%USERPROFILE%\\Personal_Learning\\00_Progress_Tracker\\tools\\setup_jfrog_pip.py"
+Run it FIRST, in your own terminal - it then waits while you copy the configuration in JFrog:
+    py -3.12 "%USERPROFILE%\\Personal_Learning\\00_Progress_Tracker\\tools\\setup_jfrog_pip.py" [--repo NAME]
 
-Before running: JFrog -> Set Me Up -> PyPI -> pick the repository your company docs tell you to use -> Client: Pip ->
-Configure -> Generate token -> Generate Token & Create Instructions -> click the copy icon next to the configuration.
+Then in JFrog: Set Me Up -> PyPI -> repository -> Client: Pip -> Configure -> Generate token ->
+Generate Token & Create Instructions -> click the copy icon on the configuration box. The script notices the copy by
+itself. (You can also paste the text into its window; nothing is shown while you paste.)
+
+JFrog's instructions mention ~/.pip/pip.conf - the Linux/macOS location. pip on Windows reads %APPDATA%\\pip\\pip.ini
+(check with `py -3.12 -m pip config debug`), which is where this script writes.
 
 What it does:
-  1. Reads the copied text from your clipboard, finds the index URL, then clears the clipboard.
-     (Nothing usable on the clipboard? It asks you to paste the line instead - your typing stays hidden.)
+  1. Waits until your clipboard (or a paste) holds the index URL with your token, then clears the clipboard.
   2. Writes %APPDATA%\\pip\\pip.ini with that index URL plus `trusted-host = <that host>` (needed behind a
      TLS-inspecting company proxy; it covers only the repository host). An existing file is backed up first.
+     --repo NAME uses repository NAME instead of the one in the copied address (for example the shared repository
+     your company docs name). If JFrog refuses NAME, it falls back to the copied repository, so the token isn't wasted.
   3. Proves it works: installs `requests` into a throwaway virtual environment, then deletes it.
   4. Tells you whether `uv` is available through JFrog.
 
 After installing uv later:  py -3.12 setup_jfrog_pip.py --uv
   -> writes %APPDATA%\\uv\\uv.toml with the index URL WITHOUT credentials, then stores your username and token with
      `uv auth login` (token passed via stdin, never shown). No new token needed - it reuses the one in pip.ini.
-The token is never printed. To revoke a token: JFrog -> your user profile -> Identity Tokens.
+The token is never printed. Never screenshot or share JFrog's configuration box - it shows the token.
+To revoke a token: JFrog -> profile icon -> Edit Profile -> Identity Tokens -> x on the token's row -> Revoke.
 """
 import argparse
 import configparser
 import ctypes
 import datetime
+import functools
 import getpass
 import os
 import re
@@ -31,6 +38,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from urllib.parse import urlsplit, urlunsplit
 
 URL_RE = re.compile(r"https://[^\s\"'<>`]+/api/pypi/[^\s\"'<>`]+")
@@ -55,7 +63,7 @@ def split_credentials(url):
 
 
 def mask(text, url=None):
-    text = re.sub(r"(https://[^:/@\s]+:)[^@\s]+@", r"\1****@", text or "")
+    text = re.sub(r"(https?://[^:/@\s]+:)[^@\s]+@", r"\1****@", text or "")
     if url:
         token = split_credentials(url)[1]
         if token:
@@ -63,7 +71,47 @@ def mask(text, url=None):
     return text
 
 
+REF_TOKEN_RE = re.compile(r"cmVmd[A-Za-z0-9]{59}")  # JFrog reference token: 'cmVmd' + 59 letters/digits
+
+HINTS = {
+    "template": "That copy has no token in it. Click 'Generate token', then 'Generate Token & Create Instructions', "
+                "and copy again.",
+    "no-token": "That address has no username and token. Copy the instructions shown after 'Generate Token & Create "
+                "Instructions'.",
+    "cut-token": "The token looks cut off (JFrog tokens are 64 characters). Use JFrog's copy icon instead of "
+                 "selecting the text.",
+    "own-command": "That was this script's own command, not the JFrog text.",
+}
+
+
+def find_index_url(text):
+    """-> (url, None) if text holds a complete index URL with username and token, else (None, reason or None)."""
+    url = extract_url(text)
+    if not url:
+        if looks_like_template(text):
+            return None, "template"
+        if "setup_jfrog_pip" in (text or ""):
+            return None, "own-command"
+        return None, None
+    user, token = split_credentials(url)[:2]
+    if not (user and token):
+        return None, "no-token"
+    if token.startswith("cmVmd") and not REF_TOKEN_RE.fullmatch(token):
+        return None, "cut-token"
+    return url, None
+
+
+def repo_of(url):
+    m = re.search(r"/api/pypi/([^/]+)/simple/?$", url)
+    return m.group(1) if m else "?"
+
+
+def with_repo(url, repo):
+    return re.sub(r"(/api/pypi/)[^/]+(/simple/?)$", lambda m: m.group(1) + repo + m.group(2), url, count=1)
+
+
 # ---------------------------------------------------------------- clipboard (Windows, stdlib only)
+@functools.lru_cache(maxsize=None)
 def _clipboard_api():
     if os.name != "nt":
         return None
@@ -76,6 +124,7 @@ def _clipboard_api():
     user32.GetClipboardData.restype = wintypes.HANDLE
     user32.EmptyClipboard.restype = wintypes.BOOL
     user32.CloseClipboard.restype = wintypes.BOOL
+    user32.GetClipboardSequenceNumber.restype = wintypes.DWORD
     kernel32.GlobalLock.argtypes = [wintypes.HGLOBAL]
     kernel32.GlobalLock.restype = wintypes.LPVOID
     kernel32.GlobalUnlock.argtypes = [wintypes.HGLOBAL]
@@ -83,13 +132,22 @@ def _clipboard_api():
     return user32, kernel32
 
 
+def _open_clipboard(user32):
+    for _ in range(10):  # another app may hold it for a moment
+        if user32.OpenClipboard(None):
+            return True
+        time.sleep(0.03)
+    return False
+
+
 def read_clipboard():
+    """Clipboard text ("" if none), or None if the clipboard could not be opened."""
     api = _clipboard_api()
     if not api:
         return ""
     user32, kernel32 = api
-    if not user32.OpenClipboard(None):
-        return ""
+    if not _open_clipboard(user32):
+        return None
     try:
         handle = user32.GetClipboardData(13)  # CF_UNICODETEXT
         if not handle:
@@ -107,11 +165,17 @@ def read_clipboard():
 
 def clear_clipboard():
     api = _clipboard_api()
-    if api and api[0].OpenClipboard(None):
+    if api and _open_clipboard(api[0]):
         try:
             api[0].EmptyClipboard()
         finally:
             api[0].CloseClipboard()
+
+
+def clipboard_seq():
+    """Changes whenever anything is copied (0 if unknown)."""
+    api = _clipboard_api()
+    return api[0].GetClipboardSequenceNumber() if api else 0
 
 
 def drain_console():
@@ -128,27 +192,113 @@ def looks_like_template(text):
     return "api/pypi" in (text or "") and re.search(r"<\s*(user|username|token|password)\s*>", text, re.I) is not None
 
 
-def get_url_interactively():
-    input("In JFrog, copy the configuration (Client: Pip, after 'Generate Token & Create Instructions'), then press Enter here... ")
-    clip = read_clipboard()
-    url = extract_url(clip)
-    if url and split_credentials(url)[1]:
-        clear_clipboard()
-        print("Found the index URL on your clipboard. (Clipboard cleared.)")
-        return url
-    if looks_like_template(clip):
-        print("The clipboard has the template WITHOUT your token. In JFrog choose 'Generate token', click "
-              "'Generate Token & Create Instructions', copy again, and re-run this script.")
-        sys.exit(1)
-    print("No JFrog PyPI address with a token found on the clipboard.")
-    for _ in range(3):
-        line = getpass.getpass("Paste the line that contains the index URL (it stays hidden), then press Enter: ")
-        url = extract_url(line)
-        drain_console()
-        if url and split_credentials(url)[1]:
+def console_keys():
+    """(kbhit, getwch) to read pasted text without showing it, or None outside a Windows console."""
+    if os.name != "nt":
+        return None
+    try:
+        import msvcrt
+        return (msvcrt.kbhit, msvcrt.getwch) if sys.stdin.isatty() else None
+    except Exception:
+        return None
+
+
+class HiddenLineReader:
+    """Collects typed or pasted characters (never shown) into lines."""
+
+    def __init__(self):
+        self.buf, self.skip_next = [], False
+
+    def feed(self, ch):
+        if self.skip_next:  # second half of an arrow/function key
+            self.skip_next = False
+            return None
+        if ch in ("\x00", "\xe0"):
+            self.skip_next = True
+            return None
+        if ch == "\x03":
+            raise KeyboardInterrupt
+        if ch in ("\r", "\n"):
+            line, self.buf = "".join(self.buf), []
+            return line
+        if ch == "\x08":
+            if self.buf:
+                self.buf.pop()
+        elif ch == "\x1b":
+            self.buf = []
+        else:
+            self.buf.append(ch)
+        return None
+
+
+def wait_for_index_url(timeout=900, poll=0.3, keys=None, read_clip=None, clip_seq=None, say=print):
+    """Watch the clipboard (and pasted input) until it holds the index URL with a token.
+    -> (url, 'clipboard' | 'paste'), or (None, None) after the timeout. keys=False turns pasting off."""
+    read_clip = read_clip or read_clipboard
+    clip_seq = clip_seq or clipboard_seq
+    keys = console_keys() if keys is None else (keys or None)
+    reader, said, last_seq = HiddenLineReader(), set(), None
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        seq = clip_seq()
+        if not seq or seq != last_seq:
+            text = read_clip()
+            if text is not None:  # None = clipboard busy; try again next round
+                last_seq = seq
+                url, reason = find_index_url(text)
+                if url:
+                    clear_clipboard()
+                    return url, "clipboard"
+                if reason in ("template", "no-token", "cut-token") and reason not in said:
+                    said.add(reason)
+                    say(HINTS[reason])
+        while keys and keys[0]():
+            line = reader.feed(keys[1]())
+            if line is None:
+                continue
+            url, reason = find_index_url(line)
+            if url:
+                if split_credentials(url)[1] in (read_clip() or ""):
+                    clear_clipboard()
+                return url, "paste"
+            text = line.strip()
+            if text and not text.startswith("[") and not text.endswith("="):  # skip the block's other lines
+                say(HINTS.get(reason) or "That line had no JFrog address - still waiting for the copy from JFrog.")
+        time.sleep(poll)
+    return None, None
+
+
+def paste_with_getpass():
+    """Fallback when neither the clipboard nor the console can be watched."""
+    for _ in range(6):
+        line = getpass.getpass("Paste the line with the index URL (hidden), then press Enter: ")
+        url, reason = find_index_url(line)
+        if url:
             return url
-        print("That line had no address like https://<user>:<token>@<host>/artifactory/api/pypi/<repo>/simple - try again.")
+        if line.strip() and not line.strip().startswith("["):
+            print(HINTS.get(reason) or "That line had no JFrog address - try again.")
     sys.exit("Stopped: no index URL received. Nothing was changed.")
+
+
+def get_url_interactively():
+    keys = console_keys()
+    if not _clipboard_api() and not keys:
+        return paste_with_getpass()
+    print("Waiting for the configuration from JFrog... (Ctrl+C cancels)")
+    print("  JFrog: Set Me Up -> PyPI -> Client: Pip -> Configure -> Generate token ->")
+    print("         'Generate Token & Create Instructions' -> click the copy icon on the configuration box.")
+    print("  This window notices the copy by itself%s." % (" (or paste it here - nothing is shown)" if keys else ""))
+    print("  Never screenshot or share that box: it shows your token.")
+    try:
+        url, source = wait_for_index_url(keys=keys or False)
+    except KeyboardInterrupt:
+        drain_console()
+        sys.exit("\nCancelled. Nothing was changed.")
+    drain_console()
+    if not url:
+        sys.exit("Stopped: nothing usable arrived from JFrog within 15 minutes. Nothing was changed.")
+    print("Got the JFrog address from your %s." % ("clipboard (clipboard cleared)" if source == "clipboard" else "paste"))
+    return url
 
 
 # ---------------------------------------------------------------- pip config + test
@@ -182,43 +332,73 @@ def pip_run(vpy, args, env):
     return r.returncode, (r.stdout or "") + (r.stderr or "")
 
 
-def explain_failure(out):
+def classify(out):
+    """Sort a failed `pip -vv` run: auth / cert / forbidden / notfound / other."""
     low = out.lower()
-    if "401" in out or "unauthorized" in low or "user for" in low:
-        return ("JFrog refused the login (401). Generate the instructions again with 'Generate Token & Create "
-                "Instructions' (Client: Pip), copy them, and re-run this script.")
-    if "403" in out or "forbidden" in low:
-        return ("Access denied (403). Your account may not have read access to this repository, or the package is "
-                "blocked by JFrog Curation. Check your company docs for which PyPI repository to use.")
-    if "no matching distribution" in low or "could not find a version" in low:
-        return "The repository answered, but had no 'requests' package. Check which PyPI repository you selected."
+    codes = set(re.findall(r"\b(40[134]) client error", low)) | set(re.findall(r'http/1\.[01]" (40[134])\b', low))
+    if "401" in codes or "credentials not correct" in low:
+        return "auth"
     if "certificate_verify_failed" in low or "sslerror" in low:
-        return "Certificate error. Follow your company's guide for trusting the proxy certificate."
-    return "Unexpected error - the last lines are shown above (token hidden)."
+        return "cert"
+    if "403" in codes:
+        return "forbidden"
+    if "404" in codes or "no matching distribution" in low or "could not find a version" in low:
+        return "notfound"
+    return "other"
 
 
-def setup_pip(url, pip_ini):
-    print("Repository address:", mask(url, url))
-    write_pip_ini(url, pip_ini)
-    print("Saved", pip_ini, "(index-url + trusted-host for the repository host)")
+EXPLAIN = {
+    "auth": "JFrog refused the token (401): it is wrong, revoked or expired. Run this script again and generate a new "
+            "token in JFrog while it waits.",
+    "cert": "Certificate error. Follow your company's guide for trusting the proxy certificate.",
+    "forbidden": "Access denied (403): no read access to this repository, or the package is blocked by JFrog Curation. "
+                 "Check your company docs for which PyPI repository to use.",
+    "notfound": "The repository doesn't exist or has no 'requests' package. Check the repository name.",
+    "other": "Unexpected error - see the lines above (token hidden).",
+}
 
+
+def key_lines(out, url, limit=8):
+    keep = [ln for ln in out.splitlines() if re.search(r"error|could not fetch|ssl|timed out|retrying", ln, re.I)]
+    return "\n".join(mask(ln, url)[:220] for ln in (keep[-limit:] or out.strip().splitlines()[-limit:]))
+
+
+def try_install(vpy, url, pip_ini, env, make_backup):
+    """Write pip.ini for url, then install 'requests' through it. -> (ok, kind, pip output)."""
+    write_pip_ini(url, pip_ini, make_backup=make_backup)
+    args = ["install", "-vv", "--no-cache-dir", "--timeout", "30", "--retries", "1", "requests"]
+    code, out = pip_run(vpy, args, env)
+    if code != 0 and ("CERTIFICATE_VERIFY_FAILED" in out or "SSLError" in out):
+        print("Certificate problem - letting pip also trust the Windows certificate store and retrying...")
+        write_pip_ini(url, pip_ini, truststore=True, make_backup=False)
+        code, out = pip_run(vpy, args, env)
+    return code == 0, (None if code == 0 else classify(out)), out
+
+
+def setup_pip(url, pip_ini, prefer_repo=None):
+    candidates = [with_repo(url, prefer_repo)] if prefer_repo else []
+    if url not in candidates:
+        candidates.append(url)
     env = dict(os.environ, PIP_CONFIG_FILE=pip_ini, PIP_DISABLE_PIP_VERSION_CHECK="1", PIP_NO_INPUT="1")
     tmp = tempfile.mkdtemp(prefix="jfrog-pip-check-")
     try:
         print("Testing: creating a throwaway virtual environment and installing 'requests' through JFrog...")
         subprocess.run([sys.executable, "-m", "venv", os.path.join(tmp, "venv")], check=True)
         vpy = venv_python(os.path.join(tmp, "venv"))
-        args = ["install", "--timeout", "30", "--retries", "1", "requests"]
-        code, out = pip_run(vpy, args, env)
-        if code != 0 and ("CERTIFICATE_VERIFY_FAILED" in out or "SSLError" in out):
-            print("Certificate problem - letting pip also trust the Windows certificate store and retrying...")
-            write_pip_ini(url, pip_ini, truststore=True, make_backup=False)
-            code, out = pip_run(vpy, args, env)
-        if code != 0:
-            print("\n".join(mask(out, url).strip().splitlines()[-12:]))
-            print("\n[FAILED] " + explain_failure(out))
+        for i, cand in enumerate(candidates):
+            print("Repository '%s': %s" % (repo_of(cand), mask(cand, cand)))
+            ok, kind, out = try_install(vpy, cand, pip_ini, env, make_backup=(i == 0))
+            if ok:
+                break
+            if kind not in ("auth", "cert") and i + 1 < len(candidates):
+                print("[INFO] '%s' didn't work (%s) - trying '%s', the repository you copied..."
+                      % (repo_of(cand), kind, repo_of(candidates[i + 1])))
+                continue
+            print(key_lines(out, cand))
+            print("\n[FAILED] " + EXPLAIN[kind])
             print("Your pip.ini was kept so you can inspect it; re-running this script replaces it.")
             return False
+        print("Saved", pip_ini, "(index-url + trusted-host for the repository host)")
         print("[OK] pip works through JFrog: 'requests' installed successfully.")
 
         code, out = pip_run(vpy, ["index", "versions", "uv"], env)
@@ -281,16 +461,22 @@ def main():
     appdata = os.environ.get("APPDATA") or os.path.expanduser("~")
     p = argparse.ArgumentParser(description="Connect pip (and uv) to your company's JFrog PyPI repository.")
     p.add_argument("--uv", action="store_true", help="configure uv from your pip.ini (after installing uv)")
+    p.add_argument("--repo", help="use this repository instead of the one in the copied address "
+                                  "(falls back to the copied one if JFrog refuses it)")
     p.add_argument("--test-url", help=argparse.SUPPRESS)
     p.add_argument("--pip-ini", default=os.path.join(appdata, "pip", "pip.ini"), help=argparse.SUPPRESS)
     p.add_argument("--uv-toml", default=os.path.join(appdata, "uv", "uv.toml"), help=argparse.SUPPRESS)
     p.add_argument("--uv-exe", help=argparse.SUPPRESS)
     a = p.parse_args()
+    if a.repo and not re.fullmatch(r"[A-Za-z0-9._-]+", a.repo):
+        p.error("--repo takes a repository name, like my-python-virtual")
     if a.uv:
         ok = setup_uv(a.pip_ini, a.uv_toml, a.uv_exe)
         sys.exit(0 if ok else 1)
+    if a.repo:
+        print("Preferred repository: %s (falls back to the one you copy if JFrog refuses it)" % a.repo)
     url = a.test_url or get_url_interactively()
-    ok = setup_pip(url, a.pip_ini)
+    ok = setup_pip(url, a.pip_ini, a.repo)
     print("\nDone. Tell your AI mentor 'N4 done'." if ok else "\nNot done yet - see the message above.")
     sys.exit(0 if ok else 1)
 
