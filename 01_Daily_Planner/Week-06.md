@@ -1,6 +1,6 @@
 # 🗓️ Week 06 · 30 Nov → 06 Dec 2026 · Season 2 — Concurrency Crucible
 
-> ☕ Still on Corretto 21? Get **JDK 25 before Mon 7 Dec** — Java Week 7 covers Java 22–25 features.  
+> ☕ Still on Corretto 21? Get **Corretto 25 before Mon 7 Dec** — Java Week 7 covers Java 22–25 features.  
 > ⭐ XP available: ~475 (blocks 250 · DSA 125 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-06.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-06.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-06.md) · [🏗️ System Design](../System%20Design/Weeks/Week-06.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-06.md)  

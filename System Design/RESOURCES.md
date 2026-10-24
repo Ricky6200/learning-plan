@@ -80,7 +80,7 @@ Hello Interview mixes free and premium pages — the pages linked here are the *
 
 | Tool | Version (Oct 2026) | Notes |
 |---|---|---|
-| [Eclipse Temurin JDK](https://adoptium.net/temurin/releases/?version=25) | **JDK 25 (LTS)** | Same JDK as the Java track |
+| [Amazon Corretto 25](https://docs.aws.amazon.com/corretto/latest/corretto-25-ug/what-is-corretto-25.html) | **JDK 25 (LTS)** | Same JDK as the Java track (company software catalogue) |
 | [Apache Maven](https://maven.apache.org/download.cgi) | **3.9.x / 3.10.x** (Maven 4 is still a release candidate) | `mvn -q test` after every session |
 | JUnit + AssertJ (Maven dependencies) | **JUnit 6.1.x (Jupiter API)**, **AssertJ 3.27.x** | [JUnit user guide](https://docs.junit.org/current/user-guide/) · [AssertJ docs](https://assertj.github.io/doc/) |
 | [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) | Latest | Free (Community-level) features are enough for this track |

@@ -1,6 +1,6 @@
 # 🗓️ Week 02 · 02 Nov → 08 Nov 2026 · Season 1 — Foundation Forge
 
-> ☕ **Make JDK 25 your learning-project JDK this week** (Section 5 of [03_SETUP_YOUR_LAPTOP.md](../03_SETUP_YOUR_LAPTOP.md)) — Week 3 starts JUnit 6, which needs Java 17+. Not installed by Fri 6 Nov? Install AWS Corretto 21 instead. 🐍 AI blocks now need pip packages (JFrog).  
+> ☕ **Make Corretto 25 (JDK 25) your learning-project JDK this week** (Section 5 of [03_SETUP_YOUR_LAPTOP.md](../03_SETUP_YOUR_LAPTOP.md)) — Week 3 starts JUnit 6, which needs Java 17+. Not installed by Fri 6 Nov? Install Corretto 21 from the Company Portal instead. 🐍 AI blocks now need pip packages (JFrog).  
 > 🎉 Sun 08 Nov: 🪔 **Diwali** — do a *Mini Test* (75 min, see protocol) today, or shift the full test to Mon 9 Nov evening  
 > ⭐ XP available: ~445 (blocks 250 · DSA 95 · test 100)  
 

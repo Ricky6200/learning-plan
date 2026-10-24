@@ -265,7 +265,7 @@ ticketverse/
 
 | Layer | Choice |
 |---|---|
-| Language/runtime | Java 25 (Temurin), virtual threads where they help |
+| Language/runtime | Java 25 (Corretto 25 on your laptop, Temurin 25 images in Docker/CI), virtual threads where they help |
 | Framework | Spring Boot 4.1.x (or newest stable) → Spring Framework 7.0.x, Spring Security 7.1.x, Hibernate ORM 7.4, Jackson 3.x, Micrometer 1.17 |
 | Data | PostgreSQL 18 + Flyway 12 · Redis 8 (Azure Managed Redis in cloud) |
 | Messaging | Kafka 4.x KRaft (clients 4.2.x via Boot), Spring for Apache Kafka 4.1.x · Event Hubs Kafka endpoint (cloud option) |

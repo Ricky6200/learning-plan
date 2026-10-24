@@ -10,7 +10,7 @@
 ## 🗓️ Sessions
 
 ### Monday 26 Oct · 60 min — Setup JDK 25 + IDE; javac to bytecode to JVM
-- 📚 **Learn:** JDK vs JRE vs JVM; javac -> .class bytecode -> class loading -> interpreter + JIT; running single-file source with `java Hello.java`; JShell for quick experiments. [dev.java: Getting started](https://dev.java/learn/getting-started/), [dev.java: javap disassembler](https://dev.java/learn/jvm/core-tools/javap/), [Temurin JDK 25](https://adoptium.net/temurin/releases/?version=25).
+- 📚 **Learn:** JDK vs JRE vs JVM; javac -> .class bytecode -> class loading -> interpreter + JIT; running single-file source with `java Hello.java`; JShell for quick experiments. [dev.java: Getting started](https://dev.java/learn/getting-started/), [dev.java: javap disassembler](https://dev.java/learn/jvm/core-tools/javap/), [Amazon Corretto 25](https://docs.aws.amazon.com/corretto/latest/corretto-25-ug/what-is-corretto-25.html).
 - 🛠️ **Do:** Use your installed JDK 11 this week (JDK 25 arrives before Week 2 - then make it this project's SDK; Section 5 of `03_SETUP_YOUR_LAPTOP.md`). Turn the `java-mastery` repo from your setup push test (in `C:\dev\personal`) into a Maven project (package `w01`). Write `Hello.java`, compile with `javac`, run, then `javap -c Hello` and annotate 3 bytecode lines in comments. Predict-then-try 5 JShell expressions. Done when: the first commit (Hello + javap notes) is on GitHub.
 
 ### Tuesday 27 Oct · 60 min — Primitives vs references, wrappers, autoboxing, Integer cache

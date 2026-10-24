@@ -1,6 +1,6 @@
 # 🗓️ Week 01 · 26 Oct → 01 Nov 2026 · Season 1 — Foundation Forge
 
-> ⚙️ **Setup week:** finish Section 3 of [03_SETUP_YOUR_LAPTOP.md](../03_SETUP_YOUR_LAPTOP.md). Java: JDK 11 is fine this week — JDK 25 arrives before Week 2. Python: start it with `py`; connect pip to JFrog by Mon 2 Nov. Keep every personal repo in `C:\dev\personal` so your work email never appears in personal commits.  
+> ⚙️ **Setup week:** finish Section 3 of [03_SETUP_YOUR_LAPTOP.md](../03_SETUP_YOUR_LAPTOP.md). Java: JDK 11 is fine this week — request **Amazon Corretto 25** (the only JDK 25 your company offers) so it's here before Week 2. Python: start it with `py`; connect pip to JFrog by Mon 2 Nov. Keep every personal repo in `C:\dev\personal` so your work email never appears in personal commits.  
 > ⭐ XP available: ~420 (blocks 250 · DSA 70 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-01.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-01.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-01.md) · [🏗️ System Design](../System%20Design/Weeks/Week-01.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-01.md)  

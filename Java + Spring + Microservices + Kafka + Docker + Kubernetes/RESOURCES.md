@@ -134,7 +134,7 @@ Rule of thumb: **docs + one tutorial + code** beats three videos.
 
 | Tool | Version (Oct 2026) | Install / notes | When |
 |---|---|---|---|
-| JDK | **Eclipse Temurin 25 (LTS)** | [Adoptium releases](https://adoptium.net/temurin/releases/?version=25) — set `JAVA_HOME`; JDK 27 is the latest feature release but stay on LTS | W1 |
+| JDK | **Amazon Corretto 25 (LTS)** — from your company's software catalogue | [Corretto 25 guide](https://docs.aws.amazon.com/corretto/latest/corretto-25-ug/what-is-corretto-25.html) — use it **per project** (IntelliJ project SDK / per-window `JAVA_HOME`, Section 5 of `03_SETUP_YOUR_LAPTOP.md`) so work stays on JDK 11. Any Java SE 25 build behaves the same (Docker images and CI use Temurin 25). JDK 27 is the latest feature release but stay on LTS | W1 |
 | IDE | **IntelliJ IDEA 2026.x** (free unified edition; Community Edition was merged in 2025.3) | [Download](https://www.jetbrains.com/idea/download/) · [why it changed](https://blog.jetbrains.com/idea/2025/12/intellij-idea-unified-release/) | W1 |
 | Build | **Maven 3.9.x / 3.10.x** via the Maven Wrapper (`./mvnw`) in each repo; Maven 4 is still a release candidate — not the default | [Maven download](https://maven.apache.org/download.cgi) · [Maven Wrapper](https://maven.apache.org/tools/wrapper/) | W1, W7 |
 | VCS | **Git 2.x** + GitHub account (SSH key) | [Git downloads](https://git-scm.com/downloads) · [GitHub SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) | W1 |
