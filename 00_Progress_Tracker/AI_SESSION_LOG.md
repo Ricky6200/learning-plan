@@ -52,4 +52,6 @@
   Expiry check (decodes only the token's expiry field, never the token) showed `pip.ini` holds the exposed token (the user re-copied
   the old box) → N4b: revoke today's tokens, re-run, generate a NEW token; then the AI re-checks the expiry and deletes the
   `pip.ini.bak-*` copy that will hold the old token. After that: uv (N9, optional), `git push` of `learning-plan`.
+- 22:12 IST: **N4 done.** Re-run with a NEW token (expiry differs from the exposed one); the exposed token is revoked (one test request
+  → 401); the backup holding it was deleted. Next: uv (N9, optional), `git push` of `learning-plan` (N11).
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.
