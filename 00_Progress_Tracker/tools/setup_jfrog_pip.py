@@ -23,6 +23,7 @@ What it does:
 After installing uv later:  py -3.12 setup_jfrog_pip.py --uv
   -> writes %APPDATA%\\uv\\uv.toml with the index URL WITHOUT credentials, then stores your username and token with
      `uv auth login` (token passed via stdin, never shown). No new token needed - it reuses the one in pip.ini.
+     It also makes the Python it runs on uv's default (`uv python pin --global`), so uv never picks an older Python.
 The token is never printed. Never screenshot or share JFrog's configuration box - it shows the token.
 To revoke a token: JFrog -> profile icon -> Edit Profile -> Identity Tokens -> x on the token's row -> Revoke.
 """
@@ -416,6 +417,18 @@ def setup_pip(url, pip_ini, prefer_repo=None):
 
 
 # ---------------------------------------------------------------- uv config (index without credentials + uv auth login)
+def uv_tls_key(uv):
+    """'system-certs' (current uv) or the older 'native-tls', whichever this uv understands."""
+    if uv:
+        try:
+            h = subprocess.run([uv, "pip", "install", "--help"], capture_output=True, text=True, timeout=30).stdout or ""
+            if "--system-certs" not in h and "--native-tls" in h:
+                return "native-tls"
+        except Exception:
+            pass
+    return "system-certs"
+
+
 def setup_uv(pip_ini, uv_toml, uv_exe=None):
     cp = configparser.ConfigParser(interpolation=None)
     cp.read(pip_ini, encoding="utf-8")
@@ -425,12 +438,13 @@ def setup_uv(pip_ini, uv_toml, uv_exe=None):
     user, token, clean_url, host = split_credentials(url)
     if "'" in clean_url:
         sys.exit("The index URL contains a quote character; please set up uv manually.")
+    uv = uv_exe or shutil.which("uv")
     os.makedirs(os.path.dirname(uv_toml), exist_ok=True)
     backup(uv_toml)
     with open(uv_toml, "w", encoding="utf-8", newline="\n") as fh:
         fh.write("# Written by setup_jfrog_pip.py: uv uses your company's JFrog PyPI repository and Company Portal Python.\n")
         fh.write("# Credentials are NOT stored here - they were saved with `uv auth login`.\n")
-        fh.write("native-tls = true\n")
+        fh.write("%s = true\n" % uv_tls_key(uv))  # trust the Windows certificate store (company proxy)
         fh.write('python-preference = "only-system"\n')
         fh.write('python-downloads = "never"\n\n')
         fh.write("[[index]]\n")
@@ -439,7 +453,6 @@ def setup_uv(pip_ini, uv_toml, uv_exe=None):
         fh.write("default = true\n")
     print("Saved", uv_toml, "->", clean_url, "(no credentials in this file)")
 
-    uv = uv_exe or shutil.which("uv")
     if not uv:
         print("[INFO] 'uv' is not on your PATH yet. After installing it, run this command again.")
         return False
@@ -453,7 +466,13 @@ def setup_uv(pip_ini, uv_toml, uv_exe=None):
         print("[FAILED] 'uv auth login' did not work - see the message above.")
         return False
     print("[OK] Credentials stored with 'uv auth login' for", host)
-    print("Test it:  uv venv --python 3.12 C:\\dev\\uv-check  then  uv pip install --python C:\\dev\\uv-check requests")
+    ver = "%d.%d" % sys.version_info[:2]
+    r = subprocess.run([uv, "python", "pin", "--global", ver], capture_output=True, text=True)
+    if r.returncode == 0:
+        print("[OK] uv's default Python is now %s (global pin) - the Python this script runs on." % ver)
+    else:
+        print("[INFO] Could not set uv's default Python: " + ((r.stderr or r.stdout or "").strip()[:200]))
+    print("Test it:  uv venv C:\\dev\\uv-check  then  uv pip install --python C:\\dev\\uv-check requests")
     return True
 
 

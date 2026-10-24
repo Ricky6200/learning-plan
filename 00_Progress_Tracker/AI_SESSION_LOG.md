@@ -54,4 +54,8 @@
   `pip.ini.bak-*` copy that will hold the old token. After that: uv (N9, optional), `git push` of `learning-plan`.
 - 22:12 IST: **N4 done.** Re-run with a NEW token (expiry differs from the exposed one); the exposed token is revoked (one test request
   → 401); the backup holding it was deleted. Next: uv (N9, optional), `git push` of `learning-plan` (N11).
+- 22:30 IST: **uv set up (N9, user approved):** pip `--user` install from the company JFrog (0.13.5); user PATH += user Scripts
+  folder (REG_EXPAND_SZ kept, backup in the session folder, WM_SETTINGCHANGE sent); helper `--uv` (now writes `system-certs`,
+  pins uv's global Python to 3.12); tested `uv venv` (3.12) + `uv pip install requests` through JFrog. Next: user opens a new
+  terminal → `uv --version`; restart VS Code; `git push` of `learning-plan` (N11).
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.
