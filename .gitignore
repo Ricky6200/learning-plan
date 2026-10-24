@@ -1,0 +1,17 @@
+# This folder is backed up to the private GitHub repo "learning-plan".
+
+# ---- Never commit: company-specific / local-only files ----
+*.local.md
+03_SETUP_YOUR_LAPTOP.md
+
+# ---- Generated read-only copies (rebuild: py -3.12 00_Progress_Tracker\tools\build_pdfs.py) ----
+*.pdf
+
+# ---- Python, OS and editor noise ----
+__pycache__/
+*.pyc
+.venv/
+*.bak*
+Thumbs.db
+desktop.ini
+.DS_Store
