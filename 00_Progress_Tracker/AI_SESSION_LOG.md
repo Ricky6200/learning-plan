@@ -41,4 +41,7 @@
 - Privacy split: company-specific details (internal addresses, proxy observations, test results) moved to `COMPANY_ENVIRONMENT.local.md`, which is gitignored together with `03_SETUP_YOUR_LAPTOP.md` and the PDFs. This folder is the private GitHub repo `learning-plan` (first commit prepared; the user pushes).
 - Files: NEW `03_SETUP_YOUR_LAPTOP.md` (local), `COMPANY_ENVIRONMENT.local.md` (local), `tools/setup_jfrog_pip.py`, `.gitignore`; `00_START_HERE.md`, AI README/RESOURCES, SD LLD framework, Azure cost doc, test protocol ("§" → "Section"); AI_MEMORY (D12–D24); plan_source data (AI W1, Java W1 Mon, SD W1 Mon) + gen.py ENV_NOTES → regenerated; PDFs rebuilt.
 - Open items: Section 3 of `03_SETUP_YOUR_LAPTOP.md` (N1, N3–N6, N8–N10, N12) and the first `git push` of `learning-plan`.
+- 21:20 IST: read the company developer-portal pages (Artifactory set-up, repository naming, certificates) at the user's request → helper
+  script now writes the company-standard pip config (shared Python repository + `trusted-host`) and sets up uv via `uv auth login`;
+  re-tested safely (temp files, public index only). Company-specific details stay in `COMPANY_ENVIRONMENT.local.md`.
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.
