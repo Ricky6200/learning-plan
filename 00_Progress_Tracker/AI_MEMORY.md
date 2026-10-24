@@ -78,6 +78,7 @@ Read 00_Progress_Tracker\AI_MEMORY.md and WEEKLY_TEST_PROTOCOL.md. Run my Week <
 | D22 | Certifications: the company provides the AZ-900/AZ-104/AI-200 exams. Account linking is impossible (personal account blocked on the office laptop, work account blocked on the personal laptop) and not needed: the Learn profile = **personal** Microsoft account, created and used on the **personal laptop**; ask L&D for **voucher codes** redeemable on the personal profile (if they insist on the work account, ask Microsoft certification support to move the cert before leaving). Online exams (Pearson VUE OnVUE) on the personal laptop — system test by Sat 21 Nov (Azure W4, booking day). AZ-900 never expires; associate certs renew yearly via a free online assessment | Certifications must stay with the user; Pearson recommends personal computers |
 | D23 | Git on the company laptop (**set up and verified 24 Oct**): personal repos under `C:\dev\personal` with `includeIf gitdir/i` → `~/.gitconfig-personal` (GitHub noreply email); clone URLs include `Ricky6200@`; Git Credential Manager sign-in via device code in **Chrome** (Edge holds the work GitHub session). SSH :22 is blocked → HTTPS only. `Personal_Learning` is NOT under `C:\dev\personal` — when creating the `learning-plan` repo, add `include.path = ~/.gitconfig-personal` to its local config | Global git email is the work address; two GitHub identities on one machine |
 | D24 | uv: **installed 24 Oct** (0.13.5) from the company JFrog with `py -3.12 -m pip install --user uv`; the user Scripts folder (`%APPDATA%\Python\Python312\Scripts`) appended to the **user** PATH (registry type REG_EXPAND_SZ kept; old value backed up in the session folder); configured to the company standard with `setup_jfrog_pip.py --uv`: `%APPDATA%\uv\uv.toml` with the index URL **without credentials** (+ `system-certs` — uv ≥0.13 renamed `native-tls`, `python-preference = only-system`, `python-downloads = never`), credentials via `uv auth login` (token on stdin; stored in `%APPDATA%\uv\credentials`), and `uv python pin --global 3.12` (else uv picks the PATH's 3.9). Verified: `uv venv` → 3.12, `uv pip install requests` through JFrog. Plan's uv commands work as written; `uv python install` is not used | User wanted uv; Company Portal doesn't have it |
+| D25 | **VS Code extensions on the company laptop are allow-listed by company policy.** Allowed (verified 24 Oct): Python, Pylance, Jupyter, Docker DX (`docker.docker`), Remote-WSL, Mermaid, draw.io, Ruff, YAML. **Blocked:** the `ms-azuretools` publisher (Bicep, Azure Resources, Azure Functions, Container Tools), Azurite, Kubernetes tools → Bicep via the `az bicep` CLI (works), Azurite and Functions Core Tools in a Codespace / on the personal laptop; the user asks IT to allow-list them (request text in the local setup guide) | Company policy; keep the plan runnable without them |
 
 ---
 
@@ -113,7 +114,7 @@ Personal_Learning/
 
 1. Read: **this file** → `PROGRESS_DASHBOARD.md` → `WEAKNESS_TRACKER.md` → last entry of `AI_SESSION_LOG.md` → current `01_Daily_Planner/Week-XX.md` → `COMPANY_ENVIRONMENT.local.md` (if it exists) → (until every item is ✅) the setup status in Section 3 of `03_SETUP_YOUR_LAPTOP.md` — ask about pending items and update that table.
 2. Work out today's **calendar** Week/Day (Week 1 = Mon 26 Oct 2026). Compare with the **actual** position in `PROGRESS_DASHBOARD.md` (the learner may be behind/ahead). Use the actual position for tasks.
-3. Open the session with: Season · Week · Day · streak · XP/level · today's checklist (from Daily_Planner) · any **remediation** items due from `WEAKNESS_TRACKER.md`.
+3. Open the session with: Season · Week · Day · streak · XP/level · today's checklist (from Daily_Planner) · any **remediation** items due from `WEAKNESS_TRACKER.md` · any **reminders due from Section 11** (remind-from date ≤ today and not ✅).
 4. During the session: teach, review code, quiz. When the learner reports completion → tick the checkbox in Daily_Planner, append to `DAILY_LOG.md`, update XP in the dashboard.
 5. On Sunday (or when asked): run the test exactly per `WEEKLY_TEST_PROTOCOL.md`; save it to `Weekly_Tests/Week-XX-Test.md`; update `TEST_SCOREBOARD.md`, `WEAKNESS_TRACKER.md`, dashboard; add remediation items into next week's Daily_Planner "Fix-it" section.
 6. Before the session ends or context gets long: append a **handoff** entry to `AI_SESSION_LOG.md` (what happened, open items, next step) and update the dashboard. Never leave progress only in chat.
@@ -160,6 +161,7 @@ Levels: L1 Trainee 0 · L2 Code Cadet 500 · L3 Junior Dev 1,500 · L4 SDE-1 3,0
 - **If a secret shows up in a screenshot or message** (even partly): never repeat it, tell the user to revoke it and generate a new one (only the exposed one — older tokens may be in use), and remind them to crop/blur credential boxes before sharing.
 - **The AI's own terminal uses the Copilot app's bundled Git with its own GitHub credential helper (the user's work account).** So the AI must never `push`/`fetch`/`clone` personal repos — that would use the wrong identity, and it can't see private personal repos anyway. The user runs those commands in their own terminal; the AI may run local-only Git commands (`init`, `add`, `commit`, `status`, `log`).
 - After editing Markdown plans, regenerate PDFs: `python "00_Progress_Tracker\tools\build_pdfs.py"`.
+- **Chat commands** (the learner may type these; also listed in `00_START_HERE.md`): `start` (= magic prompt: position, today's blocks, fix-its, reminders) · `doubt: …` (explain simply with an example; a doubt that repeats goes to `WEAKNESS_TRACKER.md`) · `teach: <topic>` (10-min lesson + 3 check questions) · `hint: <problem>` (hint ladder — pattern → approach → pseudo-code; no full code unless `solution:`; the learner marks it 🟡/🔴 in the DSA revision tracker) · `review: <repo/path/paste>` (senior-level code review) · `quiz: <topic>` (5 questions, scored, not logged as a test) · `log today: …` (tick the planner, append `DAILY_LOG.md`, XP/streak, carry-overs, doubts) · `test week <N>` (Sunday test per `WEEKLY_TEST_PROTOCOL.md`) · `status` (dashboard summary) · `behind` (catch-up plan per Section 7) · `lite day` (minimum viable day) · `remind` (Section 11 items) · `wrap up` (handoff entry in `AI_SESSION_LOG.md`).
 
 ---
 
@@ -177,3 +179,30 @@ Levels: L1 Trainee 0 · L2 Code Cadet 500 · L3 Junior Dev 1,500 · L4 SDE-1 3,0
 | 2026-10-24 | N4 (pip, fresh token; exposed one revoked — verified), N9 (uv; D24: `system-certs`, global Python 3.12 pin) and N11 (`learning-plan` pushed) done; D20 vendor note (any company-provided JDK 25; Temurin/Microsoft preferred; Oracle OK) | User finished the setup steps and asked which JDK 25 to take | Yes — user asked |
 | 2026-10-24 | D20 vendor decided: **Amazon Corretto 25** (only JDK 25 in the company catalogue). Java/SD resource pages, TicketVerse spec, Java W1 resource link and planner reminders (W1, W2, W6) updated; Docker/CI stay Temurin 25 | User listed the requestable JDKs and asked for a final pick | Yes — user asked |
 | 2026-10-24 | **Corretto 25 installed** (N1 done) → D20 rewritten: learning on 25 from Week 1; user `JAVA_HOME` = JDK 11 keeps work Maven on 11 (installer had switched it); Maven-through-JFrog verified on 25; `Windows-ROOT` trust store for PKIX. Java W1 Mon + SD W1 Mon now use Corretto 25 (the old SD text paired JDK 11 with JUnit 6, which needs 17+); planner W1/W2 reminders updated, W6 reminder removed. N10: the plan doesn't need the Visual Studio IDE; only a VS subscription's Azure credit matters (Path A) | User installed Corretto 25 and asked about the Visual Studio licence | Yes — user asked; JAVA_HOME change announced beforehand |
+| 2026-10-24 | D25 (VS Code extension allow-list); **Section 11 reminder schedule** + session-start check; chat commands (Section 9 + `00_START_HERE.md`); plan fixes: Azure W1 Sat (`az bicep build` instead of the blocked extension), Azure W3 Sat (Azurite in a Codespace), AI W6 Mon (Docker inside the Codespace, no Docker Desktop install); planner lead-time reminders W1, W3, W7, W9, W14, W18, W20 | User asked for every pending install/IT request with reminders, and how to run the days from Week 1 | Yes — user asked |
+
+---
+
+## 11) Install & reminder schedule — the AI checks this at every session start (Section 6, step 3)
+
+Announce every row whose **Remind from** date ≤ today and isn't ✅; mark ✅ when the learner confirms (also in Section 3 of the local setup guide).
+
+| Remind from | What | Needed by | Where | Fallback | Status |
+|---|---|---|---|---|---|
+| Mon 26 Oct | VS Code **Python + Jupyter** extensions (allowed) + `pip install ipykernel` in the AI venv | AI W1 Mon (26 Oct) | company laptop | — | ⏳ |
+| Mon 26 Oct | Send the **L&D message** (exam vouchers + Visual Studio subscription Azure credit) | before booking AZ-900 (Sat 21 Nov) | — | company exam process | ⏳ |
+| Mon 26 Oct | **Ask IT: Docker Desktop (or Rancher/Podman Desktop) + WSL2** | Sun 27 Dec (Java W10) | company laptop | Codespace | ⏳ |
+| Mon 26 Oct | **Ask IT to allow-list VS Code extensions:** `ms-azuretools` (Bicep, Azure Resources, Functions, Container Tools), `azurite.azurite`, `ms-kubernetes-tools.vscode-kubernetes-tools` | nice-to-have from Azure W1 Sat (31 Oct) | company laptop | `az bicep build` · Codespace | ⏳ |
+| Mon 26 Oct | Policy check: personal GitHub from the company laptop (N6) | this week | — | — | ⏳ |
+| Sat 31 Oct | `az bicep install` (Azure CLI works through the proxy — verified) | Azure W1 Sat | company laptop | Codespace | ⏳ |
+| Mon 9 Nov | Personal laptop: Codespace test (N8) + free Gemini and Groq API keys | AI W4 (Mon 16 Nov) | personal laptop | — | ⏳ |
+| Mon 9 Nov | Personal laptop: Microsoft Learn profile (N5) + Pearson OnVUE system test | Sat 21 Nov (book AZ-900) | personal laptop | test centre | ⏳ |
+| Sat 14 Nov | Azurite lab in a Codespace (`npx azurite`) | Azure W3 Sat | Codespace | dry-run | ⏳ |
+| Mon 23 Nov | Read `Azure Cloud/COST_SAFETY_AND_ACCOUNT_SETUP.md`; create the personal Azure free account on Tue 1 Dec | Tue 1 Dec (Azure W6) | personal laptop | — | ⏳ |
+| Mon 7 Dec | Chase the Docker request | Sun 27 Dec | — | Codespace | ⏳ |
+| Mon 21 Dec | Docker arrived? → image pulls through the company JFrog Docker mirror (details in the local file) + `docker run hello-world` | Mon 28 Dec (Java W10) | company laptop | Codespace | ⏳ |
+| Mon 21 Dec | VisualVM / JDK Mission Control (optional) | Java W10 Wed (30 Dec) | company laptop | JDK `jcmd` + `jfr` | ⏳ |
+| Mon 25 Jan | **Ask IT: kubectl + kind** | Sun 7 Mar (Java W20) | company laptop | Cloud Shell / Killercoda / Codespace | ⏳ |
+| Mon 8 Mar | Azure Functions Core Tools (`func`) in a Codespace or on the personal laptop | Azure W21 (Mon 15 Mar) | personal | — | ⏳ |
+| When assigned | Visual Studio subscription → my.visualstudio.com → Benefits → Azure credit → Activate (Path A) | — | — | Path B (free account) | ⏳ |
+| Mon 11 Oct 2027 | Renew the JFrog token (Set Me Up → helper with `--repo`, then `--uv`) | 24 Oct 2027 | company laptop | — | ⏳ |

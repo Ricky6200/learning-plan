@@ -65,10 +65,25 @@ Each folder also has a **PDF** copy for reading/printing. Markdown files are the
    Read C:\Users\rkumar48\Personal_Learning\00_Progress_Tracker\AI_MEMORY.md and follow its "Session start protocol".
    Then tell me where I am, my streak/XP, and today's tasks.
    ```
-   Ask it to explain topics, review your code, quiz you, and log your day ("log today: …").
+   Then use the commands below (a new chat each day is fine — the mentor remembers everything through these files).
 4. **Sunday:** paste `Read 00_Progress_Tracker\AI_MEMORY.md and WEEKLY_TEST_PROTOCOL.md. Run my Week N test now.`
    The mentor tests all 5 tracks, saves the test, updates the scoreboard & weakness tracker, and inserts **Fix-it items** into next week.
 5. Behind schedule? Don't panic — follow the catch-up rules in Section 7 of `AI_MEMORY.md`.
+
+### 💬 Mentor commands (type them in the chat)
+| Type | When | What happens |
+|---|---|---|
+| magic prompt (or `start`) | first message of a new chat | where you are · streak/XP · today's blocks · fix-its · reminders |
+| `doubt: …` | any time | plain explanation + example; doubts that keep coming back become fix-it items |
+| `teach: <topic>` | before or after a block | 10-minute lesson + 3 check questions |
+| `hint: <problem>` | stuck on a DSA problem | hints step by step (pattern → approach → pseudo-code); `solution:` for the full answer — then mark it 🟡/🔴 in the revision tracker |
+| `review: <repo or file>` | after a coding task | senior-level code review |
+| `quiz: <topic>` | any time | 5 quick questions, scored |
+| `log today: …` | end of the day | ticks your planner, writes the daily log, XP and streak |
+| `test week <N>` | Sunday | the full weekly test (all 5 tracks) |
+| `status` · `remind` | any time | dashboard summary · upcoming installs, IT requests and exams |
+| `behind` · `lite day` | missed days · tired or busy | catch-up plan · minimum viable day |
+| `wrap up` | before closing a chat | saves a handoff note so the next chat continues |
 
 ```mermaid
 flowchart LR

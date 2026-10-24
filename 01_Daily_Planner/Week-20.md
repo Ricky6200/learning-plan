@@ -1,6 +1,7 @@
 # 🗓️ Week 20 · 08 Mar → 14 Mar 2027 · Season 5 — Cloud Ascension
 
 > 🏁 Milestone: 💼 Start applying  
+> ☁️ Next week's Azure Functions labs: run `func` (Functions Core Tools) in a Codespace or on your personal laptop — the Azure VS Code extensions aren't allowed on the company laptop.  
 > ⭐ XP available: ~490 (blocks 250 · DSA 140 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-20.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-20.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-20.md) · [🏗️ System Design](../System%20Design/Weeks/Week-20.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-20.md)  

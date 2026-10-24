@@ -1,5 +1,6 @@
 # 🗓️ Week 07 · 07 Dec → 13 Dec 2026 · Season 2 — Concurrency Crucible
 
+> 🐳 **Docker approved yet?** It's needed from Mon 28 Dec (Java Week 10). If not, chase IT this week — or plan the container weeks in a Codespace.  
 > ⭐ XP available: ~450 (blocks 250 · DSA 100 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-07.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-07.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-07.md) · [🏗️ System Design](../System%20Design/Weeks/Week-07.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-07.md)  

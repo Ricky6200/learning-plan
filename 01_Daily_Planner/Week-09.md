@@ -2,7 +2,7 @@
 
 > ⚔️ **BOSS WEEK** — Saturday blocks are timed Boss Battles; beat the boss on Sunday for +300 XP  
 > 🏁 Milestone: ⚔️ Boss S2  
-> 🐳 **Docker needed from Mon 28 Dec** (Java Week 10). Not approved on the company laptop yet? Run the Java container weeks in a Codespace on your personal GitHub account.  
+> 🐳 **Docker needed from Mon 28 Dec** (Java Week 10). Not approved on the company laptop yet? Run the Java container weeks in a Codespace on your personal GitHub account. Next Wednesday's VisualVM/JMC aren't installed — the JDK's own `jcmd` and `jfr` tools cover the exercise.  
 > 🎉 Fri 25 Dec: 🎄 **Christmas** — Lite day allowed (1 DSA problem + 30 min Java); catch up in Sunday's preview slot  
 > ⭐ XP available: ~810 (blocks 250 · DSA 160 · test 100 · boss 300)  
 

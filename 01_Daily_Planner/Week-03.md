@@ -1,6 +1,6 @@
 # 🗓️ Week 03 · 09 Nov → 15 Nov 2026 · Season 1 — Foundation Forge
 
-> 🎓 Run Pearson VUE's **online-exam system test on your personal laptop** this week (webcam + microphone) — you book AZ-900 next Saturday. See Section 7 of [03_SETUP_YOUR_LAPTOP.md](../03_SETUP_YOUR_LAPTOP.md).  
+> 🎓 Run Pearson VUE's **online-exam system test on your personal laptop** this week (webcam + microphone) — you book AZ-900 next Saturday. See Section 7 of [03_SETUP_YOUR_LAPTOP.md](../03_SETUP_YOUR_LAPTOP.md). ☁️ Saturday's Azurite lab runs in a Codespace.  
 > ⭐ XP available: ~470 (blocks 250 · DSA 120 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-03.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-03.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-03.md) · [🏗️ System Design](../System%20Design/Weeks/Week-03.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-03.md)  

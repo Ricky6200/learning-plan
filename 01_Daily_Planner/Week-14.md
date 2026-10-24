@@ -2,6 +2,7 @@
 
 > ⚔️ **BOSS WEEK** — Saturday blocks are timed Boss Battles; beat the boss on Sunday for +300 XP  
 > 🏁 Milestone: ⚔️ Boss S3 · 🚀 TicketVerse v1.0  
+> ☸️ **Ask IT for kubectl + kind now** — needed from Mon 8 Mar (Java Week 20). Fallback: Azure Cloud Shell / Killercoda / a Codespace.  
 > 🎉 Tue 26 Jan: 🇮🇳 **Republic Day** — if you're off work, use the extra time to prepare for Saturday's Boss Battle  
 > ⭐ XP available: ~790 (blocks 250 · DSA 140 · test 100 · boss 300)  
 

@@ -76,4 +76,9 @@
   `-Djavax.net.ssl.trustStoreType=Windows-ROOT` fixes it (verified). Plan updated so Week 1 uses Corretto 25. User asked about the
   Visual Studio IDE licence (trial until 22 Jan 2027): not needed — only a VS subscription's Azure credit matters (N10, Path A).
   Open setup items: N12 (L&D, Mon), N6 (policy), N3 (Docker + WSL2), N5 + N8 (personal laptop), N10 (VS subscription credit).
+- 23:45 IST: user confirmed a work project (JDK 11) still builds. Scanned the whole plan for tools: the VS Code allow-list policy
+  blocks the Azure tools/Azurite/Kubernetes extensions (D25) → Azure W1 Sat uses `az bicep build`, Azure W3 Sat Azurite in a
+  Codespace, AI W6 Mon Docker inside the Codespace. Created **AI_MEMORY Section 11 (install & reminder schedule)** + session-start
+  check; planner lead-time reminders (W1, W3, W7, W9, W14, W18, W20); chat commands (AI_MEMORY Section 9 + START_HERE).
+  **Next session = Mon 26 Oct, Week 1 Day 1**: start with the magic prompt; remind N3/N13/N12/N6/N14 (Section 11).
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.

@@ -1,6 +1,6 @@
 # 🗓️ Week 18 · 22 Feb → 28 Feb 2027 · Season 4 — Distributed Kingdom
 
-> ☸️ **kubectl + kind needed from Mon 8 Mar** (Java Week 20) — request them now, or use Azure Cloud Shell / Killercoda / a Codespace.  
+> ☸️ **kubectl + kind needed from Mon 8 Mar** (Java Week 20). Not approved? Use Azure Cloud Shell / Killercoda / a Codespace.  
 > ⭐ XP available: ~510 (blocks 250 · DSA 160 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-18.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-18.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-18.md) · [🏗️ System Design](../System%20Design/Weeks/Week-18.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-18.md)  
