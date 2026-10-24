@@ -114,7 +114,9 @@ Decided on 24 Oct 2026, based on tests run on your laptop:
 - **Personal laptop (browser → GitHub Codespaces/Colab)** for AI coding from Week 4 — the free AI APIs are blocked on the company
   network — and for everything job-search related.
 - Code lives in your **personal GitHub** (personal email), never the company GitLab. Certifications go on a **personal Microsoft account**.
-- Installs only via the Company Portal / JFrog Artifactory; never bypass a block. Java: **AWS Corretto 21** now (JDK 25 by Sun 6 Dec); ask IT for **Docker/Rancher + WSL2**.
+- Installs only via the Company Portal / JFrog Artifactory; never bypass a block. Java: **Amazon Corretto 25** for learning projects
+  (work stays on JDK 11); Python: **3.12 + pip + uv through JFrog**; still to do: ask IT for **Docker/Rancher + WSL2**.
+- Done 24 Oct: accounts, tools, Git identity + push test, pip/uv through JFrog, Corretto 25, private plan backup (`learning-plan`).
 
 The guide has the step-by-step checklist, Artifactory pip setup, "No uv?" command equivalents, the Azure account decision,
 a glossary of every tool, and message templates for your team, manager and L&D.

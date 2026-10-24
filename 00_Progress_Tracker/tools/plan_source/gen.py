@@ -65,12 +65,11 @@ HOLIDAYS = {  # verified dates; festival days may use the "Lite day" rule (Secti
 }
 SETUP_GUIDE = "[03_SETUP_YOUR_LAPTOP.md](../03_SETUP_YOUR_LAPTOP.md)"
 ENV_NOTES = {  # environment reminders (company laptop: Company Portal installs, JFrog Artifactory, free AI APIs blocked)
-    1: f"⚙️ **Setup week:** finish Section 3 of {SETUP_GUIDE}. Java: JDK 11 is fine this week — request **Amazon Corretto 25** (the only JDK 25 your company offers) so it's here before Week 2. Python: start it with `py`; connect pip to JFrog by Mon 2 Nov. Keep every personal repo in `C:\\dev\\personal` so your work email never appears in personal commits.",
-    2: f"☕ **Make Corretto 25 (JDK 25) your learning-project JDK this week** (Section 5 of {SETUP_GUIDE}) — Week 3 starts JUnit 6, which needs Java 17+. Not installed by Fri 6 Nov? Install Corretto 21 from the Company Portal instead. 🐍 AI blocks now need pip packages (JFrog).",
+    1: f"⚙️ **Setup week:** finish the open items in Section 3 of {SETUP_GUIDE}. Java: **Corretto 25 is installed** — make it the SDK of your learning projects from day 1 (Section 5); work stays on JDK 11. Python: start it with `py`; pip and uv already work through JFrog. Keep every personal repo in `C:\\dev\\personal` so your work email never appears in personal commits.",
+    2: f"🐍 AI blocks now use pip packages — already working through JFrog. ☕ A `PKIX path building failed` error when your Java code calls an internet API? See Section 5, step 4 of {SETUP_GUIDE}.",
     3: f"🎓 Run Pearson VUE's **online-exam system test on your personal laptop** this week (webcam + microphone) — you book AZ-900 next Saturday. See Section 7 of {SETUP_GUIDE}.",
     4: f"🏠 **From this week, AI-track coding happens on your personal laptop** (GitHub Codespaces in the browser) — the free AI APIs are blocked on the company network. Create your Gemini/Groq keys there. See Section 8 of {SETUP_GUIDE}.",
     5: "☁️ Next week (Tue 1 Dec) you create your **personal Azure free account on the personal laptop** — personal Microsoft sign-in is blocked on the office laptop, so the Azure W6–W7 identity labs run there. Read `Azure Cloud/COST_SAFETY_AND_ACCOUNT_SETUP.md` first.",
-    6: "☕ Still on Corretto 21? Get **Corretto 25 before Mon 7 Dec** — Java Week 7 covers Java 22–25 features.",
     9: "🐳 **Docker needed from Mon 28 Dec** (Java Week 10). Not approved on the company laptop yet? Run the Java container weeks in a Codespace on your personal GitHub account.",
     18: "☸️ **kubectl + kind needed from Mon 8 Mar** (Java Week 20) — request them now, or use Azure Cloud Shell / Killercoda / a Codespace.",
 }

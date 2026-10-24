@@ -66,4 +66,14 @@
 - 22:55 IST: user listed requestable JDKs (Temurin ≤21, Microsoft OpenJDK ≤21, Amazon Corretto up to 25) → **D20: Amazon Corretto
   25**. Updated the setup guide (N1, Section 5 paths, request text), Java/SD resource pages, TicketVerse spec, Java W1 resource link,
   planner reminders W1/W2/W6; regenerated planner + week files and PDFs. User to submit the Corretto 25 request.
+- 23:05 IST: "AWS Corretto 25" turned out to be directly installable in the Company Portal → user installing it. Baseline recorded
+  (local file): `java`/`mvn` = JDK 11, JAVA_HOME unset. **Next (when the user says installed):** verify the Corretto folder and
+  version; check whether the installer changed system JAVA_HOME/PATH (if `mvn` moved to 25 → user JAVA_HOME = JDK 11); TLS test
+  with Corretto 25 (Maven Central, Spring Initializr, company JFrog) → company-cert step if PKIX errors.
+- 23:15 IST: **Corretto 25 installed (N1 done).** Installer had made 25 the system default (system JAVA_HOME + first in PATH) → set
+  user `JAVA_HOME` = JDK 11 (work Maven back on 11, verified); per-window override → 25 (verified). Maven on 25 downloads through the
+  company JFrog (76 jars, empty cache, BUILD SUCCESS). Corretto's own trust store fails on intercepted sites (PKIX) →
+  `-Djavax.net.ssl.trustStoreType=Windows-ROOT` fixes it (verified). Plan updated so Week 1 uses Corretto 25. User asked about the
+  Visual Studio IDE licence (trial until 22 Jan 2027): not needed — only a VS subscription's Azure credit matters (N10, Path A).
+  Open setup items: N12 (L&D, Mon), N6 (policy), N3 (Docker + WSL2), N5 + N8 (personal laptop), N10 (VS subscription credit).
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.
