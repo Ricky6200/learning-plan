@@ -48,4 +48,8 @@
   the JFrog copy (or a paste), checks the token is complete, supports `--repo` with fallback and explains 401/403/404 exactly;
   40/40 offline tests (fake tokens, local fake index). A token was partly visible in a screenshot → user told to revoke it and make
   a new one. Next: user revokes, re-runs N4 with the new command, then pushes `learning-plan`.
+- 22:06 IST: **pip works through the company JFrog** (shared repository, `trusted-host`; `requests` installed; uv available there).
+  Expiry check (decodes only the token's expiry field, never the token) showed `pip.ini` holds the exposed token (the user re-copied
+  the old box) → N4b: revoke today's tokens, re-run, generate a NEW token; then the AI re-checks the expiry and deletes the
+  `pip.ini.bak-*` copy that will hold the old token. After that: uv (N9, optional), `git push` of `learning-plan`.
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.
