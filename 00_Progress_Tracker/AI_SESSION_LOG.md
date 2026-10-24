@@ -58,4 +58,9 @@
   folder (REG_EXPAND_SZ kept, backup in the session folder, WM_SETTINGCHANGE sent); helper `--uv` (now writes `system-certs`,
   pins uv's global Python to 3.12); tested `uv venv` (3.12) + `uv pip install requests` through JFrog. Next: user opens a new
   terminal → `uv --version`; restart VS Code; `git push` of `learning-plan` (N11).
+- 22:40 IST: user confirmed `uv --version` works in a new terminal and pushed `learning-plan` (local `main` = `origin/main`). User asked
+  for a summary and which JDK 25 vendor → D20 vendor note (any company-provided JDK 25; Temurin/Microsoft preferred; Oracle OK).
+  **Setup status at end of Sat 24 Oct:** done = accounts, Python 3.12, VS Code, Azure CLI, Git identity + push, pip→JFrog, uv, plan
+  backup. Open = N1 (JDK 25, by Fri 6 Nov else Corretto 21), N12 (L&D, Mon), N6 (policy), N5 + N8 (personal laptop), N10 (VS
+  credit), N3 (Docker + WSL2 by Sun 27 Dec). **Next session: Week 1 starts Mon 26 Oct** (`01_Daily_Planner/Week-01.md`).
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.
