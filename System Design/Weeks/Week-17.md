@@ -1,40 +1,41 @@
-# 🏗️ System Design · Week 17 — Case studies: rate limiter, notifications
+# 🏗️ System Design · Week 17 — KV store, security, DNS and edge
 
 > 📅 **Mon 15 Feb 2027 → Sun 21 Feb 2027** · Season 4 — Distributed Kingdom  
 > ⏱️ Slots: Mon, Wed, Thu · 45 min + Sat 45 min PRACTICE · Sunday test: 30 min
 
-[← Week 16](Week-16.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-17.md) · [Week 18 →](Week-18.md)
+[← Week 16](Week-16.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-17.md) · [Week 18 →](Week-18.md)
 
-**Why this week:** Full case studies are the HLD interview itself: this week you run the framework end to end twice and produce interview-ready write-ups and diagrams.
+**Why this week:** A thread-safe KV store with TTL is a favourite concurrency machine-coding problem, and authorization placement plus edge design (DNS, CDN, WAF) come up in every senior-leaning HLD discussion.
 
 ## 🗓️ Sessions
 
-### Monday 15 Feb · 45 min — Case study: distributed rate limiter (steps 1-4)
-- 📚 **Learn:** Requirements (limit by user/IP/API key, multiple rules, < 5 ms overhead), estimation (QPS, Redis memory per key), API (`isAllowed(clientId, rule)` + `X-RateLimit-*` headers), data model (Redis keys + TTL). Read [Design a distributed rate limiter (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/distributed-rate-limiter); watch its [walkthrough](https://www.youtube.com/watch?v=MIJFyUPG4Z4) (first 25 min); Hindi: [Design rate limiter (Concept && Coding)](https://www.youtube.com/watch?v=X5daFTDfy2g).
-- 🛠️ **Do:** In `hld/02-rate-limiter/README.md` do framework steps 1-4 solo in 25 minutes, then spend 15 minutes comparing with the Hello Interview breakdown and fixing gaps. Done when: a Redis memory estimate for 10M active keys is shown and the API includes headers and the 429 response.
+### Monday 15 Feb · 45 min — Security in system design: authZ placement, OWASP, secrets, WAF
+- 📚 **Learn:** You built login with Spring Security, JWT and OAuth2 in Java W16 - now the system view: where authorization sits across services (gateway checks the token, each service checks roles/ownership, the DB enforces row ownership), service-to-service identity, OWASP API Top 10 risks, encryption in transit and at rest, secrets in a vault, WAF and DDoS protection at the edge. Read [OWASP API Security Top 10 (2023)](https://owasp.org/API-Security/editions/2023/en/0x11-t10/). Optional: [Session vs JWT (ByteByteGo, 7 min)](https://www.youtube.com/watch?v=fyTxwIa-1U0).
+- 🛠️ **Do:** In `notes/19-security.md`: reuse your Java W16 login diagram, then add an authorization-placement table (gateway, service, database: what each checks), 5 OWASP API risks with your TicketVerse mitigation, and one line each on secrets, encryption and WAF. Done when: you can explain how to limit damage from a stolen JWT (short TTL, refresh-token rotation, denylist) and where BOLA (broken object-level authorization) is prevented.
 
-### Wednesday 17 Feb · 45 min — Rate limiter deep dives: Redis, Lua, failure modes
-- 📚 **Learn:** Placement (gateway vs sidecar vs library), Redis Cluster sharding by client key, atomic check-and-update with Lua, local + global hybrid limits, fail-open vs fail-closed, hot clients, multi-region limits. Read [Redis Lua scripting intro](https://redis.io/docs/latest/develop/programmability/eval-intro/) and [Rate limiting pattern (Azure)](https://learn.microsoft.com/en-us/azure/architecture/patterns/rate-limiting-pattern).
-- 🛠️ **Do:** Finish steps 5-7: high-level diagram (Excalidraw), 3 deep dives (atomicity with Lua; Redis outage -> fail-open with local fallback; hot-key mitigation) and a trade-offs section. Done when: the write-up fits one page and the diagram PNG is committed.
+### Wednesday 17 Feb · 45 min — LLD: thread-safe in-memory KV store with TTL (design)
+- 📚 **Learn:** API: `put(k, v, ttl)`, `get`, `delete`, `incrBy`; storage in a `ConcurrentHashMap`; expiry = lazy check on read + periodic sampling sweep (as Redis does); locking options (per-key atomic ops vs `ReentrantReadWriteLock` vs lock striping); optional LRU eviction at a size limit. Read [How Redis expires keys (EXPIRE docs)](https://redis.io/docs/latest/commands/expire/). Optional: [ReentrantReadWriteLock docs](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/locks/ReentrantReadWriteLock.html).
+- 🛠️ **Do:** Write `lld/kvstore/DESIGN.md`: requirements, class diagram (`KvStore`, `Entry`, `ExpiryPolicy`, `EvictionPolicy`, `Clock`), a concurrency plan (which lock or atomic op guards what) and a list of >= 8 tests for Saturday. Then code `Entry` + `put`/`get` with lazy expiry. Done when: the design is committed and the first 3 tests pass.
 
-### Thursday 18 Feb · 45 min — Case study: notification system at scale
-- 📚 **Learn:** Requirements: multi-channel, 10M+/day, priorities, templates, preferences, dedupe, delivery tracking. Architecture: API -> validation -> preference service -> queues per priority/channel -> channel workers -> providers (email/SMS/FCM/APNs/WhatsApp) with retries, DLQ, per-provider rate limits; analytics. Watch [Design a notification system (Nikhil Lohia)](https://www.youtube.com/watch?v=1E3oeYkJ1P8); read [Priority Queue pattern (Azure)](https://learn.microsoft.com/en-us/azure/architecture/patterns/priority-queue).
-- 🛠️ **Do:** Timer on: full framework in 40 minutes in `hld/03-notification-system/README.md`, with an estimate for 10M notifications/day at 10x peak. Include how you avoid double sends (idempotency key) and survive a provider outage (circuit breaker + fallback provider). Done when: all 7 sections are filled and you note your two weakest sections.
+### Thursday 18 Feb · 45 min — DNS, GeoDNS, anycast, CDN edge, DDoS and WAF
+- 📚 **Learn:** Resolution chain (recursive resolver -> root -> TLD -> authoritative), record types (A, AAAA, CNAME, NS, TXT), TTL trade-offs; GeoDNS/latency routing; anycast (one IP served from many PoPs); L3/L4 vs L7 DDoS; WAF rules; edge rate limiting. Watch [Everything you need to know about DNS (ByteByteGo, 6 min)](https://www.youtube.com/watch?v=27r4Bzuj5NQ). Optional: [What is anycast? (Cloudflare)](https://www.cloudflare.com/learning/cdn/glossary/anycast-network/).
+- 🛠️ **Do:** Run `Resolve-DnsName` (or `nslookup`) for 3 public domains and record A/CNAME/NS answers and TTLs. Then design the global entry for TicketVerse users in India + Singapore: DNS or anycast, CDN, WAF, regional gateways; describe what happens when the Mumbai region fails. Done when: diagram + failover narrative are in `notes/20-edge.md`.
 
-### Saturday 20 Feb · 45 min — PRACTICE: Polish both write-ups + Excalidraw diagrams
-- 📚 **Learn:** Diagram conventions: clients left, data stores as cylinders, solid arrows = sync calls, dashed = async/events, number the main flow. Reuse the write-up template from `HLD_INTERVIEW_FRAMEWORK.md`; draw in [Excalidraw](https://excalidraw.com/).
-- 🛠️ **Do:** 20 min per case: clean diagram, export PNG + `.excalidraw`, add 'Trade-offs I made' and 'What changes at 10x' sections. Last 5 min: record a 3-minute summary of each design. Done when: both folders have README + `.excalidraw` + PNG and your AI mentor's review comments are addressed or logged.
+### Saturday 20 Feb · 45 min — PRACTICE: KV store machine coding
+- 📚 **Learn:** Finish the store you designed on Wednesday. Useful APIs: `ConcurrentHashMap.compute/merge` for atomic updates, a `ScheduledExecutorService` for the sweeper, an injected `Clock` for deterministic expiry tests. Docs: [ConcurrentHashMap (Java 25)](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ConcurrentHashMap.html).
+- 🛠️ **Do:** Implement `delete`, atomic `incrBy`, TTL refresh on `put` and an active-expiry sweeper (sample 20 keys every 100 ms). Done when: >= 6 tests pass, including 32 threads x 1,000 `incrBy(1)` = 32,000, expired keys invisible to `get`, the sweeper removing expired keys, and `delete` racing `put` without exceptions; max-size LRU eviction goes to the stretch.
 
 ## 📦 Deliverable (by Saturday night)
-`hld/02-rate-limiter/` and `hld/03-notification-system/` each with a one-page write-up, `.excalidraw` source, PNG export and a 3-minute recorded summary.
+`notes/19-security.md`, `notes/20-edge.md`, and `lld/kvstore` (design + >= 6 green tests including the concurrency test). Sunday mini-design (20 min, full template): a distributed job scheduler in `hld/mini/W17-job-scheduler.md`.
 
 ## ✅ Self-check (Sunday test preview)
-- Where would you place a rate limiter in a microservices system, and why?
-- How do you make check-and-increment atomic in Redis?
-- Fail-open or fail-closed when the rate-limit store is down? Defend your answer.
-- Notification system: how do you prioritise OTPs over marketing messages?
-- How do you handle a third-party SMS provider outage?
-- How do you track delivery status end to end?
+- Sessions vs JWT: how do you revoke access in each?
+- AuthN vs authZ: where does each happen in a microservices system, and what does the database enforce?
+- Pick two OWASP API Top 10 risks and explain how TicketVerse prevents them.
+- How does anycast help against DDoS and reduce latency?
+- What is the trade-off of a low DNS TTL?
+- How does Redis expire keys, and why both lazy and active expiry?
+- Sunday mini-design: a distributed job scheduler (one-off + cron jobs, at-least-once) - requirements, API, data model, how workers claim jobs.
 
 ## 🚀 Stretch (optional)
-Add a 'notification digest' feature (batch low-priority messages hourly per user) to your design and explain the data model change.
+Add max-size LRU eviction and an append-only log to the KV store so it survives restarts (replay on startup); measure throughput with and without fsync. Extra: [OAuth 2 explained (ByteByteGo)](https://www.youtube.com/watch?v=ZV5yTm4pT8g); [Traffic Manager routing methods (Azure)](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods); [LLD of a cache, mock interview (Gaurav Sen)](https://www.youtube.com/watch?v=tzbX4ix2RjI).

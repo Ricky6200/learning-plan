@@ -138,7 +138,7 @@ Assumptions: 100M new links/month, read:write = 100:1, ~500 B per record, keep 5
 | Cache | 4,000 × 86,400 ≈ 350M reads/day; 20% × 500 B | ≈ 35 GB → small Redis cluster |
 | Egress | 12,000/s × ~500 B | ≈ 6 MB/s (tiny) |
 
-**So what:** read-heavy → cache + replicas; low write rate → one primary is fine; pure key → value access → KV store or an indexed SQL table; 7-character codes.
+**So what:** read-heavy → cache + replicas; low write rate → one primary is fine; pure key → value access → KV store or an indexed SQL table; 7-character codes. A 64-bit Snowflake ID would need 10–11 Base62 characters, so 7-character codes come from **range-allocated counters** (each server takes a block of IDs) — the trade-off: codes are guessable and the allocator must stay available (W12).
 
 ---
 
@@ -182,16 +182,18 @@ Rules: **start from access patterns**, name the partition key and the query it s
 | Write-heavy | Sharding by a high-cardinality key, LSM stores, batching, async queues | Cross-shard queries; rebalancing |
 | Hot keys / celebrities | Key replication, local caches, hybrid fan-out, request coalescing | Memory; complexity |
 | Contention (tickets, inventory, drivers) | Row locks / optimistic versioning, Redis TTL holds, per-resource queues, virtual waiting room | Throughput vs fairness; lock expiry |
+| Date-range inventory (hotels, rentals) | Per-night counters (`reserved + n <= total`) updated in one transaction; capped overbooking; exclusion constraints for unique listings | Overbooking risk vs lost sales |
 | Duplicate requests / retries | Idempotency keys, dedupe tables, upserts | Storage for keys; TTL choice |
 | Multi-step workflows | Saga (orchestrated) + transactional outbox, or a workflow engine | Eventual consistency; compensations |
+| Scheduled / delayed jobs | Time-bucketed job table + queue, worker leases with heartbeats, idempotent execution IDs | Timing precision vs scan cost; duplicate runs |
 | Real-time updates | WebSockets or SSE; pub/sub between gateway servers | Connection state; reconnect logic |
 | Large files | Presigned/SAS URLs, multipart + resumable uploads, CDN | Security of URLs; CDN cost |
 | Search | Inverted index (Elasticsearch) fed by CDC/events | Index lag; ops cost |
 | Geo / proximity | Geohash, quadtree, H3, Redis GEO | Cell size vs hotspots |
-| Strong consistency | Single leader + sync replicas, consensus (Raft/etcd), quorums R + W > N | Latency; availability during partitions |
+| Strong consistency | Single leader + sync replicas, consensus (Raft/etcd), quorums R + W > N | Latency; availability during partitions. R + W > N only guarantees the latest acknowledged write with strict quorums (no sloppy quorum) and no concurrent writes — and it is still not linearizable |
 | High availability | Redundancy across zones, health checks, failover, graceful degradation | Cost; split-brain risk |
 | Abuse / overload | Rate limiting, load shedding, WAF, backpressure | False positives; fail-open vs fail-closed |
-| Counting / analytics | Kafka + stream processing windows, count-min sketch, batch reconciliation | Accuracy vs cost; late events |
+| Counting / analytics | Kafka + stream processing (tumbling/sliding windows, watermarks for late events), count-min sketch, batch reconciliation (Lambda) or replay from the log (Kappa), OLAP store for queries | Accuracy vs cost; late events |
 | Observability | Metrics (golden signals), logs, traces, SLO-burn alerts | Cardinality; cost |
 | Failure handling | Timeouts, retries with backoff + jitter, circuit breakers, DLQs, bulkheads | Retry storms; duplicate effects |
 
@@ -232,7 +234,7 @@ Score each line **0–3** (0 = missing, 1 = weak, 2 = solid, 3 = strong). Max 24
 | 7 | Trade-offs & failures | SPOFs, failure modes, consistency choices explicit |
 | 8 | Communication | Structured, checks in, handles hints and pushback |
 
-Pass marks in this plan: W19 ≥ 16, W23 ≥ 17, W26 ≥ 18.
+Pass marks in this plan: boss battles W20 ≥ 16, W25 ≥ 17, W30 ≥ 18. The other unseen HLD mocks (W21 Yelp, the two W27 mocks, W29 stock exchange and flash sale) use the same rubric — log them in `mocks/`.
 
 ## 11. Fill-in write-up template (`hld/NN-case/README.md`, one page)
 
@@ -273,6 +275,7 @@ Flows: 1) … 2) … 3) …
 - First bottleneck at 10×: …
 - Failure modes (component → impact → detection → mitigation): …
 - Trade-offs I made: …
+- Key decision recorded in: `adr/NNNN-<decision>.md` (MADR)
 
 ## 8. Compared with reference (after solo attempt)
 - Gaps: 1) … 2) … 3) …
@@ -281,13 +284,18 @@ Flows: 1) … 2) … 3) …
 
 ## 12. How case studies are split across 45-minute sessions
 
+Every session is ~15 min of learning (one main resource or a named section) + **≤ 25 min hands-on** + a few minutes to commit. Unseen mocks and boss battles are the exception: they use the full 45 minutes.
+
 | Session | What you do |
 |---|---|
-| Part 1 (e.g., Mon) | Steps 1–5 solo with a timer (25–30 min) → compare with the reference (15 min) → note gaps |
-| Part 2 (e.g., Wed) | Steps 6–7 deep dives + Excalidraw diagram → one-page write-up |
-| Single-session cases (Thu) | Full framework in 40 min, 5 min to note weakest sections |
-| Sat polish | Clean diagram, add "what changes at 10×", record a 3–5 min verbal summary |
+| Part 1 (e.g., Mon) | Learn the concept, then steps 1–5 solo in a **25-minute sprint** (requirements, estimate, API, data model, box diagram) |
+| Part 2 (e.g., Wed) | Read the reference's deep-dive section, then steps 6–7 (2–3 deep dives + Excalidraw diagram, ~20 min) and a 5-min comparison: list 3 gaps |
+| Single-session cases (Thu) | 25-min sprint on steps 1–5; deep dives move to Saturday or the week's stretch |
+| Sat polish | Finish deep dives, clean the diagram, add "what changes at 10×", write the ADR, record a 3–5 min verbal summary |
+| Follow-up session (W26 Thu, W29 Wed) | Compare earlier designs with a reference, add the deep dives you missed, write "What I changed after review" |
+| Sunday mini-design (W13–W17) | 20-min full-template sketch in `hld/mini/` (ID generator, leaderboard, Pastebin, hotel booking, job scheduler) |
+| Unseen mocks + bosses | 45 min, recorded, scored with §10: W20 (FB Live comments), W21 (Yelp), W25 (random), W27 (×2), W29 (stock exchange; flash sale in 35 min), W30 (final) |
 
 Want a mock? Ask your AI mentor: *"Be my HLD interviewer for <case>. 45 minutes. Make me drive; give hints only if I'm stuck for 2 minutes; ask 3 follow-ups; then score me with the rubric in HLD_INTERVIEW_FRAMEWORK.md."*
 
-Useful references: [Hello Interview delivery framework](https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery) · [ByteByteGo: system design interview step by step](https://www.youtube.com/watch?v=i7twT3x5yv8) · [Back-of-the-envelope estimation (ByteByteGo)](https://www.youtube.com/watch?v=UC5xf8FbdJc) · [napkin-math](https://github.com/sirupsen/napkin-math).
+Useful references: [Hello Interview delivery framework](https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery) · [Hello Interview patterns](https://www.hellointerview.com/learn/system-design/in-a-hurry/patterns) · [ByteByteGo: system design interview step by step](https://www.youtube.com/watch?v=i7twT3x5yv8) · [Back-of-the-envelope estimation (ByteByteGo)](https://www.youtube.com/watch?v=UC5xf8FbdJc) · [napkin-math](https://github.com/sirupsen/napkin-math) · [MADR decision-record template](https://adr.github.io/madr/).

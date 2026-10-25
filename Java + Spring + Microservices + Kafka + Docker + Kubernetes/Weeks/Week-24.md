@@ -1,49 +1,49 @@
-# ☕ Java Backend · Week 24 — Spring AI assistant: Ask TicketVerse
+# ☕ Java Backend · Week 24 — Kubernetes II: Gateway API, autoscaling, state, Helm
 
-> 📅 **Mon 05 Apr 2027 → Sun 11 Apr 2027** · Season 6 — Final Boss: The Offer  
+> 📅 **Mon 05 Apr 2027 → Sun 11 Apr 2027** · Season 5 — Cloud Ascension  
 > ⏱️ Slots: Mon–Fri · 60 min (Block B) + Sat 60 min BUILD · Sunday test: 30 min
 
-[← Week 23](Week-23.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-24.md) · [Week 25 →](Week-25.md)
+[← Week 23](Week-23.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-24.md) · [Week 25 →](Week-25.md)
 
-**Why this week:** Java backends are adding LLM features fast; showing ChatClient, tool calling, RAG and an MCP server inside a real secured microservice system sets you apart in Java + AI roles.
+**Why this week:** Real clusters need traffic entry, autoscaling, stateful workloads, access control and packaging; Gateway API replaced ingress-nginx (retired March 2026), so modern answers use it.
 
 ## 🗓️ Sessions
 
-### Monday 05 Apr · 60 min — Spring AI 2.x ChatClient, model choice, prompts, streaming
-- 📚 **Learn:** ChatModel vs ChatClient fluent API; system and user messages, prompt templates, options (temperature, max tokens); streaming responses; free model options: Ollama locally, Gemini free tier, OpenAI-compatible endpoints (Groq, OpenRouter) via the OpenAI starter's base URL (in Spring AI 2.0, Azure OpenAI also goes through the OpenAI module). [Spring AI: Chat Client API](https://docs.spring.io/spring-ai/reference/api/chatclient.html), [Spring AI: Ollama chat](https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html), [Dan Vega: Spring AI (playlist)](https://www.youtube.com/playlist?list=PLZV0a2jwt22uoDm3LNDFvN6i2cAVU_HTH).
-- 🛠️ **Do:** Create `ai-assistant` service (Boot 4.1, Spring AI 2.0.x BOM) with `POST /api/assistant/chat` and a streaming variant; a system prompt that keeps the assistant to TicketVerse topics; model via Ollama or an OpenAI-compatible free endpoint chosen by profile; route it through the gateway with JWT. Done when: the same prompt works on two providers by switching only the profile.
+### Monday 05 Apr · 60 min — Gateway API: GatewayClass, Gateway, HTTPRoute with Envoy Gateway
+- 📚 **Learn:** Why Ingress gave way to Gateway API (role-oriented, portable, richer routing) and the ingress-nginx retirement; GatewayClass (infra provider), Gateway (listeners), HTTPRoute (path/header matching, weights, filters); implementations like Envoy Gateway or NGINX Gateway Fabric. If Helm charts or images cannot be pulled behind the corporate proxy, use the 4-core Codespace. Read: [Kubernetes: Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/). Optional: [Envoy Gateway: Quickstart](https://gateway.envoyproxy.io/docs/tasks/quickstart/).
+- 🛠️ **Do:** Install Envoy Gateway on kind with Helm; create a Gateway and HTTPRoutes sending `/api/events` to catalog-service and `/api/bookings` to booking-service; add a header-based route to a `v2` deployment and a 90/10 weighted split. Done when: curl through the Gateway reaches both services and the weighted split shows roughly 10% v2 responses over 100 calls.
 
-### Tuesday 06 Apr · 60 min — Structured output, advisors and per-user chat memory
-- 📚 **Learn:** Structured output into records (`.entity(BookingIntent.class)`), validation and retries on bad JSON; Advisors API (logging, memory, guard-style advisors) and ordering; chat memory with a conversation id and a JDBC-backed repository; token limits. [Spring AI: Structured output](https://docs.spring.io/spring-ai/reference/api/structured-output.html), [Spring AI: Advisors](https://docs.spring.io/spring-ai/reference/api/advisors.html), [Spring AI: Chat memory](https://docs.spring.io/spring-ai/reference/api/chat-memory.html).
-- 🛠️ **Do:** Implement `extractIntent(text)` returning `BookingIntent(city, movie, date, seatCount, budget)`; test it with 10 phrasings including Hinglish ('kal shaam Pune mein 2 seats'); add a logging advisor and JDBC chat memory keyed by the JWT subject so follow-ups ('make it 3 seats') work. Done when: 8 of 10 phrasings parse correctly and memory survives an app restart.
+### Tuesday 06 Apr · 60 min — Horizontal Pod Autoscaler with metrics-server and load
+- 📚 **Learn:** metrics-server (its image comes from registry.k8s.io, part of the IT request; else use the Codespace); HPA on CPU utilization (needs requests), min/max replicas, stabilization windows and scale-down behaviour; why JVM warm-up and memory-based scaling are tricky; VPA and KEDA awareness for event-driven scaling (Kafka lag). Read: [Kubernetes: HPA walkthrough](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/). Optional: [Kubernetes: Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+- 🛠️ **Do:** Install metrics-server on kind (with `--kubelet-insecure-tls`), create an HPA for catalog-service (min 1, max 5, 60% CPU), generate load with a busy loop pod, and record replicas over time with `kubectl get hpa -w`; then stop load and watch scale-down. Done when: a timeline of scale-out and scale-in is saved in `docs/k8s-hpa.md`.
 
-### Wednesday 07 Apr · 60 min — Tool calling into catalog and booking APIs, with safety
-- 📚 **Learn:** `@Tool` methods and tool descriptions; how the model chooses tools; read tools (search shows, check availability) vs write tools (hold seats) that need explicit user confirmation; passing the user's identity to downstream calls; limiting tool scope and validating arguments. [Spring AI: Tool calling](https://docs.spring.io/spring-ai/reference/api/tools.html), [Concept && Coding: Spring AI (Hindi playlist)](https://www.youtube.com/playlist?list=PL6W8uoQQ2c602ytEt7f_qVtlV7jNkdabL).
-- 🛠️ **Do:** Add tools `searchShows(city, movie, date)`, `seatAvailability(showId)` and `holdSeats(showId, seatIds)` that call your services with the caller's token; `holdSeats` only runs after the user replies 'confirm'. Test: 'Find 2 seats for Dune tomorrow evening in Pune' -> options -> confirm -> hold created. Done when: logs show the tool calls and no hold happens without confirmation.
+### Wednesday 07 Apr · 60 min — StatefulSets, PV/PVC, Jobs and CronJobs
+- 📚 **Learn:** StatefulSets (stable names, ordered rollout, per-pod PVCs via volumeClaimTemplates); PersistentVolumes, claims and StorageClasses; why managed databases beat self-run ones in the cloud; Jobs for one-off work (migrations) and CronJobs for schedules (cleanup). Read: [Kubernetes: StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/). Optional: [Kubernetes: CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/).
+- 🛠️ **Do:** Convert Postgres to a StatefulSet with a volumeClaimTemplate; insert data, delete the pod and prove data survives; add a Job that runs Flyway migrations before deploy and a CronJob that calls booking-service's `/actuator/health` every 5 minutes as a stand-in (W25 builds the real cleanup endpoint and you point the CronJob at it). Done when: data persists across pod deletion and the CronJob history shows successful runs.
 
-### Thursday 08 Apr · 60 min — RAG over FAQs and policies with PgVectorStore; evaluation
-- 📚 **Learn:** ETL pipeline: document readers, token splitting, embeddings, PgVectorStore (pgvector on Postgres); retrieval advisors (`QuestionAnswerAdvisor` from the `spring-ai-vector-store-advisor` artifact / RetrievalAugmentationAdvisor), similarity threshold and top-k, metadata filters; grounding and citing sources; evaluating relevancy and faithfulness. [Spring AI: RAG](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html), [Spring AI: PGvector](https://docs.spring.io/spring-ai/reference/api/vectordbs/pgvector.html), [Spring AI: Evaluation testing](https://docs.spring.io/spring-ai/reference/api/testing.html).
-- 🛠️ **Do:** Write 10 short policy docs (cancellation, refunds, F&B, accessibility, kids, convenience fees) in Markdown; ingest them into PgVectorStore with metadata; answer 'Can I cancel 2 hours before the show?' citing the source doc; build a 10-question eval set and score answers with an evaluator. Done when: at least 8 of 10 answers are judged relevant and each cites a source.
+### Thursday 08 Apr · 60 min — RBAC, Kustomize awareness, troubleshooting broken workloads
+- 📚 **Learn:** ServiceAccounts, Roles/ClusterRoles, RoleBindings, least privilege, `kubectl auth can-i`; Kustomize overlays (dev/prod) vs Helm values; reading Events and statuses: CrashLoopBackOff, ImagePullBackOff, OOMKilled, Pending, failing readiness. Read: [Kubernetes: RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/). Optional: [Kubernetes: Debug running pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/).
+- 🛠️ **Do:** Create a read-only ServiceAccount for a 'support' role and verify with `kubectl auth can-i`. Inject 5 failures (bad image tag, crashing command, tiny memory limit, impossible CPU request, wrong readiness path) and fix each using only `get`, `describe`, `logs`, `events`. Done when: `docs/RUNBOOK.md` gains 5 Kubernetes entries with the decisive command for each.
 
-### Friday 09 Apr · 60 min — MCP server exposing booking tools; LangChain4j awareness
-- 📚 **Learn:** Model Context Protocol: hosts, clients, servers, tools/resources/prompts; Spring AI MCP server Boot starter with Streamable HTTP and server annotations; securing MCP endpoints; LangChain4j (AI Services, Spring Boot starter) as the other popular Java option. [Spring AI: MCP overview](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-overview.html), [Spring AI: MCP server Boot starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html), [Dan Vega: MCP with Spring AI (video)](https://www.youtube.com/watch?v=MarSC2dFA9g).
-- 🛠️ **Do:** Expose `searchShows`, `seatAvailability` and `getMyBookings` as MCP tools from `ai-assistant` (read-only), protected by a token; connect an MCP client (VS Code agent mode or MCP Inspector) and call each tool. Write a 10-line comparison of Spring AI vs LangChain4j in `docs/adr/ADR-004-ai-stack.md`. Done when: an external MCP client lists and successfully calls all 3 tools.
+### Friday 09 Apr · 60 min — Helm charts: templates, values, install, upgrade, rollback
+- 📚 **Learn:** Chart layout (Chart.yaml, values.yaml, templates/, `_helpers.tpl`); Go templating, `include`, `toYaml`, conditionals; per-environment values files; `helm lint`, `helm template`, `install`, `upgrade --install`, `rollback`, `history`; Helm 4 is current and keeps chart compatibility. Read: [Helm: Chart template guide](https://helm.sh/docs/chart_template_guide/getting_started/). Optional: [Helm: Quickstart](https://helm.sh/docs/intro/quickstart/).
+- 🛠️ **Do:** `helm create` a chart for catalog-service and adapt it: image repo/tag, replicas, resources, probes, env from ConfigMap/Secret, HTTPRoute template toggled by a value; lint and template it; install, upgrade with a new tag, then roll back. Done when: `helm history` shows 3 revisions and `helm template` output matches your hand-written manifests.
 
-### Saturday 10 Apr · 60 min — BUILD: Ask TicketVerse v1 end to end
-- 📚 **Learn:** Production concerns for LLM features: authentication, per-user rate limits, prompt-injection awareness (never let retrieved text trigger write tools), PII-safe logging, timeouts and fallbacks when the model is down, observability of model and tool calls, cost tracking. [Spring AI: Observability](https://docs.spring.io/spring-ai/reference/observability/index.html), [Spring AI: MCP server annotations](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-annotations-server.html).
-- 🛠️ **Do:** Demo a scripted 6-turn conversation through the gateway: find a show, ask a policy question (RAG), pick seats, confirm (hold via tool), complete booking through the normal API, ask 'what did I book?'. Add a rate limit and a fallback message when the model times out; show model and tool spans in Jaeger or App Insights; tag `v6.0.0`. Done when: the demo passes twice and a video is linked in the README.
+### Saturday 10 Apr · 60 min — BUILD: TicketVerse Helm chart on local Kubernetes
+- 📚 **Learn:** Umbrella chart with one subchart per service (or one generic service chart reused with values), shared labels and helpers, values-dev.yaml, infra (Postgres StatefulSet, Redis, Kafka in KRaft mode, Keycloak) kept simple for local use; the full chart may need the 4-core Codespace. Read: [Helm: Chart best practices](https://helm.sh/docs/chart_best_practices/). Optional: [Gateway API: HTTP routing guide](https://gateway-api.sigs.k8s.io/guides/user-guides/http-routing/).
+- 🛠️ **Do:** Create `charts/ticketverse` deploying gateway, catalog, booking, payment-mock, notification and infra plus HTTPRoutes; `helm upgrade --install tv charts/ticketverse -f values-dev.yaml -n ticketverse`; run the saga smoke test through the Gateway API entry point. Done when: one Helm command brings up the system on a fresh kind cluster and both saga paths pass.
 
 ## 📦 Deliverable (by Saturday night)
-`ai-assistant` service: ChatClient with switchable free providers, structured intent extraction, JDBC chat memory, guarded tool calling, PgVector RAG with eval set, MCP server, observability; Ask TicketVerse demo `v6.0.0`.
+Gateway API routing (incl. weighted split), HPA timeline, Postgres StatefulSet, migration Job + stand-in CronJob, RBAC + troubleshooting runbook, `charts/ticketverse` umbrella chart running the full saga on kind.
 
 ## ✅ Self-check (Sunday test preview)
-- ChatClient vs ChatModel: what does the fluent API add?
-- How does tool calling work end to end, and how did you prevent unwanted write actions?
-- Walk through your RAG pipeline from Markdown files to a cited answer.
-- How do you evaluate whether RAG answers are relevant and grounded?
-- What is MCP, and how is an MCP tool different from a Spring AI @Tool?
-- How do you handle model timeouts, rate limits and cost in production?
-- What is prompt injection, and where could it hit TicketVerse?
+- Why did the ecosystem move from Ingress to Gateway API? Name its three core resources.
+- How does HPA decide the replica count, and why must requests be set?
+- StatefulSet vs Deployment: when do you need each?
+- Job vs CronJob: one TicketVerse use case each.
+- What do CrashLoopBackOff and ImagePullBackOff mean, and what is your first command for each?
+- Helm vs Kustomize: how do they differ?
+- How would you do a canary release with Gateway API?
 
 ## 🚀 Stretch (optional)
-Rebuild `extractIntent` with [LangChain4j's Spring Boot integration](https://docs.langchain4j.dev/tutorials/spring-boot-integration) and compare code and accuracy.
+Install Argo CD on kind and let it sync `charts/ticketverse` from Git (GitOps preview for W26).

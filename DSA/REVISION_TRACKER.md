@@ -12,7 +12,8 @@
 - **Targets:** Easy 10 · Medium 20 · Hard 35 min, from memory, no notes. Missed the target → mark that re-solve 🔴.
 - **Your own 🔴 rule:** re-solve every 🔴 of the week in the Sunday preview slot; if it is still 🔴, the mentor puts it on next week's fix-it list.
 - **Re-solve weeks (no new problems):** W26 — light, 2 a day (AI-200 exam week) · W30 — final speed-run, 4 a day.
-- **Contests:** on contest Sundays (even weeks from W10: W10, W12 … W30) log the result below and the one problem you up-solved during the week.
+- **Contests:** on contest Sundays (W10, W12, W14, W16, W18, W22, W24, W26, W28 — never in boss weeks) log the result below and the one problem you up-solved during the week; from W20 explain that up-solve aloud.
+- **Mocks:** from W15, every non-contest Sunday test opens with a talk-aloud mock — log it in the table below too.
 
 ## 📊 Running totals (update every Sunday)
 | Week | Core done | Re-solves done | Bonus done | 🟢 | 🟡 | 🔴 | Contest / mock |
@@ -36,17 +37,17 @@
 | W17 | /10 | /6 | | | | | mock |
 | W18 | /10 | /6 | | | | | 🏆 |
 | W19 | /11 | /6 | | | | | mock · OA sim |
-| W20 ⚔️ | /11 | /6 | | | | | 🏆 · mock · OA sim |
+| W20 ⚔️ | /11 | /6 | | | | | mock · OA sim |
 | W21 | /10 | /7 | | | | | mock |
-| W22 | /9 | /6 | | | | | 🏆 · mock |
+| W22 | /9 | /6 | | | | | 🏆 · up-solve aloud |
 | W23 | /10 | /7 | | | | | mock |
-| W24 | /10 | /7 | | | | | 🏆 · mock |
+| W24 | /10 | /7 | | | | | 🏆 · up-solve aloud |
 | W25 ⚔️ | /9 | /6 | | | | | virtual contest · mock |
-| W26 | — | /12 | | | | | 🏆 |
-| W27 | /7 | /6 | | | | | 2 virtual contests · mock |
-| W28 | /11 | /6 | | | | | 🏆 · 3 mocks |
-| W29 | /8 | /7 | | | | | 2 OA sims · 2 contests · mock |
-| W30 👑 | — | /24 | | | | | 🏆 · final mock loop |
+| W26 | — | /12 | | | | | 🏆 · up-solve aloud |
+| W27 | /7 | /6 | | | | | mock · optional virtual contests |
+| W28 | /11 | /6 | | | | | 🏆 · up-solve aloud |
+| W29 | /8 | /7 | | | | | 2 OA sims · mock |
+| W30 👑 | — | /24 | | | | | final mock loop |
 | **Total** | **/294** | **/214** | **/202** | | | | |
 
 ## 🏆 Contests, OA simulations & mocks

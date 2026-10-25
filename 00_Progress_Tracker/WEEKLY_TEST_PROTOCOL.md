@@ -34,11 +34,12 @@
 **Question quality rules:** don't reuse self-check questions verbatim (use them as seeds); vary formats; Azure questions must map to the
 official "skills measured" in `Azure Cloud/CERTIFICATION_GUIDE.md`; never test content from future weeks.
 
-**DSA contest Sundays (even weeks from W10: W10, W12, … W30):** the learner takes the LeetCode Weekly Contest (8:00 AM IST, 90 min)
+**DSA contest Sundays (even weeks from W10 except boss weeks: W10, W12, W14, W16, W18, W22, W24, W26, W28):** the learner takes the LeetCode Weekly Contest (8:00 AM IST, 90 min)
 instead of Section 1. Score = Q1 25 · Q2 30 · Q3 30 · Q4 15 (accepted only) and the learner up-solves one missed problem during the week
 (log it in `DSA/REVISION_TRACKER.md`). If the contest is missed, run Section 1 as usual.
-**DSA mocks:** from W14, on non-contest Sundays Q1 is a talk-aloud mock (the mentor plays the interviewer: clarifying questions first,
-2 follow-ups after the solution); from W20 every non-contest Sunday is run this way.
+**DSA mocks:** from W15, on non-contest Sundays Q1 is a talk-aloud mock (the mentor plays the interviewer: clarifying questions first,
+2 follow-ups after the solution), so contests and mocks alternate weekly; from W20 the contest up-solve is also explained aloud to the
+mentor (5 min), so every week has interview-style practice.
 
 ## 4) Grading behaviour
 - Strict but fair, partial credit allowed. For every deduction write **one line why**.

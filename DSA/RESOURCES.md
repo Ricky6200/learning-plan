@@ -37,12 +37,12 @@ Also good: [codestorywithMIK](https://www.youtube.com/@codestorywithMIK) (Hindi,
 - [GfG – Morris inorder traversal](https://www.geeksforgeeks.org/dsa/inorder-tree-traversal-without-recursion-and-without-stack/) (W29) · [GfG practice – Kosaraju SCC](https://www.geeksforgeeks.org/problems/strongly-connected-components-kosarajus-algo/1) (W29)
 - [Sean Prashad – LeetCode Patterns](https://seanprashad.com/leetcode-patterns/) (filter problems by pattern)
 - [LeetCode Top Interview 150](https://leetcode.com/studyplan/top-interview-150/) · [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/) (gap fillers for W25 and W28)
-- [LeetCode contests](https://leetcode.com/contest/) — Weekly (Sunday 8:00 AM IST) & Biweekly (Saturday 8:00 PM IST); the Weekly replaces the DSA test part on even Sundays from W10
+- [LeetCode contests](https://leetcode.com/contest/) — Weekly (Sunday 8:00 AM IST) & Biweekly (Saturday 8:00 PM IST); the Weekly replaces the DSA test part on W10, W12, W14, W16, W18, W22, W24, W26 and W28 (never in boss weeks)
 
 ## 🏢 Company-style practice (from W20; company sets in W28)
 - Free company-wise LeetCode lists on GitHub: [list 1](https://github.com/snehasishroy/leetcode-companywise-interview-questions) · [list 2](https://github.com/liquidslr/interview-company-wise-problems) — pick 2–3 target companies, sort by frequency, skip Premium, solve the top ones you haven't done.
 - [LeetCode Discuss – interview experiences](https://leetcode.com/discuss/interview-experience/) — read 5 recent posts per target company (round format, repeated problems).
-- Mock interviews: every 2 weeks from W14, weekly from W20 — the AI mentor on Sundays, plus a friend or a free peer-mock site.
+- Mock interviews: from W15 on every non-contest Sunday (the AI mentor plays the interviewer); from W20 you also explain each contest up-solve aloud. A friend or a free peer-mock site is a bonus.
 
 ## 🖥️ Online-assessment practice (full programs: every 2 weeks from W12; OA simulations in W19–W20 and W29)
 - [USACO Guide – Input & Output in Java](https://usaco.guide/general/input-output?lang=java) — fast I/O; template #36 in [PATTERNS_CHEATSHEET.md](PATTERNS_CHEATSHEET.md).

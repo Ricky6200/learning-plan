@@ -1,39 +1,41 @@
-# 🏗️ System Design · Week 25 — Mock week: HLD, LLD, revision sheets
+# 🏗️ System Design · Week 25 — Kafka internals, ad clicks, top-K (Boss week)
 
-> 📅 **Mon 12 Apr 2027 → Sun 18 Apr 2027** · Season 6 — Final Boss: The Offer  
+> 📅 **Mon 12 Apr 2027 → Sun 18 Apr 2027** · Season 5 — Cloud Ascension · ⚔️ **BOSS WEEK**  
 > ⏱️ Slots: Mon, Wed, Thu · 45 min + Sat 45 min PRACTICE · Sunday test: 30 min
 
-[← Week 24](Week-24.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-25.md) · [Week 26 →](Week-26.md)
+[← Week 24](Week-24.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-25.md) · [Week 26 →](Week-26.md)
 
-**Why this week:** Mocks convert knowledge into interview performance; this week finds your weakest areas while there is still time to fix them.
+**Why this week:** Designing a message queue and stream aggregations shows deep understanding of logs, partitions, consensus and exactly-once trade-offs; top-K and leaderboards are common product questions. The Season 5 boss is a random unseen HLD mock.
 
 ## 🗓️ Sessions
 
-### Monday 12 Apr · 45 min — HLD mock #1 (AI mentor or peer, 40 min + score)
-- 📚 **Learn:** Mock etiquette: clarify first, think aloud, check in with the interviewer every ~10 minutes, budget time for deep dives. Ask your AI mentor (or a colleague) to run a case you have not presented, e.g., [Design LeetCode](https://www.hellointerview.com/learn/system-design/problem-breakdowns/leetcode) or [FB post search](https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-post-search) (Hello Interview; read only afterwards).
-- 🛠️ **Do:** 40-minute recorded mock using your framework, then 5 minutes scoring with the 8-line rubric. Done when: `mocks/W25-hld-1.md` has the score, the interviewer's 3 toughest follow-ups and your best answer to each.
+### Monday 12 Apr · 45 min — Kafka internals + consensus: Raft, leader election, gossip
+- 📚 **Learn:** Kafka: log segments, partition leaders/followers, ISR, `acks=all` + `min.insync.replicas`, high watermark, idempotent producer. KRaft (ZooKeeper removed in Kafka 4.0) stores cluster metadata with Raft: terms, leader election by majority vote, log replication, an entry is committed once a majority has it. Heartbeats vs gossip for failure detection. Read 'Fault Tolerance and Durability' in [Kafka deep dive (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/kafka). Optional: [Raft visualization](https://thesecretlivesofdata.com/raft/).
+- 🛠️ **Do:** In `hld/14-message-queue/README.md` design 'Kafka-lite' in a 25-minute sprint (partitions, replication, consumer groups, retention), plus a Raft cheat-sheet in `notes/23-consensus.md`: election steps, what 'committed' means, why a majority. Done when: you can explain what happens to acknowledged writes when a partition leader dies, for `acks=1` vs `acks=all`.
 
-### Wednesday 14 Apr · 45 min — LLD mock: machine coding with a peer or AI mentor
-- 📚 **Learn:** LLD mock flow: 5 min requirements, 5 min class diagram, 30 min code + tests, 5 min walkthrough of extensibility and concurrency. Unseen-problem suggestion: [Amazon Locker (Hello Interview)](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/amazon-locker) - read only after the mock.
-- 🛠️ **Do:** Do the mock on a problem you have not coded (Amazon Locker, car rental, or one the interviewer picks). Score 0-3 on: requirements, model, patterns, working code, tests, concurrency, communication. Done when: code is committed in `lld/mock-w25/` and the scorecard is in `mocks/W25-lld.md`.
+### Wednesday 14 Apr · 45 min — Ad-click aggregation: stream processing and exactly-once
+- 📚 **Learn:** Click ingestion -> Kafka -> stream processor (e.g., Flink) with tumbling 1-minute windows -> OLAP store; dedupe by click ID; late events and watermarks (W21 Mon); reconciliation with a batch job; fraud filtering; query API for advertisers. Watch the first 15 minutes of [Design an ad click aggregator (Hello Interview)](https://www.youtube.com/watch?v=Zcv_899yqhI). Optional: [Ad click aggregator breakdown (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/ad-click-aggregator).
+- 🛠️ **Do:** Timer on, 25 minutes: framework steps 1-5 in `hld/15-ad-clicks/README.md` for 10k clicks/s average and 50k/s peak. Done when: you can explain how a click is counted exactly once even when a processor crashes; deep dives return in W29.
 
-### Thursday 15 Apr · 45 min — HLD mock #2 on your weakest area
-- 📚 **Learn:** Choose the case family where your W19/W23/W25 scores were lowest (e.g., storage, streaming, consistency). Refresh with the related breakdown first, e.g., [Design Tinder (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/tinder) for geo + matching or [Design Dropbox](https://www.hellointerview.com/learn/system-design/problem-breakdowns/dropbox) for blobs.
-- 🛠️ **Do:** 40-minute recorded mock on a case from your weakest family with a different interviewer if possible, then 5 minutes scoring. Done when: `mocks/W25-hld-2.md` shows the score and whether it improved versus mock #1, with 2 concrete fixes.
+### Thursday 15 Apr · 45 min — Top-K and heavy hitters: count-min sketch
+- 📚 **Learn:** Exact top-K (sharded counters + min-heap merge) vs approximate (count-min sketch + heap), sliding time windows, precomputed windows vs on-demand; Redis sorted sets as a leaderboard preview (full design in W29). Read 'Count-Min Sketch' in [Data structures for big data (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/data-structures-for-big-data). Optional: [Top-K (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/top-k).
+- 🛠️ **Do:** 25-min timer: implement `labs/topk/CountMinSketch` (width, depth, `add`, `estimate`) and `TopK` with a min-heap over the sketch estimates. Done when: tests on a skewed stream prove the true top 5 are found and estimates never undercount.
 
-### Saturday 17 Apr · 45 min — PRACTICE: Revisit weakest design + one-page summary sheet
-- 📚 **Learn:** Spaced revision: one table row per case study (key requirement, scale numbers, core components, the one big trade-off, a failure mode). Reuse your write-ups in `hld/`; cross-check with the [Hello Interview core concepts](https://www.hellointerview.com/learn/system-design/in-a-hurry/core-concepts).
-- 🛠️ **Do:** 20 min: rewrite the weakest design's deep-dive section using the mock feedback. 25 min: build `hld/SUMMARY.md` - one row per case study (all 18) plus a list of 15 LLD problems with their key patterns. Done when: the summary has no empty cells and you can recite any row's trade-off in 30 seconds.
+### Saturday 17 Apr · 45 min — BOSS BATTLE: Timed 45-min HLD mock (random unseen case)
+- 📚 **Learn:** Boss rules: your AI mentor (or a peer) picks a random case you have NOT designed yet, e.g., Design LeetCode, Design Tinder or an online auction; same time splits and 8-line rubric as W20, with 3 interviewer follow-ups. Optional: read the matching breakdown, e.g., [Design LeetCode (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/leetcode), only after the mock.
+- 🛠️ **Do:** Run a full 45-minute mock, recorded, the interviewer asking 3 follow-ups. Score with the 8-line rubric (0-3 each). Done when: recording, scorecard and 3 improvement actions are in `boss/W25.md`; >= 17/24 clears the boss.
 
 ## 📦 Deliverable (by Saturday night)
-Three mock scorecards in `mocks/`, an improved weakest design, and `hld/SUMMARY.md` covering every case study and LLD problem.
+`hld/14-message-queue/` and `hld/15-ad-clicks/` (write-up + PNG each), `notes/23-consensus.md`, `labs/topk` with tests, and the Boss scorecard in `boss/W25.md`.
 
 ## ✅ Self-check (Sunday test preview)
-- Which part of the framework do you rush or skip under time pressure?
-- Name your three weakest case studies and the fix for each.
-- Give a 60-second summary of the URL shortener including its key trade-off.
-- What follow-up questions did your interviewers ask that you could not answer well?
-- Which LLD patterns do you reach for first, and are they always justified?
+- What is the ISR, and how do `acks=all` + `min.insync.replicas` protect data?
+- How does Kafka achieve high throughput (sequential I/O, batching, zero-copy)?
+- What changed in Kafka 4.0 regarding ZooKeeper, and what does KRaft use instead?
+- In Raft, when is a log entry committed, and why does a leader need a majority?
+- Ad clicks: how do you handle late-arriving events in windowed aggregation?
+- Count-min sketch: why does it overestimate but never underestimate?
+- Heartbeats vs gossip: when would you use each for failure detection?
 
 ## 🚀 Stretch (optional)
-Do a fourth mock with a different peer and compare their feedback with your AI mentor's.
+Watch the [Raft lecture (Martin Kleppmann)](https://www.youtube.com/watch?v=uXEYuDwm7e4) and the [Kafka deep dive video (Hello Interview)](https://www.youtube.com/watch?v=DU8o-OTeoCc); go deeper with the [Kafka internals course (Confluent)](https://developer.confluent.io/courses/architecture/get-started/) and [Bloom filters, count-min sketch, HyperLogLog (Hello Interview)](https://www.youtube.com/watch?v=IgyU0iFIoqM). Re-run the boss case a week later with a peer as interviewer and compare scores.

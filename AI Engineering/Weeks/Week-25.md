@@ -1,44 +1,44 @@
-# 🤖 AI Engineering · Week 25 — Capstone II: Observability, Tuning, Demo
+# 🤖 AI Engineering · Week 25 — Azure AI: Foundry, AI Search and the Cloud Boss
 
-> 📅 **Mon 12 Apr 2027 → Sun 18 Apr 2027** · Season 6 — Final Boss: The Offer  
+> 📅 **Mon 12 Apr 2027 → Sun 18 Apr 2027** · Season 5 — Cloud Ascension · ⚔️ **BOSS WEEK**  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 24](Week-24.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-25.md) · [Week 26 →](Week-26.md)
+[← Week 24](Week-24.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-25.md) · [Week 26 →](Week-26.md)
 
-**Why this week:** One polished, measured, well-explained project beats five half-finished demos. This week converts your work into interview stories and public proof.
+**Why this week:** Indian enterprises standardise on Azure. Microsoft Foundry, keyless auth and Azure AI Search are what AI-103-style interviews and real projects expect (the AI-200 exam itself focuses on data, containers, messaging and monitoring). The season ends with a timed, cost-safe cloud deployment.
 
 ## 🗓️ Sessions
 
-### Monday 12 Apr · 45 min — AI observability: traces, token and cost dashboards, SLOs
-- 📚 **Learn:** One view across services: OpenTelemetry traces from gateway -> ticketverse-ai -> LLM and tools, `gen_ai` metrics in Prometheus/Grafana, prompt and cost views; SLOs for AI endpoints (p95 latency, error rate, cost per request). Read: [Spring AI observability](https://docs.spring.io/spring-ai/reference/observability/index.html) and [OTel GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/).
-- 🛠️ **Do:** Build a Grafana (or Langfuse) dashboard for AI endpoints: requests, p50/p95 latency, tokens, cost per day, tool-call errors, cache hit rate. Define 3 SLOs with alert rules. Done when: a dashboard screenshot and the SLO definitions are in `docs/ai-observability.md`.
+### Monday 12 Apr · 45 min — Microsoft Foundry: projects, models and a keyless call
+- 📚 **Learn:** Foundry resource and project, model catalog, deployments and quotas (tokens per minute), Foundry Models including Azure OpenAI, endpoints and SDKs. Keyless auth: `DefaultAzureCredential` + `get_bearer_token_provider` and the 'Cognitive Services OpenAI User' role (managed identity from Azure W22). Cost-safe: pay-per-token deployments, your Azure W9 budget alerts, delete everything after Saturday. Read: [What is Microsoft Foundry?](https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry). Optional: [Keyless connections to Azure AI](https://learn.microsoft.com/en-us/azure/developer/ai/keyless-connections).
+- 🛠️ **Do:** In a codespace, `az login --use-device-code` with your personal account, create a resource group and a Foundry project, and deploy the smallest chat model offered in your region plus a small embedding model. Assign yourself the role above and add an `azure` provider to `llmkit` that calls both keylessly. Done when: both calls work with no key in code or settings, and a repo search finds no Azure keys.
 
-### Tuesday 13 Apr · 45 min — Latency and cost tuning with load tests
-- 📚 **Learn:** Profile before optimising (retrieval, time-to-first-token, tools?), then apply: parallel tool calls, smaller models for routing/summaries, prompt trimming, caching, streaming, `max_tokens`, batched backfills; re-run evals to confirm quality holds. Load-testing tool: [Locust](https://locust.io/) (Python).
-- 🛠️ **Do:** Load-test `/ai/assistant` and `/ai/search` (20 users, 5 minutes), find the top 2 bottlenecks in traces, apply 2 optimisations, then rerun load and evals. Done when: a before/after table shows better p95 latency and cost per request with eval scores within 2%.
+### Tuesday 13 Apr · 45 min — Foundry Agent Service and Microsoft Agent Framework basics
+- 📚 **Learn:** Foundry Agent Service: prompt agents vs hosted agents, built-in tools, conversations, tracing. Microsoft Agent Framework 1.x (`pip install agent-framework`): agents with chat clients for Foundry, OpenAI, Ollama and others, tools, graph workflows; the successor to Semantic Kernel and AutoGen. Read: [Agent Framework overview](https://learn.microsoft.com/en-us/agent-framework/overview/). Optional: [Foundry Agent Service](https://learn.microsoft.com/en-us/azure/foundry/agents/overview).
+- 🛠️ **Do:** Rebuild the CareerPilot interviewer as an Agent Framework agent with one tool (question-bank lookup), running on your Foundry deployment. Run 3 mock questions with feedback. Done when: it works and `frameworks.md` gains an Agent Framework row compared with your W17 versions.
 
-### Thursday 15 Apr · 45 min — READMEs, decision records and resume bullets that sell
-- 📚 **Learn:** Recruiter-friendly README: problem, demo GIF, architecture diagram, key decisions (ADR style), metrics (evals, latency, cost), 'run in 3 commands', what's next; keep the format consistent across projects. Browse README styles in [awesome-llm-apps](https://github.com/Shubhamsaboo/awesome-llm-apps).
-- 🛠️ **Do:** Rewrite the READMEs of TicketVerse AI, DocuMind and CareerPilot: 30-second summary, architecture, eval table, security notes, trade-offs and 'what I learned'. Add 3 numbers-backed resume bullets to `Career & Interview Prep`. Done when: someone can run each project from its README alone and understand its value in 60 seconds.
+### Thursday 15 Apr · 45 min — Azure AI Search: vector, hybrid and semantic ranker
+- 📚 **Learn:** Index schemas with vector fields, integrated vectorisation, hybrid queries (BM25 + vectors fused with RRF, as in W11), the semantic ranker (re-ranking), agentic retrieval; the Free tier is enough for practice. Content Safety and Prompt Shields can filter inputs and outputs (W18). Read: [Hybrid search](https://learn.microsoft.com/en-us/azure/search/hybrid-search-overview). Optional: [Semantic ranker](https://learn.microsoft.com/en-us/azure/search/semantic-search-overview).
+- 🛠️ **Do:** Create a Free-tier search service, write the index JSON (fields, vector profile) and an `AzureSearchRetriever` implementing your retriever interface; upload your DocuMind chunks with embeddings from the Foundry embedding deployment. Run 10 golden questions. Done when: the retriever returns hybrid results and each index option in your notes maps to a W11 concept.
 
-### Friday 16 Apr · 45 min — Demo script and LinkedIn post draft
-- 📚 **Learn:** Demo storytelling: problem -> live flow -> one diagram under the hood -> metrics -> next steps, in 3-5 minutes with recorded fallback clips. A 'How I built...' post: hook, problem, approach, numbers, lesson, link. Example of a strong build write-up: [How we built our multi-agent research system](https://www.anthropic.com/research/multi-agent-research-system).
-- 🛠️ **Do:** Write `DEMO_SCRIPT.md` (timed sections, commands, fallback clips) and draft a LinkedIn post 'How I built an AI booking assistant with Spring AI + MCP' (250 words max, 1 diagram). Rehearse once with a timer. Done when: both are committed and the rehearsal fits in 5 minutes.
+### Friday 16 Apr · 45 min — Deployment script: Container Apps with managed identity
+- 📚 **Learn:** Deploy containers to Azure Container Apps (revisions, scale rules, system-assigned managed identity, secrets) as you practised in Azure W23; grant the app's identity the Foundry role so no API key is ever stored; script everything so creation and teardown are repeatable. Read: [Managed identities in Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/managed-identity). Optional: [Baseline Foundry chat reference architecture](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/architecture/baseline-microsoft-foundry-chat).
+- 🛠️ **Do:** Write `09-documind/azure/deploy.sh` (az CLI: registry, push the image, Container Apps environment and app with a system-assigned identity, role assignment, environment variables) and `teardown.sh`. Dry-run with a public hello-world image. Done when: the hello app answers on its public URL and `teardown.sh` removes the registry and the app.
 
-### Saturday 17 Apr · 45 min — BUILD: record and publish the demo video
-- 📚 **Learn:** Recording tips: 1080p, large fonts, clean terminal and browser, mic check, one take per section, captions; publish unlisted first, then share. Free recorder: [OBS Studio](https://obsproject.com/).
-- 🛠️ **Do:** Record the 4-5 minute TicketVerse AI demo plus a 2-minute DocuMind/CareerPilot montage, upload (YouTube unlisted or LinkedIn), link them from the READMEs and publish or schedule the LinkedIn post. Done when: all video links work, the post is live or scheduled and the READMEs embed the demo.
+### Saturday 17 Apr · 45 min — BOSS BATTLE: DocuMind on Azure in 45 minutes
+- 📚 **Learn:** Rules: 45-minute timer, start from Friday's scripts, docs allowed, no AI code generation. Rubric /100: working public URL 30, keyless auth (no secrets anywhere) 20, 10-question smoke eval against the URL 20, `AZURE_ARCHITECTURE.md` with diagram and identity flow 15, teardown and cost note 15. Reference: [Container Apps overview](https://learn.microsoft.com/en-us/azure/container-apps/overview).
+- 🛠️ **Do:** Run `deploy.sh` with the DocuMind image using the Foundry model through managed identity and the Azure AI Search retriever, run the 10-question smoke eval against the public URL, screenshot it, write `AZURE_ARCHITECTURE.md`, then run `teardown.sh` and delete the search service and Foundry project. Done when: the rubric score is 80+, nothing is left running in the portal, and tag `v3.0-documind-azure` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-AI observability dashboard with SLOs, measured latency/cost tuning, polished READMEs for three flagship projects, demo script, recorded demo video and a LinkedIn post.
+DocuMind on Azure Container Apps with a Foundry model via keyless auth and an Azure AI Search retriever (boss tag `v3.0-documind-azure`), deploy/teardown scripts, `AZURE_ARCHITECTURE.md` and an Agent Framework interviewer.
 
 ## ✅ Self-check (Sunday test preview)
-- Walk me through your TicketVerse AI architecture in 2 minutes.
-- What was your biggest latency bottleneck, and how did you fix it?
-- Which SLOs did you define for AI endpoints, and why those?
-- How did you verify that optimisations did not hurt quality?
-- What would you do differently if you rebuilt the project?
-- Tell me about a bug in your AI system and how you debugged it.
+- What is Microsoft Foundry, and how do projects, deployments and the model catalog relate?
+- How does keyless auth with managed identity work for Foundry/Azure OpenAI models?
+- Explain hybrid search with RRF and the semantic ranker in Azure AI Search.
+- When would you use Foundry Agent Service vs your own LangGraph app on Container Apps?
+- Where do Content Safety and Prompt Shields fit in a RAG pipeline?
+- How did you keep this week's Azure bill close to zero?
 
 ## 🚀 Stretch (optional)
-Write a technical blog post on one deep topic with your own numbers (e.g., hybrid search + re-ranking gains in DocuMind).
+Compare this week's work with the [AI-103 certification](https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-apps-and-agents-developer-associate/) skills and list your gaps for post-plan preparation.

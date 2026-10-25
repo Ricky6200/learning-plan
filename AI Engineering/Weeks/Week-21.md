@@ -1,44 +1,44 @@
-# 🤖 AI Engineering · Week 21 — Spring AI II: Tools, RAG and MCP
+# 🤖 AI Engineering · Week 21 — Fine-Tuning with LoRA: FineTune Lab
 
 > 📅 **Mon 15 Mar 2027 → Sun 21 Mar 2027** · Season 5 — Cloud Ascension  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 20](Week-20.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-21.md) · [Week 22 →](Week-22.md)
+[← Week 20](Week-20.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-21.md) · [Week 22 →](Week-22.md)
 
-**Why this week:** Tool calling, RAG and MCP in Spring AI turn TicketVerse into an AI-powered product and give you Java-side answers in AI system interviews.
+**Why this week:** Interviewers expect you to know when fine-tuning beats prompting or RAG and how LoRA/QLoRA work. A measured before/after experiment is strong resume evidence.
 
 ## 🗓️ Sessions
 
-### Monday 15 Mar · 45 min — Tool calling with @Tool on Spring beans
-- 📚 **Learn:** `@Tool` and `@ToolParam` on bean methods, tool definitions sent to the model, `returnDirect`, tool context for passing user identity safely, exception handling; start with read-only tools. The model never runs code; your application does. Read: [Tool calling](https://docs.spring.io/spring-ai/reference/api/tools.html).
-- 🛠️ **Do:** Create `ShowTools` with `@Tool searchShows(city, date, genre)` and `@Tool checkSeats(showId)` calling TicketVerse catalog and booking APIs (or stubs if not ready). Register them with `.tools(showTools)` and ask 'Any comedy shows in Pune on Saturday with 2 seats together?'. Done when: logs show both tools called with correct arguments and the answer uses tool data.
+### Monday 15 Mar · 45 min — Fine-tune vs prompt vs RAG: the decision
+- 📚 **Learn:** Prompting changes behaviour fast, RAG adds knowledge, fine-tuning fixes format/style or makes small models cheaper and faster on narrow tasks; it needs data, evals and maintenance; SFT vs preference tuning (DPO) vs distillation (teacher -> student). Read: [Unsloth fine-tuning guide](https://docs.unsloth.ai/get-started/fine-tuning-llms-guide) (what and when). Optional: [Post-training of LLMs](https://www.deeplearning.ai/courses/post-training-of-llms) (overview).
+- 🛠️ **Do:** Define the FineTune Lab task: JD text -> compact JSON (title, seniority, skills, years_min, remote). Write a one-page `12-finetune-lab/DECISION.md` comparing prompting, RAG and fine-tuning for it, with success metrics (JSON validity, field-level F1 from W4, latency, cost) and a hypothesis. Done when: the memo states measurable targets.
 
-### Tuesday 16 Mar · 45 min — Embeddings, VectorStore and PgVectorStore
-- 📚 **Learn:** `EmbeddingModel`, the portable `VectorStore` API, `PgVectorStore` (HNSW, cosine distance, dimensions must match your embedding model), metadata filter expressions. Read: [Vector databases](https://docs.spring.io/spring-ai/reference/api/vectordbs.html) and [PGvector store](https://docs.spring.io/spring-ai/reference/api/vectordbs/pgvector.html); model option: [nomic-embed-text](https://ollama.com/library/nomic-embed-text) (768 dimensions).
-- 🛠️ **Do:** Add the pgvector store starter, set dimensions to match your embedding model, and index 30 TicketVerse FAQ and policy snippets (refunds, cancellations, accessibility) with a `category` metadata field. Query with and without a filter. Done when: `similaritySearch` returns relevant snippets and the `category == 'refund'` filter works.
+### Tuesday 16 Mar · 45 min — Dataset preparation and distillation from a teacher model
+- 📚 **Learn:** Chat-format training data, train/validation/test splits (W4), quality over quantity (a few hundred clean examples), de-duplication and leakage checks, synthetic labels from a stronger teacher model plus human review, data licensing. Read: [TRL SFTTrainer](https://huggingface.co/docs/trl/sft_trainer) (dataset formats). Optional: [LLM course: supervised fine-tuning](https://huggingface.co/learn/llm-course/chapter11/1).
+- 🛠️ **Do:** Collect about 200 JDs (your W7 set plus pages from the free [Arbeitnow jobs API](https://www.arbeitnow.com/api/job-board-api)), label them with a strong free model in a background script (several JDs per call to respect rate limits), hand-review 20 and fix systematic errors, then split 80/10/10 into chat-format JSONL. Done when: `DATA.md` documents sources, cleaning, split sizes and review findings.
 
-### Thursday 18 Mar · 45 min — ETL pipeline and RAG advisors
-- 📚 **Learn:** ETL: `DocumentReader` (PDF, Markdown, Tika) -> `TokenTextSplitter` -> `VectorStore`; RAG via `QuestionAnswerAdvisor` (artifact `spring-ai-vector-store-advisor`) or the modular `RetrievalAugmentationAdvisor` (artifact `spring-ai-rag`: query transformers, retrievers, augmenters). Read: [ETL pipeline](https://docs.spring.io/spring-ai/reference/api/etl-pipeline.html) and [Retrieval Augmented Generation](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html).
-- 🛠️ **Do:** Write policies as Markdown, ingest them via ETL at startup (idempotently), and add `POST /ai/ask-policy` using `QuestionAnswerAdvisor` with a similarity threshold; then try `RetrievalAugmentationAdvisor` with a query-rewrite transformer. Done when: 10 policy questions are answered with sources and an off-topic question gets a polite refusal.
+### Thursday 18 Mar · 45 min — LoRA, QLoRA and PEFT on a free Colab GPU
+- 📚 **Learn:** Full fine-tuning vs PEFT; LoRA adds low-rank adapters (rank r, alpha, target modules) to frozen weights; QLoRA = 4-bit base model + LoRA; memory math; merging adapters; free GPUs on Colab or Kaggle. Read: [PEFT LoRA guide](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora). Optional: [QLoRA paper](https://arxiv.org/abs/2305.14314) (abstract).
+- 🛠️ **Do:** Open an [Unsloth notebook](https://docs.unsloth.ai/get-started/unsloth-notebooks) for a small (about 1-4B) instruct model on a Colab T4 and run it unchanged on its sample data for a few steps. Record r, alpha, target modules, VRAM used and seconds per step. Done when: the training loop runs and your notes explain each LoRA setting.
 
-### Friday 19 Mar · 45 min — MCP server and client with Spring AI; LangChain4j awareness
-- 📚 **Learn:** Spring AI MCP Boot starters: a server (WebMVC, Streamable HTTP) exposing `@McpTool`/`@McpResource` methods, and a client starter that consumes external MCP servers as tools; LangChain4j is the alternative Java AI library (AI Services, tools, RAG). Read: [MCP overview](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-overview.html), [MCP server annotations](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-annotations-server.html), [LangChain4j docs](https://docs.langchain4j.dev/).
-- 🛠️ **Do:** Expose `searchShows` and `checkSeats` as MCP tools from `ticketverse-ai` over Streamable HTTP and call them from VS Code and MCP Inspector. Then add the MCP client starter so `ticketverse-ai` consumes one external server (your W13 `careerpilot-mcp` over HTTP or a reference server) as tools. Done when: VS Code chat searches TicketVerse shows through MCP and Spring logs show both server-side and client-side MCP tool calls.
+### Friday 19 Mar · 45 min — Train on your data and evaluate against prompting
+- 📚 **Learn:** Training hygiene: 1-3 epochs, watch train vs validation loss (the overfitting signs from W4), learning rate, evaluate on the held-out test split with the same metrics as the baseline, save adapters, optional GGUF export for Ollama. Read: [Practical tips for finetuning LLMs using LoRA (Sebastian Raschka)](https://magazine.sebastianraschka.com/p/practical-tips-for-finetuning-llms).
+- 🛠️ **Do:** Swap in your JSONL, train 1-2 epochs, plot losses, then evaluate on the 20-example test split: JSON validity and field-level F1 vs the same base model with your best prompt. Save the adapter to Drive or a private Hugging Face repo. Done when: the base+prompt vs fine-tuned metrics table is recorded.
 
-### Saturday 20 Mar · 45 min — BUILD: Ask TicketVerse assistant with tools and RAG
-- 📚 **Learn:** Assistant design: show search -> tools, policy questions -> RAG, booking -> not allowed yet; system prompt rules, memory per user, guardrails (`SafeGuardAdvisor`, input length limits), evaluation with Spring AI evaluators. Read: [Evaluation testing](https://docs.spring.io/spring-ai/reference/api/testing.html); Hindi option: [Chai aur Code Spring Boot + RAG project](https://www.youtube.com/watch?v=R8VBA_KtUo0).
-- 🛠️ **Do:** Ship `POST /ai/assistant/{conversationId}` combining memory, tools, RAG advisor, logging and safeguards. Add 15 evaluation cases using `RelevancyEvaluator`/`FactCheckingEvaluator` or JUnit assertions on tool calls. Update Compose and the README with a sequence diagram. Done when: 12+ of 15 cases pass, booking requests are refused with guidance and tag `ticketverse-ai-v0.2` is pushed.
+### Saturday 20 Mar · 45 min — BUILD: FineTune Lab report, LoRA vs prompting
+- 📚 **Learn:** Report like an engineer: hypothesis, data, setup (hyperparameters, GPU, time), results with caveats (small n), cost and latency, failure examples, recommendation. Awareness: preference tuning with the [TRL DPO trainer](https://huggingface.co/docs/trl/dpo_trainer).
+- 🛠️ **Do:** Finalize `12-finetune-lab`: notebook plus `REPORT.md` comparing base+prompt, LoRA and a large API model on JSON validity, field F1, latency and estimated cost, with 5 error examples. Done when: the fine-tuned model beats its prompted baseline by 10+ F1 points or you explain why not, and tag `v1.0-finetune-lab` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-`ticketverse-ai` v0.2: `@Tool` show search and seat check, PgVectorStore FAQ/policy RAG via ETL and advisors, MCP server exposure, assistant endpoint with memory and guardrails, 15-case evaluation.
+`12-finetune-lab/`: decision memo, reviewed dataset with `DATA.md`, Colab/Unsloth training notebook, saved LoRA adapter and `REPORT.md` comparing prompting vs LoRA vs API.
 
 ## ✅ Self-check (Sunday test preview)
-- How does Spring AI's `@Tool` work end to end?
-- QuestionAnswerAdvisor vs RetrievalAugmentationAdvisor: when do you use which?
-- How do you keep embedding dimensions consistent between the model and PgVectorStore?
-- How do you expose Spring beans as MCP tools?
-- How would you stop the assistant from booking tickets without confirmation?
-- Spring AI vs LangChain4j: how would you choose for a team?
+- When should you fine-tune instead of prompting or RAG?
+- Explain LoRA: what are rank and alpha, and why is it parameter-efficient?
+- How does QLoRA reduce GPU memory?
+- What is DPO and how does it differ from SFT?
+- What is distillation, and how did you use a teacher model?
+- How do you detect overfitting during fine-tuning?
 
 ## 🚀 Stretch (optional)
-Rebuild the assistant with LangChain4j AI Services in a branch and compare code size, features and testing support.
+Grow the dataset to 400 examples and retrain, export the adapter to GGUF and serve it in Ollama, or try the SFT unit of the [Hugging Face smol course](https://huggingface.co/learn/smol-course/unit0/1).

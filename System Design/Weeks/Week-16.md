@@ -1,41 +1,41 @@
-# 🏗️ System Design · Week 16 — KV store, security, DNS and edge
+# 🏗️ System Design · Week 16 — Notifications, food delivery, reliability
 
 > 📅 **Mon 08 Feb 2027 → Sun 14 Feb 2027** · Season 4 — Distributed Kingdom  
 > ⏱️ Slots: Mon, Wed, Thu · 45 min + Sat 45 min PRACTICE · Sunday test: 30 min
 
-[← Week 15](Week-15.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-16.md) · [Week 17 →](Week-17.md)
+[← Week 15](Week-15.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-16.md) · [Week 17 →](Week-17.md)
 
-**Why this week:** A thread-safe KV store with TTL is a favourite concurrency machine-coding problem, and authN/authZ plus edge design (DNS, CDN, WAF) come up in every senior-leaning HLD discussion.
+**Why this week:** Notification and food-delivery systems are everyday Indian-product problems (Swiggy, Zomato, Paytm), and reliability vocabulary (SLOs, RPO/RTO, bulkheads, load shedding) separates SDE-2 answers from SDE-1 answers. AZ-104 exam week: Saturday is deliberately light.
 
 ## 🗓️ Sessions
 
-### Monday 08 Feb · 45 min — Security in system design: OAuth2/OIDC, JWT vs sessions, API security
-- 📚 **Learn:** AuthN vs authZ (RBAC/ABAC); sessions vs JWT (revocation, size, statelessness); OAuth 2.0 authorization code + PKCE and client credentials; OIDC ID tokens; API security (TLS everywhere, validation, rate limits, OWASP API Top 10); encryption in transit/at rest; secrets in a vault; DDoS/WAF. Watch [OAuth 2 explained](https://www.youtube.com/watch?v=ZV5yTm4pT8g) and [Session vs JWT](https://www.youtube.com/watch?v=fyTxwIa-1U0) (ByteByteGo); read [OWASP API Security Top 10 (2023)](https://owasp.org/API-Security/editions/2023/en/0x11-t10/).
-- 🛠️ **Do:** In `notes/19-security.md`: sequence diagram for TicketVerse login via Keycloak (authorization code + PKCE -> JWT access token -> gateway validates -> booking service checks role); a JWT vs session table (revocation, scaling, size); 5 OWASP API risks with your TicketVerse mitigation. Done when: you can explain how to limit damage from a stolen JWT (short TTL, refresh-token rotation, denylist).
+### Monday 08 Feb · 45 min — Reliability: SLOs, availability math, DR, bulkheads, load shedding
+- 📚 **Learn:** SLI vs SLO vs SLA and error budgets; availability math (serial = multiply, parallel = 1 - (1 - a)^n; 99.9% is about 8.8 h/year down); active-active vs active-passive, multi-region; DR with RPO/RTO; bulkheads (isolate resource pools so one slow dependency cannot exhaust all threads); load shedding (reject low-priority work early when overloaded). Read 'Service Level Terminology' in [Service level objectives (Google SRE book)](https://sre.google/sre-book/service-level-objectives/). Optional: [Bulkhead pattern (Azure)](https://learn.microsoft.com/en-us/azure/architecture/patterns/bulkhead).
+- 🛠️ **Do:** In `notes/18-reliability.md`: compute availability of LB (99.99%) -> 3 parallel app servers (99.9% each) -> single DB primary (99.95%); define 3 SLIs + SLOs for the TicketVerse booking API with the monthly error budget in minutes; pick RPO/RTO and a DR strategy (backup-restore, pilot light, warm standby, active-active); name one bulkhead and one load-shedding rule. Done when: the math is shown and each SLO has an alert rule.
 
-### Wednesday 10 Feb · 45 min — LLD: thread-safe in-memory KV store with TTL (design)
-- 📚 **Learn:** API: `put(k, v, ttl)`, `get`, `delete`, `incrBy`; storage in `ConcurrentHashMap`; expiry = lazy check on read + periodic sampling sweep (as Redis does); locking options (per-key atomic ops vs `ReentrantReadWriteLock` vs lock striping); optional LRU eviction at a size limit. Read [How Redis expires keys (EXPIRE docs)](https://redis.io/docs/latest/commands/expire/) and [ReentrantReadWriteLock docs](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/locks/ReentrantReadWriteLock.html); watch [LLD of a cache, mock interview (Gaurav Sen)](https://www.youtube.com/watch?v=tzbX4ix2RjI).
-- 🛠️ **Do:** Write `lld/kvstore/DESIGN.md`: requirements, class diagram (`KvStore`, `Entry`, `ExpiryPolicy`, `EvictionPolicy`, `Clock`), a concurrency plan (which lock or atomic op guards what) and a list of >= 8 tests for Saturday. Then code `Entry` + `put`/`get` with lazy expiry. Done when: the design is committed and the first 3 tests pass.
+### Wednesday 10 Feb · 45 min — Notification system LLD: design + core path
+- 📚 **Learn:** Requirements: channels (email/SMS/push/WhatsApp), templates, user preferences and quiet hours, priorities, retries with exponential backoff + jitter, idempotent sends, per-user rate limits. Patterns: Factory/Strategy (channels), Template Method (rendering), Decorator (retry and rate-limit wrappers), Observer (domain events). Read [Timeouts, retries and backoff with jitter (AWS Builders' Library)](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/). Optional: [Designing notifications for Instagram (Arpit Bhayani, 37 min)](https://www.youtube.com/watch?v=kIP8L-CSl2Y).
+- 🛠️ **Do:** Evolve your W3 kata into `lld/notification`: class diagram + `NotificationService.notify(event)` -> preference filter -> template render -> channel sender; dedupe by `eventId`. Done when: tests prove opted-out channels are skipped, templates render variables, and the same `eventId` sent twice is delivered once.
 
-### Thursday 11 Feb · 45 min — DNS, GeoDNS, anycast, CDN edge, DDoS and WAF
-- 📚 **Learn:** Resolution chain (recursive resolver -> root -> TLD -> authoritative), record types (A, AAAA, CNAME, NS, TXT), TTL trade-offs; GeoDNS/latency routing; anycast (one IP served from many PoPs); L3/L4 vs L7 DDoS; WAF rules; edge rate limiting. Watch [Everything you need to know about DNS (ByteByteGo)](https://www.youtube.com/watch?v=27r4Bzuj5NQ); read [What is anycast? (Cloudflare)](https://www.cloudflare.com/learning/cdn/glossary/anycast-network/) and [Traffic Manager routing methods (Azure)](https://learn.microsoft.com/en-us/azure/traffic-manager/traffic-manager-routing-methods).
-- 🛠️ **Do:** Run `Resolve-DnsName` (or `nslookup`) for 3 domains and record A/CNAME/NS answers and TTLs. Then design the global entry for TicketVerse users in India + Singapore: DNS or anycast, CDN, WAF, regional gateways; describe what happens when the Mumbai region fails. Done when: diagram + failover narrative are in `notes/20-edge.md`.
+### Thursday 11 Feb · 45 min — Food delivery LLD (Zomato/Swiggy)
+- 📚 **Learn:** Entities: `Customer`, `Restaurant`, `MenuItem`, `Cart`, `Order` (PLACED -> ACCEPTED -> PREPARING -> PICKED_UP -> DELIVERED, or CANCELLED), `DeliveryPartner`, assignment strategy (nearest available), payment, Observer for status updates. Read [Food delivery problem (awesome-low-level-design)](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/food-delivery-service.md). Optional: [Design Gopuff (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/gopuff).
+- 🛠️ **Do:** Core path: `OrderService.placeOrder(cart)`, an order state machine with allowed transitions, `DeliveryAssignmentStrategy` (nearest free partner) and observers notifying the customer on every state change. Extension question for Sunday: what changes for ride sharing, where drivers accept or decline offers? Done when: tests pass for valid/invalid transitions, nearest-partner assignment, a partner never getting two orders at once, and no cancellation after PICKED_UP.
 
-### Saturday 13 Feb · 45 min — PRACTICE: KV store machine coding
-- 📚 **Learn:** Finish the store you designed on Wednesday. Useful APIs: `ConcurrentHashMap.compute/merge` for atomic updates, `ScheduledExecutorService` for the sweeper, `Clock` for deterministic expiry tests. Docs: [ConcurrentHashMap](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ConcurrentHashMap.html).
-- 🛠️ **Do:** Implement `delete`, atomic `incrBy`, TTL refresh on `put`, an active-expiry sweeper (sample 20 keys every 100 ms) and optional max-size LRU eviction. Done when: >= 8 tests pass, including 32 threads x 1,000 `incrBy(1)` = 32,000, expired keys invisible to `get`, the sweeper removing expired keys, and `delete` racing `put` without exceptions.
+### Saturday 13 Feb · 45 min — PRACTICE (light, exam week): retrying sender + DLQ
+- 📚 **Learn:** Hardening in one step: a `RetryingSender` decorator (3 attempts, exponential backoff + jitter, injectable sleeper so tests do not wait) and a dead-letter list for permanent failures; the queue in front of senders smooths bursts. Pattern reference: [Queue-based load leveling (Azure)](https://learn.microsoft.com/en-us/azure/architecture/patterns/queue-based-load-leveling).
+- 🛠️ **Do:** Add `RetryingSender` and a DLQ to `lld/notification`. Done when: >= 3 tests pass: retries stop after the first success, the 3rd failure goes to the DLQ, and the recorded sleeps grow exponentially; async dispatch, rate-limited sender and quiet hours go to the stretch.
 
 ## 📦 Deliverable (by Saturday night)
-`notes/19-security.md`, `notes/20-edge.md`, and `lld/kvstore` (design + >= 8 green tests including the concurrency test).
+`notes/18-reliability.md`, `lld/notification` (sync core + retry/DLQ) and `lld/fooddelivery`, all with passing tests. Sunday mini-design (20 min, full template): hotel booking in `hld/mini/W16-hotel-booking.md`.
 
 ## ✅ Self-check (Sunday test preview)
-- Sessions vs JWT: how do you revoke access in each?
-- Walk through the OAuth 2.0 authorization code flow with PKCE. Why PKCE?
-- AuthN vs authZ: where does each happen in a microservices system?
-- How does anycast help against DDoS and reduce latency?
-- What is the trade-off of a low DNS TTL?
-- How does Redis expire keys, and why both lazy and active expiry?
-- In your KV store, how is `incrBy` made atomic?
+- SLI vs SLO vs SLA: define each with a TicketVerse example.
+- Three 99.9% services in series: what is the total availability? And in parallel?
+- RPO vs RTO: which DR strategy gives near-zero values of both, and at what cost?
+- What is a bulkhead, and when would you shed load instead of queueing it?
+- Why add jitter to exponential backoff?
+- How do you guarantee a notification is not sent twice when the sender retries?
+- Sunday mini-design: a hotel booking system (search by dates, book, cancel) - requirements, API, data model, how you avoid double booking.
 
 ## 🚀 Stretch (optional)
-Add an append-only log to the KV store so it survives restarts (replay on startup), and measure throughput with and without fsync.
+Async dispatch through a bounded `BlockingQueue` + worker pool (a full queue rejects clearly), a `RateLimitedSender` reusing your W11 limiter, quiet hours that delay LOW but not HIGH priority, and per-channel circuit breakers with a fallback SMS provider. Ride-sharing extension: [Ride sharing problem (awesome-low-level-design)](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/ride-sharing-service.md). Extra: [Using load shedding to avoid overload (AWS)](https://aws.amazon.com/builders-library/using-load-shedding-to-avoid-overload/); [Principles of Chaos Engineering](https://principlesofchaos.org/); [Active-active vs active-passive (Concept && Coding, Hindi)](https://www.youtube.com/watch?v=iL7_8TmrePM).

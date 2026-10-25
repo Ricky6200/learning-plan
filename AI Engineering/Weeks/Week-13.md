@@ -1,44 +1,44 @@
-# 🤖 AI Engineering · Week 13 — MCP: Build the CareerPilot MCP Server
+# 🤖 AI Engineering · Week 13 — Production AI Backend: DocuMind v2
 
 > 📅 **Mon 18 Jan 2027 → Sun 24 Jan 2027** · Season 3 — Spring Citadel  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 12](Week-12.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-13.md) · [Week 14 →](Week-14.md)
+[← Week 12](Week-12.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-13.md) · [Week 14 →](Week-14.md)
 
-**Why this week:** MCP is the standard plug for connecting AI apps to tools and data; IDEs, agent frameworks and clouds all speak it. Building and securing servers is a standout, very current skill.
+**Why this week:** Shipping AI means classic backend excellence (async APIs, streaming, auth, rate limits, caching, containers) applied to slow, costly, non-deterministic LLM calls. Tracing with OpenTelemetry follows in W19.
 
 ## 🗓️ Sessions
 
-### Monday 18 Jan · 45 min — Why MCP: hosts, clients, servers and primitives
-- 📚 **Learn:** The M x N integration problem; host, client and server roles; server primitives: tools (model-controlled), resources (application-controlled data), prompts (user-controlled templates); client features such as sampling, elicitation and roots. Read: [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture) and [Server concepts](https://modelcontextprotocol.io/docs/learn/server-concepts); Hindi: [CampusX MCP playlist](https://www.youtube.com/playlist?list=PLKnIA16_Rmva_oZ9F4ayUu9qcWgF7Fyc0).
-- 🛠️ **Do:** Write `mcp_design.md` for CareerPilot: which features become tools (add_application, update_status, list_applications, search_jobs), resources (`applications://all`, `profile://me`) and prompts (`interview_prep`). Mark which actions need human confirmation and why. Done when: the design lists 4+ tools, 2 resources and 1 prompt with risk levels.
+### Monday 18 Jan · 45 min — FastAPI structure: routers, lifespan, settings, logging
+- 📚 **Learn:** Routers per feature, dependency-injected services (retriever, LLM client), lifespan startup for models and connection pools, `async def` vs a threadpool for blocking libraries (the same thread-pool idea as Java W8), pydantic-settings per environment, structured logging with a request ID. Read: [Concurrency and async/await (FastAPI)](https://fastapi.tiangolo.com/async/) (the 'in a hurry' part and the path-operation rules). Optional: [Logging HOWTO](https://docs.python.org/3/howto/logging.html).
+- 🛠️ **Do:** Restructure DocuMind into `app/` (routers `ask`, `ingest`, `health`; `services/`; `config.py`). Load embedding and re-rank models once in lifespan, move secrets/config to env vars and add JSON logs with a request ID and latency. Done when: all existing tests pass, `/docs` shows grouped routes and every log line carries request_id and duration.
 
-### Tuesday 19 Jan · 45 min — Transports, the 2026-07-28 revision and auth basics
-- 📚 **Learn:** stdio (local subprocess) vs Streamable HTTP (remote); JSON-RPC messages; revision 2026-07-28 made MCP stateless (no initialize handshake or sessions, `server/discover`, multi-round-trip requests); OAuth-based authorization for remote servers. Read: [Transports](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/index), [Key changes](https://modelcontextprotocol.io/specification/2026-07-28/changelog), [Authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/index) (overview).
-- 🛠️ **Do:** Add `mcp[cli]` with uv, create the 15-line `MCPServer` demo from the [Python SDK README](https://github.com/modelcontextprotocol/python-sdk), open it with `uv run mcp dev server.py` (MCP Inspector), call the tool and read the resource. Then serve it with `--transport streamable-http`. Done when: the Inspector lists tools/resources and the `/mcp` HTTP endpoint answers.
+### Tuesday 19 Jan · 45 min — Streaming answers with Server-Sent Events
+- 📚 **Learn:** SSE streams events over an ordinary HTTP response (`text/event-stream`). FastAPI 0.135+ supports it natively: `yield` items from an async generator (W3) with `response_class=EventSourceResponse`, and send a final `ServerSentEvent(event='citations', ...)`; clients resume with `Last-Event-ID`. One-way server push is all a chat answer needs, so SSE beats WebSockets here. Read: [FastAPI Server-Sent Events](https://fastapi.tiangolo.com/tutorial/server-sent-events/).
+- 🛠️ **Do:** Add `POST /ask/stream` that yields `token` events while the LLM streams, then one `citations` event, with a 25-second overall timeout that emits an `error` event. Test with `curl -N`. Done when: tokens appear progressively, the citations event arrives last, and a deliberately slow fake provider produces the error event.
 
-### Thursday 21 Jan · 45 min — Build the CareerPilot MCP server with Python SDK v2
-- 📚 **Learn:** SDK v2 `MCPServer` (formerly FastMCP; import from `mcp.server`): `@mcp.tool()`, `@mcp.resource()`, `@mcp.prompt()`, type hints become JSON Schema, structured results, a `Context` parameter for logging and progress; keep tools small and safe. Read: [Python SDK docs](https://py.sdk.modelcontextprotocol.io/) and [What's new in v2](https://py.sdk.modelcontextprotocol.io/whats-new/).
-- 🛠️ **Do:** Implement `careerpilot-mcp` over your SQLite tracker: tools `add_application`, `update_status`, `list_applications(status)`, `search_jobs(query)`; resource `profile://me`; prompt `interview_prep(company, role)`. Validate inputs with pydantic and return structured results. Done when: everything works in MCP Inspector and invalid status values are rejected with clear errors.
+### Thursday 21 Jan · 45 min — Exact and semantic caching with Redis
+- 📚 **Learn:** Redis primer: an in-memory key-value store; `SET key value EX 3600` stores a value with a time-to-live, `GET key` reads it. Exact cache (hash of the normalised prompt + parameters) vs semantic cache (embedding similarity under a distance threshold); keys must include model, prompt version and user scope; wrong-context hits are the main risk (caching concepts from SD W4). Read: [RedisVL LLM cache guide](https://docs.redisvl.com/en/latest/user_guide/03_llmcache.html) (needs Redis 8+).
+- 🛠️ **Do:** Run `redis:8` in Docker. Add an exact cache (key = sha256 of question + config, TTL 1 hour) and a RedisVL `SemanticCache` with a strict threshold. Send 10 repeated and 10 paraphrased questions and log hit rate, latency and tokens saved. Done when: savings are logged and you show one wrong semantic hit your threshold now prevents.
 
-### Friday 22 Jan · 45 min — Connect clients and study MCP security risks
-- 📚 **Learn:** Clients: VS Code (Copilot agent mode via `mcp.json`) and your LangGraph agent (LangChain MCP adapters). Risks: tool poisoning, prompt injection through tool results, over-permissioned tools, token passthrough, confused deputy; mitigations: allow-lists, least privilege, confirmations, pinned versions. Read: [VS Code MCP servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers), [MCP security best practices](https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices), [LangChain MCP](https://docs.langchain.com/oss/python/langchain/mcp).
-- 🛠️ **Do:** Register `careerpilot-mcp` in `.vscode/mcp.json` and ask Copilot Chat to add an application; then load the same tools into CareerPilot via the MCP adapters. Create a test server with a poisoned tool description and observe behaviour. Done when: both clients call your tools and `mcp_design.md` lists 4 risks with your mitigations.
+### Friday 22 Jan · 45 min — Protecting cost: API keys and rate limits
+- 📚 **Learn:** Authentication = who is calling (here an `X-API-Key` header checked by a dependency); authorization = what that caller may do. Per-key rate limits stop runaway cost: a token bucket (SD W11) allows short bursts, then answers 429 with `Retry-After`. Provider fallback already lives in your `llmkit`. Read: [slowapi](https://github.com/laurentS/slowapi) (README quickstart). Optional: [FastAPI security reference](https://fastapi.tiangolo.com/reference/security/) (APIKeyHeader).
+- 🛠️ **Do:** Protect `/ask` and `/ask/stream` with an `APIKeyHeader` dependency (valid keys from settings) and limit each key to 10 requests per minute. Write 3 tests: missing key -> 401, valid key -> 200, 11th request within a minute -> 429. Done when: the tests pass and `curl` without a key is rejected.
 
-### Saturday 23 Jan · 45 min — BUILD: CareerPilot MCP server with client tests
-- 📚 **Learn:** Test MCP servers with an in-memory `Client` bound to the server object (no transport), contract tests for tool schemas and error cases. A2A (agent-to-agent protocol) complements MCP for agent-to-agent calls. Read: [SDK testing guide](https://py.sdk.modelcontextprotocol.io/get-started/testing/) and [A2A and MCP](https://a2a-protocol.org/latest/topics/a2a-and-mcp/).
-- 🛠️ **Do:** Ship `careerpilot-mcp` v1: stdio and Streamable HTTP modes, confirmation required for destructive actions (SDK elicitation or an explicit `confirm=true` argument), 8+ pytest tests using the in-memory `Client`, and README with VS Code config. Done when: tests pass, a VS Code + LangGraph demo is recorded and tag `v1.0-careerpilot-mcp` is pushed.
+### Saturday 23 Jan · 45 min — BUILD: DocuMind v2 dockerized with streaming and cache
+- 📚 **Learn:** Container hygiene beyond W8: a multi-stage build (dependencies in a builder stage, slim runtime stage), uv inside Docker, a non-root user, a healthcheck, `.dockerignore`, Compose for app + pgvector + Redis, secrets via env files that never reach Git. Read: [FastAPI in containers](https://fastapi.tiangolo.com/deployment/docker/). Optional: [Using uv in Docker](https://docs.astral.sh/uv/guides/integration/docker/) (multi-stage builds).
+- 🛠️ **Do:** Write a multi-stage Dockerfile using uv and a `compose.yaml` (api, pgvector, redis). Run end-to-end: ingest PDFs, stream answers, see cache hits and rate limits. Add a smoke-test script and a 'Run in 3 commands' README section. Done when: `docker compose up` works from a clean clone, eval scores stay within 2% of v1, and tag `v2.0-documind` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-`07-careerpilot/mcp_server/` v1.0: tools, resources and a prompt; stdio + Streamable HTTP; confirmations for risky actions; 8+ in-memory client tests; VS Code and LangGraph integration; security notes.
+`09-documind/` v2.0: modular FastAPI app with SSE streaming, API-key auth, per-key rate limiting, exact + semantic Redis cache, multi-stage Docker image and Compose stack.
 
 ## ✅ Self-check (Sunday test preview)
-- Explain MCP host, client and server with a concrete example.
-- Tools vs resources vs prompts: who controls each?
-- stdio vs Streamable HTTP: when do you use each?
-- What is tool poisoning and how do you defend against it?
-- What changed in MCP revision 2026-07-28, and why does statelessness help scaling?
-- How does A2A differ from MCP?
+- How do you stream LLM tokens from FastAPI to a browser, and why SSE rather than WebSockets here?
+- What must be part of a cache key for LLM responses?
+- When is semantic caching dangerous?
+- How would you protect an LLM-backed API from cost blow-ups?
+- Why run blocking model inference in a threadpool or separate worker?
+- What does a multi-stage Dockerfile save you, and why run as a non-root user?
 
 ## 🚀 Stretch (optional)
-Wrap a public jobs API (e.g., [Arbeitnow job board API](https://www.arbeitnow.com/api/job-board-api)) as a second MCP server and let CareerPilot compose both servers.
+Add `POST /ingest` as a background job with `GET /jobs/{id}` status, or a `GET /ask/stream?q=` variant plus a tiny HTML page that renders streamed answers with the browser `EventSource` API.

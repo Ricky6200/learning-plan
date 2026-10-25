@@ -1,8 +1,8 @@
 # 🗓️ Week 26 · 19 Apr → 25 Apr 2027 · Season 6 — Final Boss: The Offer
 
-> ⚔️ **BOSS WEEK** — Saturday blocks are timed Boss Battles; beat the boss on Sunday for +300 XP  
-> 🏁 Milestone: 🎓 AI-200 exam · 👑 FINAL BOSS  
-> ⭐ XP available: ~650 (blocks 250 · DSA 0 · test 100 · boss 300)  
+> 🏁 Milestone: 🎓 AI-200 exam  
+> 🎓 **AI-200 exam week** — keep Friday and Saturday lighter in every track. 🧑‍💻 Next week TicketVerse AI needs a 4-core Codespace: check your Codespaces quota now.  
+> ⭐ XP available: ~410 (blocks 250 · DSA 60 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-26.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-26.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-26.md) · [🏗️ System Design](../System%20Design/Weeks/Week-26.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-26.md)  
 **Tracker:** [Dashboard](../00_Progress_Tracker/PROGRESS_DASHBOARD.md) · [Daily log](../00_Progress_Tracker/DAILY_LOG.md) · [Weakness tracker](../00_Progress_Tracker/WEAKNESS_TRACKER.md)
@@ -10,58 +10,58 @@
 ## 🎯 This week's mission
 | Track | Theme |
 |---|---|
-| 🧩 DSA | Final Revision Speed-Run - FINAL BOSS |
-| ☕ Java Backend | Interview mode: revise, tell stories, mock |
-| 🤖 AI Engineering | AI Interview Prep: Final Boss |
-| 🏗️ System Design | TicketVerse story and final mocks (Final Boss) |
-| ☁️ Azure Cloud | AI-200 exam, interviews, cleanup, next steps |
+| 🧩 DSA | Light Re-solve Week (AI-200 exam week) |
+| ☕ Java Backend | CI/CD and DevSecOps with GitHub Actions |
+| 🤖 AI Engineering | AI System Design at Scale |
+| 🏗️ System Design | Monitoring, collaborative editing, design follow-ups |
+| ☁️ Azure Cloud | AI-200 exam week and Season 6 kickoff |
 
 ## 🔧 Fix-it items (added by your AI mentor after last Sunday's test)
 - [ ] _none yet — the mentor fills this in after each test_
 
 ## Monday · 19 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Re-solve: [LC 1 · Two Sum](https://leetcode.com/problems/two-sum/) (E) · [LC 3 · Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) (M) · [LC 15 · 3Sum](https://leetcode.com/problems/3sum/) (M) · [LC 76 · Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) (H)
-- [ ] ☕ **Java · 60m** — Core Java, OOP, collections and streams: rapid-fire plus live code
-- [ ] 🤖 **AI Engineering · 45m** — Question-bank revision: LLM basics, RAG, vector DBs, evals
-- [ ] 🏗️ **System Design · 45m** — TicketVerse architecture as an interview story
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve (timed, from memory): [LC 49 · Group Anagrams](https://leetcode.com/problems/group-anagrams/) (M) · [LC 238 · Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) (M)
+- [ ] ☕ **Java · 60m** — GitHub Actions deeper: matrix per service, caching, concurrency
+- [ ] 🤖 **AI Engineering · 45m** — LLM gateway: routing, fallbacks, quotas, cost attribution
+- [ ] 🏗️ **System Design · 45m** — Metrics monitoring & alerting (time-series DB)
 
 ## Tuesday · 20 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Re-solve: [LC 33 · Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) (M) · [LC 153 · Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) (M) · [LC 875 · Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) (M) · [LC 239 · Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) (H)
-- [ ] ☕ **Java · 60m** — Concurrency and JVM: explain, then code under time pressure
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve (timed, from memory): [LC 11 · Container With Most Water](https://leetcode.com/problems/container-with-most-water/) (M) · [LC 424 · Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) (M)
+- [ ] ☕ **Java · 60m** — Testcontainers in CI, coverage reports, branch protection
 - [ ] ☁️ **Azure Cloud · 45m** — Final AI-200 revision + exam-day checklist
-- [ ] 🤖 **AI Engineering · 45m** — Agents, MCP, security, LLMOps revision and project deep-dives
+- [ ] 🤖 **AI Engineering · 45m** — Multi-tenant RAG and vector database scaling
 
 ## Wednesday · 21 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Re-solve: [LC 206 · Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) (E) · [LC 23 · Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) (H) · [LC 146 · LRU Cache](https://leetcode.com/problems/lru-cache/) (M) · [LC 84 · Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) (H)
-- [ ] ☕ **Java · 60m** — Spring, JPA, transactions, security: whiteboard the request lifecycle
-- [ ] 🏗️ **System Design · 45m** — TicketVerse at 10x and 100x: bottlenecks and failure modes
-- [ ] ☁️ **Azure Cloud · 45m** — Azure interview Q&A: developer and migration scenarios
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve (timed, from memory): [LC 56 · Merge Intervals](https://leetcode.com/problems/merge-intervals/) (M) · [LC 34 · Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/) (M)
+- [ ] ☕ **Java · 60m** — Build and push images to GHCR with security scanning
+- [ ] 🏗️ **System Design · 45m** — Google Docs: collaborative editing with OT and CRDTs
+- [ ] ☁️ **Azure Cloud · 45m** — Practice run 3 and weakest-domain repair
 
 ## Thursday · 22 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Re-solve: [LC 102 · Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) (M) · [LC 236 · Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/) (M) · [LC 124 · Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) (H) · [LC 297 · Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) (H)
-- [ ] ☕ **Java · 60m** — Microservices, Kafka, Docker, Kubernetes: architecture and failure drills
-- [ ] 🤖 **AI Engineering · 45m** — AI coding round: build a mini RAG in 45 minutes
-- [ ] 🏗️ **System Design · 45m** — Final rapid-fire round + LLD design-only drill
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve (timed, from memory): [LC 739 · Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) (M) · [LC 98 · Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/) (M)
+- [ ] ☕ **Java · 60m** — Code quality and supply chain: Sonar, Dependabot, CodeQL, secrets
+- [ ] 🤖 **AI Engineering · 45m** — Caching layers, feedback pipelines, guardrail placement, cost models
+- [ ] 🏗️ **System Design · 45m** — Follow-up: compare, deep-dive and diagram both designs
 
 ## Friday · 23 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Re-solve: [LC 200 · Number of Islands](https://leetcode.com/problems/number-of-islands/) (M) · [LC 207 · Course Schedule](https://leetcode.com/problems/course-schedule/) (M) · [LC 743 · Network Delay Time](https://leetcode.com/problems/network-delay-time/) (M) · [LC 684 · Redundant Connection](https://leetcode.com/problems/redundant-connection/) (M)
-- [ ] ☕ **Java · 60m** — Project deep dive: STAR stories, trade-offs, two-minute pitch
-- [ ] ☁️ **Azure Cloud · 45m** — Delete everything, cost audit and next steps
-- [ ] 🤖 **AI Engineering · 45m** — Roadmap beyond Week 26 and target-company analysis
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve (timed, from memory): [LC 141 · Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) (E) · [LC 994 · Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) (M)
+- [ ] ☕ **Java · 60m** — CD basics: environments, ephemeral kind deploy, OIDC to Azure (light)
+- [ ] ☁️ **Azure Cloud · 45m** — EXAM: Sit AI-200 (swap with Saturday if you booked Sat)
+- [ ] 🤖 **AI Engineering · 45m** — Timed practice: a ChatGPT-like chat service (light)
 
 ## Saturday · 24 Apr · 4.5 h
-- [ ] 🧩 **DSA · 60m** — Re-solve: [LC 322 · Coin Change](https://leetcode.com/problems/coin-change/) (M) · [LC 300 · Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) (M) · [LC 1143 · Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) (M) · [LC 72 · Edit Distance](https://leetcode.com/problems/edit-distance/) (M)
-- [ ] ☕ **Java · 60m** — BOSS BATTLE: Full mock technical interview, 60 minutes
-- [ ] 🤖 **AI Engineering · 45m** — BOSS BATTLE: full AI-engineer mock interview
-- [ ] 🏗️ **System Design · 45m** — BOSS BATTLE: Final LLD + HLD mock (TicketVerse)
-- [ ] ☁️ **Azure Cloud · 60m** — BOSS BATTLE: Sit AI-200 (or a final timed mock)
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve (timed, from memory): [LC 70 · Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) (E) · [LC 198 · House Robber](https://leetcode.com/problems/house-robber/) (M)
+- [ ] ☕ **Java · 60m** — BUILD: One change from PR to tagged release (light day, AI-200 week)
+- [ ] 🤖 **AI Engineering · 45m** — PRACTICE: one-page enterprise RAG design (light)
+- [ ] 🏗️ **System Design · 45m** — PRACTICE (light, exam week): 2 verbal reps
+- [ ] ☁️ **Azure Cloud · 60m** — LAB: Exam retro + migration toolkit for Season 6
 
-## Sunday · 25 Apr · 3.5 h — ⚔️ BOSS BATTLE TEST
-- [ ] (Optional, 8:00 AM IST) [LeetCode Weekly Contest](https://leetcode.com/contest/) — great practice from Week 8 onward
+## Sunday · 25 Apr · 3.5 h — Weekly Test Day
+- [ ] 🏆 **LeetCode Weekly Contest · 8:00 AM IST · 90m** — on alternate Sundays from Week 10 (not boss weeks) it replaces the DSA part (45 min) of today's test; take the rest of the test afterwards
 - [ ] 📝 **Weekly test · 150m** — start a session and paste: `Read 00_Progress_Tracker\AI_MEMORY.md and WEEKLY_TEST_PROTOCOL.md. Run my Week 26 test now.`
 - [ ] 🔍 **Retro · 30m** — mentor updates scoreboard, weak areas, XP; you note 1 win + 1 fix
 - [ ] 👀 **Preview & revise · 30m** — finish the 🔥 weekend challenge if pending · DSA spaced revision (in the DSA week file) · skim next week
-- [ ] 💼 **Career · 15m** — Pipeline review: interviews scheduled, offers, next 4-week plan.
+- [ ] 💼 **Career · 15m** — Add AI-200 (if passed) to LinkedIn/resume; refresh the pipeline: follow-ups, referrals, next interviews.
 
 ## 📊 Scorecard (filled after the test)
 | Track | Score /100 | Status | Weak topics |
@@ -73,4 +73,4 @@
 | Azure | | | |
 | **Overall** | | | |
 
-[← Week 25](Week-25.md) · [Master calendar](../01_MASTER_CALENDAR.md)
+[← Week 25](Week-25.md) · [Master calendar](../01_MASTER_CALENDAR.md) · [Week 27 →](Week-27.md)

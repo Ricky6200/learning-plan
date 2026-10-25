@@ -1,41 +1,41 @@
-# 🏗️ System Design · Week 14 — Chess, inventory, storage and search (Boss week)
+# 🏗️ System Design · Week 14 — ATM, meeting rooms, distributed locks
 
-> 📅 **Mon 25 Jan 2027 → Sun 31 Jan 2027** · Season 3 — Spring Citadel · ⚔️ **BOSS WEEK**  
+> 📅 **Mon 25 Jan 2027 → Sun 31 Jan 2027** · Season 3 — Spring Citadel  
 > ⏱️ Slots: Mon, Wed, Thu · 45 min + Sat 45 min PRACTICE · Sunday test: 30 min
 
-[← Week 13](Week-13.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-14.md) · [Week 15 →](Week-15.md)
+[← Week 13](Week-13.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-14.md) · [Week 15 →](Week-15.md)
 
-**Why this week:** Uploads, CDNs and search indexes appear in most product designs, and chess/inventory problems test polymorphism and concurrency; the boss proves you can code and design under a timer.
+**Why this week:** Distributed transactions, idempotency and locks with fencing are where senior-sounding HLD answers are made, and ATM/meeting-room problems test state machines and interval logic in machine coding. Republic Day (Tue 26 Jan) does not touch SD's days.
 
 ## 🗓️ Sessions
 
-### Monday 25 Jan · 45 min — Object storage, CDN, large uploads, search and geo indexes
-- 📚 **Learn:** Object vs block vs file storage; CDN pull vs push, cache keys, invalidation; multipart/chunked + resumable uploads straight to storage with presigned URLs (Azure: SAS, the Valet Key pattern); inverted index, analyzers, Elasticsearch shards/replicas; geohash/quadtree preview (deep dive in W21). Watch [Object storage (Hello Interview)](https://www.youtube.com/watch?v=RvaMHMxHjp4); read [Valet Key pattern (Azure)](https://learn.microsoft.com/en-us/azure/architecture/patterns/valet-key) and [Elasticsearch deep dive (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/elasticsearch).
-- 🛠️ **Do:** In `notes/17-storage-search.md`: (1) sequence diagram for a 2 GB video upload with chunking, resume and a presigned/SAS URL; (2) an inverted index built by hand for 4 short movie blurbs, answering one AND query; (3) one paragraph on geohash vs quadtree. Done when: file bytes never pass through your app servers and you can explain how Elasticsearch routes a query to shards.
+### Monday 25 Jan · 45 min — Distributed transactions, idempotency, exactly-once
+- 📚 **Learn:** 2PC (prepare/commit; blocks if the coordinator dies), 3PC (why rarely used), saga with compensations (W13 Mon); idempotency keys; 'exactly-once' = at-least-once delivery + idempotent processing (dedupe table, outbox/inbox). Watch [2PC vs saga (Hello Interview, 15 min)](https://www.youtube.com/watch?v=DOFflggE_0Q). Optional: [Making retries safe with idempotent APIs (AWS Builders' Library)](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/).
+- 🛠️ **Do:** In `notes/15-distributed-tx.md`: a 2PC sequence diagram for the happy path and for a coordinator crash after prepare; then design an idempotency-key table for `POST /payments` (columns, unique key, stored response, TTL) with the retry flow. Done when: you can explain why 2PC blocks and how the key prevents a double charge when the client retries.
 
-### Wednesday 27 Jan · 45 min — Chess LLD (or Cricbuzz): design + move rules
-- 📚 **Learn:** Entities: `Game`, `Board`, `Cell`, abstract `Piece` with subclasses implementing `canMove`, `Player`, `Move`, `GameStatus`; polymorphic move rules, Command for move history/undo; check detection as awareness. Watch [Chess LLD (Gaurav Sen)](https://www.youtube.com/watch?v=I-iZbOVXwxg); Hindi: [Chess LLD mock (Concept && Coding)](https://www.youtube.com/watch?v=kk6QkWxz5jM); alternative problem: [Cricbuzz LLD (Concept && Coding)](https://www.youtube.com/watch?v=P0TJIONZi8E).
-- 🛠️ **Do:** 10 min class diagram, 35 min code: `Piece.canMove(board, from, to)` for King, Rook, Bishop, Knight and Queen (Rook + Bishop), path-blocking checks, turn alternation and captures. Done when: tests pass for legal/illegal moves per piece, a blocked path, and capturing your own piece being rejected; pawns and castling are stretch.
+### Wednesday 27 Jan · 45 min — ATM LLD with the State pattern
+- 📚 **Learn:** States: Idle -> CardInserted -> Authenticated -> transaction -> Idle, with card eject on errors; PIN retry limit; cash dispensing as a Chain of Responsibility over Rs 500/200/100 notes (Rs 2000 notes were withdrawn from circulation by the RBI in May 2023); a `BankService` interface for account checks. Read [ATM problem (awesome-low-level-design)](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/atm.md). Optional: [ATM LLD (Concept && Coding, Hindi, 45 min)](https://www.youtube.com/watch?v=JH7gcXeR3ds).
+- 🛠️ **Do:** Core path in 25 min: `AtmMachine` with state classes, a `CashDispenser` chain (500 -> 200 -> 100) and a fake `BankService`. Done when: tests pass for wrong PIN x3 -> card retained, withdrawing Rs 3,800 -> 7x500 + 1x200 + 1x100, not enough cash in the ATM -> nothing dispensed and the account untouched; deposits and mini-statements are extension questions.
 
-### Thursday 28 Jan · 45 min — Inventory & order management core + Bloom filter lab
-- 📚 **Learn:** Inventory: stock per SKU per warehouse, all-or-nothing `reserve(orderId, items)` with TTL, `confirm`/`release`, order state machine (CREATED -> RESERVED -> PAID -> SHIPPED, or CANCELLED). Bloom filter: bit array + k hashes, no false negatives, tunable false-positive rate. Hindi: [Inventory management LLD (Concept && Coding)](https://www.youtube.com/watch?v=DDKdMTFNvxc); watch [Bloom filters (ByteByteGo)](https://www.youtube.com/watch?v=V3pzxngeLqw).
-- 🛠️ **Do:** 30 min: `InventoryService.reserve/confirm/release` reusing your W10 seat-hold locking ideas, plus an `Order` state machine; test that 50 threads ordering the last 10 units never oversell. 15 min: `labs/bloom/BloomFilter` (`BitSet`, double hashing); add 10k keys and measure the false-positive rate on 10k other keys. Done when: no oversell and the measured FP rate is within 2x of theory.
+### Thursday 28 Jan · 45 min — Distributed locks, leases and fencing tokens
+- 📚 **Learn:** Redis lock (`SET NX PX` + unique token, release via Lua), leases that expire, and why a lock alone is unsafe: a client paused by GC can wake up after its lease expired and still write. Fix: a monotonically increasing fencing token checked by the storage. When a DB row lock or a conditional update is simpler. Read 'Protecting a resource with a lock' and 'Making the lock safe with fencing' in [How to do distributed locking (Martin Kleppmann)](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html). Optional: [Redis deep dive (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/redis).
+- 🛠️ **Do:** Implement an in-memory `LeaseLockService` (`acquire(resource, leaseMillis)` returns a lease with an increasing fencing token; injected clock) and a `FencedStorage.write(token, data)` that rejects tokens older than the last one seen. Test the story: client A acquires, 'pauses' (advance the clock past the lease), B acquires and writes, A's late write is rejected. Done when: the test passes and `notes/16-locks.md` has the timeline plus one case where a DB row lock is simpler.
 
-### Saturday 30 Jan · 45 min — BOSS BATTLE: 35-min machine coding + verbal Pastebin HLD
-- 📚 **Learn:** Boss rules: your AI mentor (or a dice roll) picks one problem from Tic-Tac-Toe, Snake & Ladder, Parking Lot, Vending Machine, Elevator, Splitwise, BookMyShow, ATM, meeting rooms, Chess, inventory; code its core from a blank package in 35 min, then pitch a Pastebin HLD for 10 min. Reference: [Pastebin solution (system-design-primer)](https://github.com/donnemartin/system-design-primer/blob/master/solutions/system_design/pastebin/README.md).
-- 🛠️ **Do:** 0-35 min: requirements (3 min), class sketch (5 min), core code + >= 4 tests. 35-45 min: talk through Pastebin (requirements, estimate, API, storage of pastes in object storage, key generation, cache, expiry cleanup) while recording. Score 0-3 each: working code, design quality, tests, HLD structure, trade-offs. Done when: `boss/W14.md` has the score; >= 10/15 clears the boss.
+### Saturday 30 Jan · 45 min — PRACTICE: Meeting-room scheduler machine coding
+- 📚 **Learn:** Interval overlap rule (`start < otherEnd && otherStart < end`); a per-room `TreeMap<start, booking>` with `floorEntry`/`ceilingEntry` gives O(log n) conflict checks (Java W5); a room-selection strategy; one lock per room. Read the `floorEntry`/`ceilingEntry` docs in [TreeMap (Java 25)](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/TreeMap.html). Optional: [Meeting scheduler mock LLD (Concept && Coding, 37 min)](https://www.youtube.com/watch?v=MRx40JVmmF4).
+- 🛠️ **Do:** Implement `MeetingRoomScheduler`: rooms with capacity, `book(start, end, attendees)` picks the smallest free room that fits (Strategy), `cancel(bookingId)`, conflict checks via `TreeMap`. Done when: tests pass for back-to-back meetings (allowed), overlap rejection, capacity filtering, cancel freeing the slot, and 20 threads booking one room producing no overlaps.
 
 ## 📦 Deliverable (by Saturday night)
-`notes/17-storage-search.md`, `lld/chess`, `lld/inventory`, `labs/bloom` with tests, and the Boss score + recording in `boss/W14.md`.
+`notes/15-distributed-tx.md`, `notes/16-locks.md`, `labs/fencing` (lease lock + fenced storage), `lld/atm` and `lld/meetingrooms` with passing tests. Sunday mini-design (20 min, full template): a game leaderboard in `hld/mini/W14-leaderboard.md`.
 
 ## ✅ Self-check (Sunday test preview)
-- Why upload large files with presigned/SAS URLs instead of through your API servers?
-- How does a CDN decide what to cache, and how do you invalidate content?
-- Explain an inverted index and how Elasticsearch scales it with shards and replicas.
-- Bloom filter: why can't it give false negatives, and how do you size it?
-- Chess: how does polymorphism keep move validation clean?
-- How do you prevent overselling the last unit of stock under concurrency?
-- Geohash vs quadtree: what is the difference at a high level?
+- Why does 2PC block when the coordinator fails after prepare?
+- How does an idempotency key prevent a double charge? Where is it stored and for how long?
+- Is exactly-once delivery possible? What do real systems do instead?
+- Why does a distributed lock need a fencing token? Walk through the GC-pause story.
+- When is a database row lock or conditional update better than a distributed lock?
+- How do you detect overlapping bookings in O(log n)?
+- Sunday mini-design: a leaderboard for 10M players (top 10, my rank, score updates) - requirements, API, storage, scaling.
 
 ## 🚀 Stretch (optional)
-Add pawn moves, castling and check detection to Chess, or build the Cricbuzz scoreboard (Observer for live score updates).
+Add recurring meetings (daily/weekly) to the scheduler and deposits + mini-statements to the ATM. Extra: [Idempotent POST API (Concept && Coding, Hindi)](https://www.youtube.com/watch?v=mI73eTlSqeU). (Raft, leader election and gossip now live in W25 Mon next to Kafka's KRaft.)

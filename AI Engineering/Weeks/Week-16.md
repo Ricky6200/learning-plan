@@ -1,44 +1,45 @@
-# 🤖 AI Engineering · Week 16 — LLMOps: Observability, Prompts, CI Eval Gates
+# 🤖 AI Engineering · Week 16 — MCP: Build the CareerPilot MCP Server
 
 > 📅 **Mon 08 Feb 2027 → Sun 14 Feb 2027** · Season 4 — Distributed Kingdom  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 15](Week-15.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-16.md) · [Week 17 →](Week-17.md)
+[← Week 15](Week-15.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-16.md) · [Week 17 →](Week-17.md)
 
-**Why this week:** Models, prompts and data change weekly in production AI. Traces, versioned prompts, eval gates and cost control are what make AI features safe to ship continuously. (AZ-104 exam week: keep sessions tight.)
+**Why this week:** MCP is the standard plug for connecting AI apps to tools and data; IDEs, agent frameworks and clouds all speak it. Building and securing servers is a standout, very current skill. (AZ-104 exam week: Friday and Saturday are deliberately lighter.)
 
 ## 🗓️ Sessions
 
-### Monday 08 Feb · 45 min — Observability with Langfuse and OTel GenAI conventions
-- 📚 **Learn:** Trace inputs/outputs (masked), model, parameters, tokens, cost, latency, tool calls, user and session IDs; sampling; OpenTelemetry GenAI semantic conventions (`gen_ai.*` attributes) for vendor-neutral telemetry; dashboards for p50/p95 latency, cost per day and error rate. Read: [OTel GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) and [Langfuse docs](https://langfuse.com/docs).
-- 🛠️ **Do:** Make DocuMind and CareerPilot send traces with session/user IDs, model, tokens and cost, with PII masked by your W15 module. Build a Langfuse dashboard for p95 latency, cost per day and error rate. Done when: the dashboard shows 50+ traces from both apps and you can find the most expensive request.
+### Monday 08 Feb · 45 min — Why MCP: hosts, clients, servers and primitives
+- 📚 **Learn:** The M x N integration problem; host, client and server roles; server primitives: tools (model-controlled), resources (application-controlled data), prompts (user-controlled templates); client features such as sampling, elicitation and roots. Read: [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture). Optional (Hindi): [CampusX MCP playlist](https://www.youtube.com/playlist?list=PLKnIA16_Rmva_oZ9F4ayUu9qcWgF7Fyc0).
+- 🛠️ **Do:** Write `mcp_design.md` for CareerPilot: which features become tools (add_application, update_status, list_applications, search_jobs), resources (`applications://all`, `profile://me`) and prompts (`interview_prep`). Mark which actions need human confirmation and why. Done when: the design lists 4+ tools, 2 resources and 1 prompt with risk levels.
 
-### Tuesday 09 Feb · 45 min — Prompt management, versioning and rollback
-- 📚 **Learn:** Prompts as versioned artifacts with labels (production, staging), templating, linking prompt versions to traces and eval results, instant rollback; Git-only prompts vs a prompt registry. Read: [Langfuse prompt management](https://langfuse.com/docs/prompt-management/overview).
-- 🛠️ **Do:** Move DocuMind's answer prompt and CareerPilot's planner prompt into Langfuse prompt management (or a local `prompts/` registry with semver if offline). Fetch by label at runtime with a cached fallback and tag traces with the prompt version. Create v2 of one prompt. Done when: moving the `production` label from v1 to v2 changes behaviour without a redeploy and traces show the version.
+### Tuesday 09 Feb · 45 min — Transports, the 2026-07-28 revision and auth basics
+- 📚 **Learn:** stdio (local subprocess) vs Streamable HTTP (remote); JSON-RPC messages; revision 2026-07-28 made MCP stateless (no initialize handshake or sessions, `server/discover`, multi-round-trip requests). OAuth primer: an authorization server issues access tokens; your remote MCP server only checks the bearer token on each request (you build this in W29). Read: [Key changes in 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28/changelog). Optional: [Transports](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/index).
+- 🛠️ **Do:** Add `mcp[cli]` with uv in a separate project `10-careerpilot/mcp_server/`, create the 15-line `MCPServer` demo from the [Python SDK README](https://github.com/modelcontextprotocol/python-sdk), open it with `uv run mcp dev server.py` (MCP Inspector), call the tool and read the resource. Then serve it with `mcp.run(transport='streamable-http')`. Done when: the Inspector lists tools and resources and the `/mcp` HTTP endpoint answers.
 
-### Thursday 11 Feb · 45 min — Evals in CI: a regression gate on pull requests
-- 📚 **Learn:** Offline evals as tests: a small fast smoke set on every PR, a bigger nightly set, thresholds per metric; reduce judge flakiness (temperature 0, deterministic checks first, cached calls). Read: [Building and testing Python with GitHub Actions](https://docs.github.com/en/actions/tutorials/build-and-test-code/python), [promptfoo GitHub Action](https://www.promptfoo.dev/docs/integrations/github-action/), [DeepEval getting started](https://deepeval.com/docs/getting-started).
-- 🛠️ **Do:** Create `.github/workflows/eval.yml`: on PR run unit tests, a 10-question DocuMind smoke eval (recall@5 plus a faithfulness check) and 10 attack cases; fail if recall@5 drops more than 0.05 below the committed baseline or the block rate falls under 90%. Store keys as GitHub secrets. Done when: a PR with a deliberately worse prompt is blocked.
+### Thursday 11 Feb · 45 min — Build the CareerPilot MCP server with Python SDK v2
+- 📚 **Learn:** SDK v2 `MCPServer` (formerly FastMCP; import from `mcp.server`): `@mcp.tool()`, `@mcp.resource()`, `@mcp.prompt()` (decorators, W3), type hints become JSON Schema, structured results, a `ctx: Context` parameter for logging and progress; keep tools small and safe. Read: [Python SDK docs](https://py.sdk.modelcontextprotocol.io/). Optional: [What's new in v2](https://py.sdk.modelcontextprotocol.io/whats-new/).
+- 🛠️ **Do:** Implement `careerpilot-mcp` over your SQLite tracker: tools `add_application`, `update_status`, `list_applications(status)`, `search_jobs(query)`; resource `profile://me`; prompt `interview_prep(company, role)`. Validate inputs with pydantic and return structured results. Done when: everything works in MCP Inspector and invalid status values are rejected with clear errors.
 
-### Friday 12 Feb · 45 min — Cost and latency optimization; feedback loops
-- 📚 **Learn:** Levers: shorter prompts and context, `max_tokens`, prompt/context caching (stable prefix first), model routing and cascades, batching, streaming for time-to-first-token, semantic cache; A/B tests and user feedback (thumbs, edits). Read: [Building a GenAI platform (Chip Huyen)](https://huyenchip.com/2024/07/25/genai-platform.html) (router, gateway, cache) and the [Gemini context caching notebook](https://github.com/google-gemini/cookbook/blob/main/quickstarts/Caching.ipynb).
-- 🛠️ **Do:** Implement a 2-tier cascade in DocuMind: a small fast model answers first; escalate to a stronger model when the retrieval score is low or a self-check fails. Add a thumbs up/down endpoint stored with the trace ID. Compare cost and quality vs a single model on 20 questions. Done when: a table shows savings and quality delta, and feedback appears on traces.
+### Friday 12 Feb · 45 min — Connect a client and study MCP security risks (light)
+- 📚 **Learn:** Clients: VS Code (Copilot agent mode via `.vscode/mcp.json`) and, next week, your LangGraph agent. Note: `langchain-mcp-adapters` 0.3.2 still requires `mcp<2`, so keep the server in its own uv project and wrap the v2 `Client` tools yourself. Risks: tool poisoning, injection through tool results, over-permissioned tools, token passthrough, confused deputy. Read: [MCP security best practices](https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices). Optional: [VS Code MCP servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
+- 🛠️ **Do:** AZ-104 week, so 25 minutes: register `careerpilot-mcp` in `.vscode/mcp.json` and ask Copilot Chat to add an application, then add 4 risks with your mitigations to `mcp_design.md`. Done when: Copilot Chat calls your tool successfully and the 4 risks are committed.
 
-### Saturday 13 Feb · 45 min — BUILD: GitHub Actions eval gate for DocuMind and CareerPilot
-- 📚 **Learn:** Release discipline: eval summary as a PR artifact or comment, committed baselines, nightly full evals, cost-budget alerts, a written gate policy. Reference: [LLM evals FAQ](https://hamel.dev/blog/posts/evals-faq/) (CI and judges sections).
-- 🛠️ **Do:** Finish the pipeline: the PR job (smoke evals, attack suite, unit tests) publishes a Markdown summary; a nightly job runs the full 30-item DocuMind and 12-scenario CareerPilot evals and uploads reports. Document the policy in `LLMOPS.md`. Done when: two PRs demonstrate a pass and a fail, and tag `llmops-v1` is pushed.
+### Saturday 13 Feb · 45 min — BUILD: CareerPilot MCP server with client tests
+- 📚 **Learn:** Test MCP servers with the in-memory `Client` bound to the server object (no transport), plus contract tests for tool schemas and error cases. A2A (agent-to-agent protocol) complements MCP for agent-to-agent calls. Read: [SDK testing guide](https://py.sdk.modelcontextprotocol.io/get-started/testing/). Optional: [A2A and MCP](https://a2a-protocol.org/latest/topics/a2a-and-mcp/).
+- 🛠️ **Do:** Ship `careerpilot-mcp` v1: stdio and Streamable HTTP modes, confirmation required for destructive actions (an explicit `confirm=true` argument), 6 pytest tests using the in-memory `Client`, and a README with the VS Code config. Done when: tests pass and tag `v1.0-careerpilot-mcp` is pushed (the demo recording can wait for the stretch).
 
 ## 📦 Deliverable (by Saturday night)
-Langfuse dashboards for both apps, labelled prompt versions, `eval.yml` PR gate plus nightly evals, cascade routing with measured savings, feedback capture and `LLMOPS.md`.
+`10-careerpilot/mcp_server/` v1.0 (its own uv project): tools, resources and a prompt; stdio + Streamable HTTP; confirmations for risky actions; 6+ in-memory client tests; VS Code integration; security notes.
 
 ## ✅ Self-check (Sunday test preview)
-- What would you log for every LLM call, and what must you never log?
-- How do you version prompts and roll back safely?
-- Design an eval gate for a RAG app: what runs per PR vs nightly?
-- Explain model cascades/routing and how you would prove they help.
-- How does prompt caching work, and how should prompts be structured to benefit?
-- What are the OpenTelemetry GenAI semantic conventions and why use them?
+- Explain MCP host, client and server with a concrete example.
+- Tools vs resources vs prompts: who controls each?
+- stdio vs Streamable HTTP: when do you use each?
+- What is tool poisoning and how do you defend against it?
+- What changed in MCP revision 2026-07-28, and why does statelessness help scaling?
+- Why does the MCP server live in its own uv project in this plan?
+- How does A2A differ from MCP?
 
 ## 🚀 Stretch (optional)
-Run an A/B test routing 50% of traffic to prompt v2 for a week, collect feedback scores and decide with data.
+Record a 2-minute VS Code demo, add 2 more tests, or wrap a public jobs API (e.g., [Arbeitnow job board API](https://www.arbeitnow.com/api/job-board-api)) as a second MCP server.

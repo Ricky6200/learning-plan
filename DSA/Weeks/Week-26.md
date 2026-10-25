@@ -1,65 +1,53 @@
-# 🧩 DSA · Week 26 — Final Revision Speed-Run - FINAL BOSS
+# 🧩 DSA · Week 26 — Light Re-solve Week (AI-200 exam week)
 
-> 📅 **Mon 19 Apr 2027 → Sun 25 Apr 2027** · Season 6 — Final Boss: The Offer · ⚔️ **BOSS WEEK**  
+> 📅 **Mon 19 Apr 2027 → Sun 25 Apr 2027** · Season 6 — Final Boss: The Offer  
 > ⏱️ Slots: Mon–Sat · 60 min (Block A, first thing) · Sunday test: 45 min
 
-[← Week 25](Week-25.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-26.md)
+[← Week 25](Week-25.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-26.md) · [Week 27 →](Week-27.md)
 
-**Why this week:** Interview-ready means fast recall. Re-solve classics within target times: Easy 10, Medium 20-25, Hard 40 min.
+**Why this week:** AI-200 exam week: keep DSA warm with 2 timed re-solves a day and no new problems.
 
 ## 🧠 Concepts to master
-- Pattern recall drill: name the pattern in 60 seconds
-- Re-solve classics with a timer (no notes)
-- Virtual contest + one full mock interview
-- Review your REVISION_TRACKER red items
+- Re-solve from memory against the target (Easy 10, Medium 20 min) - say the pattern before you code
+- Review REVISION_TRACKER red items only if time remains
+- Sunday: the LeetCode Weekly Contest replaces the DSA test part; up-solve one missed problem later in the week and explain it aloud
 
 ## 🎥 Learn from (pick ONE per topic — don't binge)
 - [NeetCode roadmap](https://neetcode.io/roadmap)
-- [Striver A2Z DSA Sheet](https://takeuforward.org/prep-hub/strivers-a2z-dsa-sheet)
 - [LeetCode contests](https://leetcode.com/contest/)
+- [Sean Prashad - LeetCode Patterns](https://seanprashad.com/leetcode-patterns/)
 
 Templates: [PATTERNS_CHEATSHEET.md](../PATTERNS_CHEATSHEET.md)
 
 ## 🔁 Re-solve speed-run (no new problems — beat the target time)
 
-| Day | Date | Problem | Difficulty | First-attempt time-box | Done (☐→✅) |
+| Day | Date | Problem | Difficulty | Re-solve target | Done (☐→✅) |
 |---|---|---|---|---|---|
-| Mon | 19 Apr | [1. Two Sum](https://leetcode.com/problems/two-sum/) | Easy | 15m | ☐ |
-|  |  | [3. Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) | Medium | 25m | ☐ |
-|  |  | [15. 3Sum](https://leetcode.com/problems/3sum/) | Medium | 25m | ☐ |
-|  |  | [76. Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | Hard | 40m | ☐ |
-| Tue | 20 Apr | [33. Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Medium | 25m | ☐ |
-|  |  | [153. Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Medium | 25m | ☐ |
-|  |  | [875. Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) | Medium | 25m | ☐ |
-|  |  | [239. Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) | Hard | 40m | ☐ |
-| Wed | 21 Apr | [206. Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | Easy | 15m | ☐ |
-|  |  | [23. Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Hard | 40m | ☐ |
-|  |  | [146. LRU Cache](https://leetcode.com/problems/lru-cache/) | Medium | 25m | ☐ |
-|  |  | [84. Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | Hard | 40m | ☐ |
-| Thu | 22 Apr | [102. Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) | Medium | 25m | ☐ |
-|  |  | [236. Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/) | Medium | 25m | ☐ |
-|  |  | [124. Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) | Hard | 40m | ☐ |
-|  |  | [297. Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) | Hard | 40m | ☐ |
-| Fri | 23 Apr | [200. Number of Islands](https://leetcode.com/problems/number-of-islands/) | Medium | 25m | ☐ |
-|  |  | [207. Course Schedule](https://leetcode.com/problems/course-schedule/) | Medium | 25m | ☐ |
-|  |  | [743. Network Delay Time](https://leetcode.com/problems/network-delay-time/) | Medium | 25m | ☐ |
-|  |  | [684. Redundant Connection](https://leetcode.com/problems/redundant-connection/) | Medium | 25m | ☐ |
-| Sat | 24 Apr | [322. Coin Change](https://leetcode.com/problems/coin-change/) | Medium | 25m | ☐ |
-|  |  | [300. Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) | Medium | 25m | ☐ |
-|  |  | [1143. Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | Medium | 25m | ☐ |
-|  |  | [72. Edit Distance](https://leetcode.com/problems/edit-distance/) | Medium | 25m | ☐ |
+| Mon | 19 Apr | [49. Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Medium | 20m | ☐ |
+|  |  | [238. Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) | Medium | 20m | ☐ |
+| Tue | 20 Apr | [11. Container With Most Water](https://leetcode.com/problems/container-with-most-water/) | Medium | 20m | ☐ |
+|  |  | [424. Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) | Medium | 20m | ☐ |
+| Wed | 21 Apr | [56. Merge Intervals](https://leetcode.com/problems/merge-intervals/) | Medium | 20m | ☐ |
+|  |  | [34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/) | Medium | 20m | ☐ |
+| Thu | 22 Apr | [739. Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Medium | 20m | ☐ |
+|  |  | [98. Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/) | Medium | 20m | ☐ |
+| Fri | 23 Apr | [141. Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Easy | 10m | ☐ |
+|  |  | [994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) | Medium | 20m | ☐ |
+| Sat | 24 Apr | [70. Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) | Easy | 10m | ☐ |
+|  |  | [198. House Robber](https://leetcode.com/problems/house-robber/) | Medium | 20m | ☐ |
 
 ## ⏱️ The 60-minute routine
-1. **5 min** — re-read yesterday's notes (pattern + insight).
-2. **2 × 25 min** — solve. Time-box the first attempt (see table). Stuck? Watch ONLY the intuition part of a video, close it, code from memory.
+1. **~50 min** — re-solve today's problems from memory, one at a time, against the target time.
 3. **5 min** — log in [REVISION_TRACKER.md](../REVISION_TRACKER.md): pattern, key insight, time, 🟢/🟡/🔴.
 
+**Sunday:** re-solve everything you marked 🔴 this week (preview slot).
+
 ## ✅ Self-check (Sunday test preview)
-- List all 20+ patterns you know with one example each.
-- Which 3 patterns are still weakest? What is the plan?
-- Explain Dijkstra, DSU, KMP and LRU in 1 minute each.
-- Your target times for Easy/Medium/Hard?
-- How do you recover when stuck in an interview?
+- Group Anagrams and Product of Array Except Self: state each key idea in one sentence.
+- Container With Most Water vs Longest Repeating Character Replacement: which pointer moves, and why?
+- Merge Intervals and Find First and Last Position: write the core loop from memory.
+- Daily Temperatures and Validate BST: what do the stack and the bounds hold?
+- Rotting Oranges and House Robber: name the pattern and complexity in 30 seconds.
 
 ## 💡 Tip
-FINAL BOSS on Sunday: full mock interview (2 unseen problems, 45 min each, talk aloud).
+Exam first: if the exam falls on Friday or Saturday, do those re-solves on Sunday. No new problems this week.

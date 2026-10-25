@@ -73,7 +73,7 @@ Every link below was checked on 24–25 Oct 2026. **Free unless marked (paid).**
 
 **Embeddings & vector databases (W9)**
 - [sentence-transformers (SBERT)](https://sbert.net/) · [MTEB leaderboard](https://huggingface.co/spaces/mteb/leaderboard) · [Embeddings explained (Simon Willison)](https://simonwillison.net/2023/Oct/23/embeddings/)
-- [pgvector](https://github.com/pgvector/pgvector) · [pgvector-python](https://github.com/pgvector/pgvector-python) · [pgvector Docker image](https://hub.docker.com/r/pgvector/pgvector) · [Qdrant docs](https://qdrant.tech/documentation/) · [Chroma docs](https://docs.trychroma.com/) · [FAISS](https://github.com/facebookresearch/faiss)
+- [pgvector](https://github.com/pgvector/pgvector) · [pgvector-python](https://github.com/pgvector/pgvector-python) · [pgvector Docker image](https://hub.docker.com/r/pgvector/pgvector) · [Qdrant docs](https://qdrant.tech/documentation/) · [Chroma docs](https://docs.trychroma.com/docs/overview/introduction) · [FAISS](https://github.com/facebookresearch/faiss)
 
 **RAG (W10–W11, W29)**
 - [LangChain retrieval concepts](https://docs.langchain.com/oss/python/deepagents/retrieval) · [LangChain semantic search tutorial](https://docs.langchain.com/oss/python/langchain/knowledge-base) · [LangGraph agentic RAG](https://docs.langchain.com/oss/python/langgraph/agentic-rag)

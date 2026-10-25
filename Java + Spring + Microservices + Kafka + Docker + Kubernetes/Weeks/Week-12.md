@@ -1,49 +1,49 @@
-# ☕ Java Backend · Week 12 — Data layer: JDBC, JPA/Hibernate, Flyway, SQL
+# ☕ Java Backend · Week 12 — Spring Core: DI, lifecycle, AOP, async, logging
 
 > 📅 **Mon 11 Jan 2027 → Sun 17 Jan 2027** · Season 3 — Spring Citadel  
 > ⏱️ Slots: Mon–Fri · 60 min (Block B) + Sat 60 min BUILD · Sunday test: 30 min
 
-[← Week 11](Week-11.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-12.md) · [Week 13 →](Week-13.md)
+[← Week 11](Week-11.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-12.md) · [Week 13 →](Week-13.md)
 
-**Why this week:** N+1, lazy loading, persistence context and indexing questions are guaranteed in backend interviews, and most production incidents start in the data layer.
+**Why this week:** Spring IoC questions appear in every SDE-2 loop; knowing what happens under `@Autowired`, `@Async` and proxies (built from the reflection and annotations you used in W10) makes Spring Boot debuggable instead of magic.
 
 ## 🗓️ Sessions
 
-### Monday 11 Jan · 60 min — JDBC basics to ORM: PreparedStatement, transactions, HikariCP
-- 📚 **Learn:** JDBC: DataSource, Connection, PreparedStatement vs Statement (SQL injection), ResultSet mapping, manual transactions (`setAutoCommit(false)`, commit/rollback); connection pooling with HikariCP; JPA (spec) vs Hibernate (implementation) vs Spring Data JPA (repositories). [Marco Behler: JDBC guide](https://www.marcobehler.com/guides/jdbc), [Marco Behler: Java and databases overview](https://www.marcobehler.com/guides/java-databases), [Concept && Coding: JDBC to JPA (Hindi video)](https://www.youtube.com/watch?v=p0zuY_OeEh0).
-- 🛠️ **Do:** In a scratch test, write a plain-JDBC `VenueDao` against your Postgres container: insert/find with PreparedStatement; demonstrate SQL injection with string-concatenated `Statement` (`' OR '1'='1`); run two inserts in one manual transaction and force a rollback. Done when: injection is shown then blocked, and the rollback leaves zero rows.
+### Monday 11 Jan · 60 min — Spring Core: IoC, ApplicationContext, bean definitions, DI
+- 📚 **Learn:** IoC vs DI; BeanFactory vs ApplicationContext; bean definitions (class, scope, dependencies); component scanning vs `@Configuration` + `@Bean`; constructor vs setter vs field injection and why constructor injection wins (immutability, required deps, easy tests); circular dependencies. Spring does with reflection what your W10 MiniContainer did. Read: [Spring: IoC container introduction](https://docs.spring.io/spring-framework/reference/core/beans/introduction.html). Optional: [Martin Fowler: IoC and DI](https://martinfowler.com/articles/injection.html).
+- 🛠️ **Do:** New module `spring-core-lab` (spring-context 7.x, no Boot): wire `NotificationService` -> `MessageFormatter` + `Sender` (Email, Sms) first by hand with `new`, then via `AnnotationConfigApplicationContext` + `@ComponentScan` using constructor injection; print `getBeanDefinitionNames()`. Create a constructor circular dependency and read the error. Done when: both wirings print identical output and the error is explained in a comment.
 
-### Tuesday 12 Jan · 60 min — Entities, relationships, fetch types, Flyway migrations
-- 📚 **Learn:** `@Entity`, `@Id` + sequence generation, `@ManyToOne(fetch = LAZY)` by default choice, `@OneToMany(mappedBy)` bidirectional helpers, cascade and orphanRemoval, why EAGER is a smell; Flyway versioned migrations (`V1__init.sql`), Boot 4 needs `spring-boot-starter-flyway`; `ddl-auto=validate`. [Vlad Mihalcea: Best @OneToMany mapping](https://vladmihalcea.com/the-best-way-to-map-a-onetomany-association-with-jpa-and-hibernate/), [Spring Data JPA: Getting started](https://docs.spring.io/spring-data/jpa/reference/jpa/getting-started.html), [Baeldung: Flyway migrations](https://www.baeldung.com/database-migrations-with-flyway).
-- 🛠️ **Do:** Replace JdbcClient code with entities: Venue 1-N Screen 1-N Seat, Event 1-N Show, Show N-1 Screen; write `V1__catalog.sql` by hand (FKs, NOT NULL, unique constraints) and `V2__seed.sql`; set `ddl-auto=validate`; create Spring Data repositories. Done when: the app boots with Flyway applying V1 and V2 and Hibernate validation passing.
+### Tuesday 12 Jan · 60 min — Bean scopes, lifecycle, BeanPostProcessor, @Qualifier/@Primary, profiles
+- 📚 **Learn:** Singleton vs prototype (and web scopes); the prototype-into-singleton fix with `ObjectProvider`; lifecycle: instantiate -> populate -> Aware -> BPP before -> `@PostConstruct` -> BPP after (where proxies are made) -> ready -> `@PreDestroy`; `@Primary`, `@Qualifier`; profiles. Read: [Spring: Lifecycle callbacks](https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html). Optional: [Baeldung: BeanPostProcessor](https://www.baeldung.com/spring-beanpostprocessor).
+- 🛠️ **Do:** Add `LifecycleLoggerBean` (BeanNameAware, InitializingBean, DisposableBean, `@PostConstruct`, `@PreDestroy`) and a `TimingBeanPostProcessor` logging before/after init for every bean; show prototype vs singleton identity; resolve two `Sender` beans with `@Primary` and `@Qualifier("sms")`; switch senders with `dev`/`prod` profiles. Done when: the console shows the full lifecycle order for one bean.
 
-### Wednesday 13 Jan · 60 min — N+1 problem, JOIN FETCH, EntityGraph, JPQL, native, projections
-- 📚 **Learn:** How N+1 happens with lazy associations; fixes: `JOIN FETCH`, `@EntityGraph`, batch fetching; JPQL vs native queries; derived queries; interface and record (DTO) projections; `Pageable` and the count query. [Vlad Mihalcea: N+1 query problem](https://vladmihalcea.com/n-plus-1-query-problem/), [Spring Data JPA: Projections](https://docs.spring.io/spring-data/jpa/reference/repositories/projections.html), [Baeldung: JPA entity graph](https://www.baeldung.com/jpa-entity-graph).
-- 🛠️ **Do:** Enable SQL logging and Hibernate statistics; list 20 shows with venue and screen names and count the queries (N+1). Fix once with JOIN FETCH and once with `@EntityGraph`; add a `ShowSummary` record projection and a paged `findByEventCity(city, Pageable)`. Done when: query count drops from 21+ to 1 or 2 and a test asserts the statement count.
+### Wednesday 13 Jan · 60 min — AOP and proxies: JDK vs CGLIB, self-invocation pitfall
+- 📚 **Learn:** Aspect, advice, pointcut, join point; Spring AOP uses runtime proxies: JDK dynamic proxies when a bean has an interface, CGLIB subclasses otherwise (Spring Boot defaults to CGLIB); calling `this.method()` bypasses the proxy, so `@Transactional`, `@Async` and `@Cacheable` silently do nothing there; final/private methods are not advised. Read: [Spring: Proxying mechanisms](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html). Optional: [Baeldung: Dynamic proxies](https://www.baeldung.com/java-dynamic-proxies).
+- 🛠️ **Do:** Write a plain `java.lang.reflect.Proxy` that times any interface call (reflection from W10). In `spring-core-lab` add `spring-aspects`, `@EnableAspectJAutoProxy`, a custom `@Timed` annotation (RUNTIME, METHOD) and an `@Around` aspect; print a bean's `getClass()` with and without an interface to spot the proxy type; call a `@Timed` method via `this` from the same bean and observe no timing, then fix it by moving the method to another bean. Done when: both behaviours are visible in the console.
 
-### Thursday 14 Jan · 60 min — Persistence context, dirty checking, entity states, lazy loading pitfalls
-- 📚 **Learn:** Entity states (transient, managed, detached, removed); first-level cache; dirty checking at flush; `save` vs `merge`; `LazyInitializationException` and why Open Session in View hides it (`spring.jpa.open-in-view=false`); equals/hashCode for entities. [Vlad Mihalcea: Entity state transitions](https://vladmihalcea.com/a-beginners-guide-to-jpa-hibernate-entity-state-transitions/), [Vlad Mihalcea: Dirty checking](https://vladmihalcea.com/the-anatomy-of-hibernate-dirty-checking/), [Baeldung: Hibernate entity lifecycle](https://www.baeldung.com/hibernate-entity-lifecycle).
-- 🛠️ **Do:** Write `@DataJpaTest` tests proving: a managed entity changed inside a transaction is updated without calling `save`; the same id loaded twice returns the same instance; a detached change is lost until `merge`; touching a lazy collection outside a transaction throws. Disable open-in-view. Done when: 4 tests pass and you can explain each from the SQL log.
+### Thursday 14 Jan · 60 min — @Async, @Scheduled, ThreadPoolTaskExecutor and Spring events
+- 📚 **Learn:** `@EnableAsync` + `@Async` runs a method on a `TaskExecutor` (a `ThreadPoolTaskExecutor` bean: core, max, queue, thread-name prefix, as in W8 Fri) and may return a `CompletableFuture` (W9); `@EnableScheduling` + `@Scheduled(fixedDelay = 5000)` or `cron`; events: `ApplicationEventPublisher.publishEvent(...)` + `@EventListener`, synchronous by default, add `@Async` to decouple; `@Async` works only through the proxy (Wednesday). Read: [Spring: Task execution and scheduling](https://docs.spring.io/spring-framework/reference/integration/scheduling.html) (annotation support). Optional: [Baeldung: Spring events](https://www.baeldung.com/spring-events).
+- 🛠️ **Do:** In `spring-core-lab`: `OrderService.place()` publishes `OrderPlaced`; an `@Async @EventListener` 'email' listener runs on a `ThreadPoolTaskExecutor` named `mail-` (core 2, max 4, queue 10); a `@Scheduled(fixedDelay = 5000)` job logs pending orders. Print thread names everywhere. Done when: the listener runs on `mail-` threads, `place()` returns before the email finishes, and the scheduled job fires every 5 s.
 
-### Friday 15 Jan · 60 min — PostgreSQL indexes, EXPLAIN ANALYZE, SQL interview drills
-- 📚 **Learn:** B-tree and composite indexes (column order), covering and partial indexes, when indexes are not used; reading `EXPLAIN ANALYZE` (Seq Scan vs Index Scan, rows, cost); SQL drills: joins, GROUP BY/HAVING, window functions (`ROW_NUMBER`, `DENSE_RANK`, running totals), nth-highest salary. [PostgreSQL: Using EXPLAIN](https://www.postgresql.org/docs/current/using-explain.html), [Use The Index, Luke](https://use-the-index-luke.com/), [techTFQ: SQL window functions (video)](https://www.youtube.com/watch?v=Ww71knvhQ-s).
-- 🛠️ **Do:** Load 1M `show_seat` rows with `generate_series`; run `EXPLAIN ANALYZE` for 'available seats of a show' before and after a composite index `(show_id, status)` and record timings. Solve 5 problems from LeetCode SQL 50 including nth-highest salary with `DENSE_RANK` and a department top-3. Done when: the plan switches to an index scan and the 5 queries are saved in `sql/drills.sql`.
+### Friday 15 Jan · 60 min — Logging with SLF4J and Logback; MDC correlation ids
+- 📚 **Learn:** SLF4J is the logging API and Logback the implementation (Spring Boot's default); levels TRACE to ERROR; parameterized messages `log.info("order {} placed", id)` instead of string concatenation; MDC stores per-thread key-values printed with `%X{orderId}`; MDC is a ThreadLocal, so it is lost on `@Async` threads unless a `TaskDecorator` copies it. Read: [SLF4J manual](https://www.slf4j.org/manual.html) (about 10 min). Optional: [Baeldung: MDC with Logback](https://www.baeldung.com/mdc-in-log4j-2-logback).
+- 🛠️ **Do:** Add `slf4j-api` + `logback-classic` and a `logback.xml` pattern with `%thread` and `%X{orderId}`; replace every `System.out` in `spring-core-lab`; put `orderId` into MDC inside `place()` and clear it in `finally`; show it is missing in the async email log, then fix it with a `TaskDecorator` on the executor. Done when: every log line for one order, sync and async, shows the same orderId.
 
-### Saturday 16 Jan · 60 min — BUILD: TicketVerse data model, migrations, Testcontainers tests
-- 📚 **Learn:** Booking data model: `venue`, `screen`, `seat`, `show`, `show_seat` (status, price, `version`), `booking`, `booking_seat`; constraints as the last line of defense (unique show+seat); `@DataJpaTest` with real Postgres via Testcontainers 2.x and `@ServiceConnection`. [Spring Boot: Testcontainers](https://docs.spring.io/spring-boot/reference/testing/testcontainers.html), [Testcontainers: Replace H2 with a real database](https://testcontainers.com/guides/replace-h2-with-real-database-for-testing/).
-- 🛠️ **Do:** Add migrations V3 (`show_seat`, `booking`, `booking_seat` with UNIQUE(show_id, seat_id)) and V4 (indexes); entities and repositories; seed one show with 100 seats. Tests on Testcontainers Postgres: available-seats query, unique-constraint violation on a duplicate booking_seat, paging. Done when: `./mvnw verify` is green with Docker running and the ER diagram (Mermaid) is in the README.
+### Saturday 16 Jan · 60 min — BUILD: Spring Core app without Boot + Postgres + Testcontainers
+- 📚 **Learn:** `@Configuration` + `@Bean` (full vs lite mode), `@PropertySource` + `Environment`, `@Profile`, graceful `context.close()`; a `DataSource` bean (`DriverManagerDataSource`) and Spring's `JdbcClient` for one insert (primer: `jdbcClient.sql("insert into audit(order_id) values (?)").param(id).update()`; data access in depth in W14). Read: [Spring: @Bean and @Configuration](https://docs.spring.io/spring-framework/reference/core/beans/java/basic-concepts.html). Optional: [Testcontainers: Getting started for Java](https://testcontainers.com/guides/getting-started-with-testcontainers-for-java/).
+- 🛠️ **Do:** Finish `OrderPipeline` in `spring-core-lab`: `OrderService` -> `PricingService` (strategy chosen by profile), `InventoryService`, `AuditLogger` writing one row per order to Postgres (your W11 Compose) via `JdbcClient`; the `@Timed` aspect, async email and MDC logs stay on; config from `app.properties`. Add a JUnit test that starts a `PostgreSQLContainer`, builds the context against it and asserts the audit row. Done when: the app runs under both profiles and the Testcontainers test is green.
 
 ## 📦 Deliverable (by Saturday night)
-TicketVerse on JPA/Hibernate with Flyway V1-V4, N+1 fixed with tests, persistence-context tests, indexed show_seat with EXPLAIN evidence, SQL drills, Testcontainers-backed `@DataJpaTest` suite.
+`spring-core-lab` module: DI by hand vs container, lifecycle + BPP logs, scopes/qualifiers/profiles, JDK proxy + `@Timed` aspect with the self-invocation demo, async events + scheduled job on a named pool, MDC logging with a TaskDecorator, OrderPipeline on Postgres with a Testcontainers test.
 
 ## ✅ Self-check (Sunday test preview)
-- JPA vs Hibernate vs Spring Data JPA: what is each?
-- What is the N+1 problem and three ways to fix it?
-- Explain entity states and dirty checking. When is `save()` unnecessary?
-- Why does LazyInitializationException happen, and why is Open Session in View considered an anti-pattern?
-- When does PostgreSQL ignore an index? How do you read EXPLAIN ANALYZE?
-- Write (verbally) a query for the 3rd highest salary per department.
-- Why test with Testcontainers instead of H2?
+- BeanFactory vs ApplicationContext; why is constructor injection preferred?
+- List the Spring bean lifecycle steps in order. Where are AOP proxies created?
+- How do you correctly inject a prototype bean into a singleton?
+- JDK dynamic proxy vs CGLIB proxy: when is each used, and why does `this.method()` skip the aspect?
+- What must be true for `@Async` to really run asynchronously, and which executor does it use?
+- Spring events are synchronous by default: what does that mean for a slow listener?
+- Why is MDC lost on async threads, and how does a TaskDecorator fix it?
 
 ## 🚀 Stretch (optional)
-Read Vlad Mihalcea's [FetchType EAGER is a code smell](https://vladmihalcea.com/eager-fetching-is-a-code-smell/) and remove any remaining EAGER mapping.
+Read `AbstractAutowireCapableBeanFactory.initializeBean` in IntelliJ and map each line to the lifecycle steps. Extras: your own `@RetryOnce` annotation + aspect; read about `@TransactionalEventListener` (you will use it after transactions in W15).

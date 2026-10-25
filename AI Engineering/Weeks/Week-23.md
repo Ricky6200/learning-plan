@@ -1,45 +1,44 @@
-# 🤖 AI Engineering · Week 23 — AI System Design at Scale
+# 🤖 AI Engineering · Week 23 — Spring AI I: ChatClient and Structured Output
 
-> 📅 **Mon 29 Mar 2027 → Sun 04 Apr 2027** · Season 5 — Cloud Ascension · ⚔️ **BOSS WEEK**  
+> 📅 **Mon 29 Mar 2027 → Sun 04 Apr 2027** · Season 5 — Cloud Ascension  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 22](Week-22.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-23.md) · [Week 24 →](Week-24.md)
+[← Week 22](Week-22.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-23.md) · [Week 24 →](Week-24.md)
 
-**Why this week:** Senior-leaning AI interviews include a design round (LLM gateway, RAG at scale, production agents) where trade-offs on cost, latency, safety and evals matter more than code.
+**Why this week:** Java + Spring AI lets you add AI to the backends you already maintain, a rare and valuable combination in the Indian market where most AI engineers know only Python. The AI track owns the `ticketverse-ai` service; Java W27 later adds the platform hooks (gateway, JWT relay, Kafka topics).
 
 ## 🗓️ Sessions
 
-### Monday 29 Mar · 45 min — LLM gateway: routing, fallbacks, quotas, cost attribution
-- 📚 **Learn:** Gateway duties: one API for many providers, auth, per-tenant token quotas and rate limits, routing and fallbacks across providers/regions, caching, PII redaction, logging and cost attribution; build vs buy (LiteLLM, Azure API Management AI gateway). Read: [AI gateway in Azure API Management](https://learn.microsoft.com/en-us/azure/api-management/genai-gateway-capabilities), [LiteLLM routing](https://docs.litellm.ai/docs/routing), [Building a GenAI platform](https://huyenchip.com/2024/07/25/genai-platform.html).
-- 🛠️ **Do:** Design an LLM gateway for a 2,000-employee company: components, request flow, token-bucket quotas per team, fallback policy, cost-attribution schema and failure modes. Done when: `11-ai-system-design/llm_gateway.md` has a diagram, an API sketch, a data model and 5 trade-offs.
+### Monday 29 Mar · 45 min — Spring AI 2.x architecture and your first ChatClient
+- 📚 **Learn:** Spring AI 2.0.x runs on Spring Boot 4.0/4.1: ChatModel and EmbeddingModel abstractions, the fluent `ChatClient` (like the RestClient of Java W13), auto-configured starters, provider swap via properties. LLM calls stay in Codespaces, because free model APIs are blocked on the company network. Read: [Spring AI getting started](https://docs.spring.io/spring-ai/reference/getting-started.html). Optional: [ChatClient API](https://docs.spring.io/spring-ai/reference/api/chatclient.html).
+- 🛠️ **Do:** Open the TicketVerse repo in a 2-core codespace (devcontainer with the Java 25 feature). Generate `ticketverse-ai` on [start.spring.io](https://start.spring.io/) (Boot 4.1.x, Java 25, Web, Actuator, Spring AI Ollama starter for zero-key local runs) and add `GET /ai/hello?q=` using an injected `ChatClient.Builder`. Done when: the endpoint returns your local model's answer and `./mvnw verify` passes.
 
-### Tuesday 30 Mar · 45 min — Multi-tenant RAG and vector database scaling
-- 📚 **Learn:** Tenant isolation (index per tenant vs shared index + tenant filter vs separate database), document-level ACL security trimming, ingestion at scale (queues, idempotency, re-embedding on model change), vector scaling: HNSW RAM, quantization (halfvec, binary), shards and replicas. Read: [Secure multitenant RAG](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/secure-multitenant-rag) and [Qdrant distributed deployment](https://qdrant.tech/documentation/guides/distributed_deployment/).
-- 🛠️ **Do:** Size 10M chunks x 768 dimensions: raw float32 size (about 30 GB), rough HNSW overhead, halfvec savings, and shards/replicas for 200 QPS at p95 under 300 ms. Choose an isolation model for 50 tenants with ACLs. Done when: `rag_at_scale.md` contains formulas, numbers and a decision record.
+### Tuesday 30 Mar · 45 min — Prompt templates, system messages, options and streaming
+- 📚 **Learn:** `PromptTemplate` with variables, system vs user messages, a default system prompt on the builder, per-request options (model, temperature, max tokens), streaming via `.stream().content()`. Primer: that returns a `Flux<String>` (Project Reactor), a lazy asynchronous stream of tokens that Spring MVC can send as `text/event-stream`; Java W27 covers Reactor properly. Read: [Prompts](https://docs.spring.io/spring-ai/reference/api/prompt.html). Optional: [Reactor reference](https://projectreactor.io/docs/core/release/reference/) (introduction).
+- 🛠️ **Do:** Add `POST /ai/event-blurb` filling a template (event name, city, date, genre) into a 50-word promo, with the template in `src/main/resources/prompts/`. Add `GET /ai/stream?q=` returning server-sent events from the `Flux`. Done when: editing the template needs no code change and `curl -N` shows tokens arriving progressively.
 
-### Thursday 01 Apr · 45 min — Caching layers, feedback pipelines, guardrail placement, cost models
-- 📚 **Learn:** Cache layers (exact, semantic, provider prompt caching, retrieval cache) and invalidation; online feedback -> labelled data -> eval sets -> regression gates; guardrails at the gateway, retrieval (ACLs), tool layer and output; cost = requests x tokens x price + infrastructure. Read: [RAG design and evaluation guide](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/rag/rag-solution-design-and-evaluation-guide) (skim) and [What we learned from a year of building with LLMs](https://applied-llms.org/).
-- 🛠️ **Do:** Build a cost model (spreadsheet or script) for a customer-support agent: 50k conversations/day, 6 turns, tokens per step, cache hit rates and a 2-model cascade. Compute INR per month and cost per resolved ticket, with sensitivity to cache hit rate. Done when: low/expected/high scenarios are committed and the biggest cost driver is named.
+### Thursday 01 Apr · 45 min — Structured output: mapping responses to Java records
+- 📚 **Learn:** `.entity(MyRecord.class)` maps model output to records and lists via a generated JSON schema; provider-native structured output (`useProviderStructuredOutput()`) when supported; add Bean Validation and one retry. Compare with your W7 pydantic version. Read: [Structured output](https://docs.spring.io/spring-ai/reference/api/structured-output.html).
+- 🛠️ **Do:** Create `record EventQuery(String city, LocalDate from, LocalDate to, List<String> genres, Integer maxPrice)` and `POST /ai/parse-query` turning 'comedy shows in Pune next weekend under 800' into it. Add validation, one retry and 5 JUnit tests with a Mockito-mocked or recorded model response. Done when: 5/5 sample queries map correctly and the tests pass offline.
 
-### Friday 02 Apr · 45 min — Timed practice: ChatGPT-like chat and a support agent
-- 📚 **Learn:** Design framework: requirements (functional, scale, latency, safety, compliance) -> APIs -> high-level architecture -> data and ingestion -> retrieval/generation -> evals and observability -> safety -> scaling and cost -> trade-offs. Reference: [Patterns for building LLM-based systems](https://eugeneyan.com/writing/llm-patterns/).
-- 🛠️ **Do:** Do two 20-minute timed designs on paper: (1) ChatGPT-like chat at 1M daily users (streaming, conversation storage, rate limits, model routing, abuse prevention); (2) customer-support agent with tools and human handoff. Scan or photograph them and write 10 takeaway bullets each. Done when: both are in `11-ai-system-design/` with an improvement list.
+### Friday 02 Apr · 45 min — Advisors, chat memory, cloud providers and observability
+- 📚 **Learn:** Advisors intercept model calls (logging, memory, RAG, safeguards); `MessageChatMemoryAdvisor` with `MessageWindowChatMemory` and a JDBC repository; cloud providers via the OpenAI starter pointed at Groq or the Google GenAI starter for Gemini; Micrometer observations with `gen_ai` keys (Micrometer from Java W19). Read: [Advisors](https://docs.spring.io/spring-ai/reference/api/advisors.html). Optional: [Chat memory](https://docs.spring.io/spring-ai/reference/api/chat-memory.html).
+- 🛠️ **Do:** Add `SimpleLoggerAdvisor` and per-conversation memory backed by Postgres (JDBC chat memory repository), exposed as `POST /ai/chat/{conversationId}`. Add a `cloud` profile using Groq ([Groq chat](https://docs.spring.io/spring-ai/reference/api/chat/groq-chat.html)) with the key from a Codespaces secret. Done when: memory survives a restart and switching profiles changes the provider without code changes.
 
-### Saturday 03 Apr · 45 min — BOSS BATTLE: 45-minute AI system-design mock plus design doc
-- 📚 **Learn:** Prompt: 'Enterprise RAG over 10M documents for a bank (Hindi + English, ACLs, audit trail)'. 35 minutes designing aloud (recorded), 10 minutes writing a 1-page doc. Rubric /100: requirements 15, architecture 25, retrieval and evals 20, safety and compliance 15, scale and cost 15, communication 10. Reference: [Baseline Foundry chat architecture](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/architecture/baseline-microsoft-foundry-chat).
-- 🛠️ **Do:** Run the mock with a friend, or record yourself and use an AI interviewer only for follow-up questions after you finish. Write `DESIGN_enterprise_rag.md` (diagram, key decisions, numbers, risks), self-score with the rubric and list 3 gaps for W26. Done when: recording and doc are committed and the score is 80+.
+### Saturday 03 Apr · 45 min — BUILD: ticketverse-ai service skeleton with chat and structured output
+- 📚 **Learn:** Service design inside TicketVerse: one AI service, `ticketverse-ai`, behind the gateway; ports-and-adapters; profiles `local` (Ollama) and `cloud` (Groq/Gemini); timeouts and fallbacks with the Resilience4j you learned in Java W19. Examples: [spring-ai-examples](https://github.com/spring-projects/spring-ai-examples). Optional: [Spring AI for Beginners (Microsoft)](https://github.com/microsoft/Spring-AI-for-Beginners).
+- 🛠️ **Do:** Ship `ticketverse-ai` v0.1: chat with memory, `/ai/parse-query`, the streaming endpoint, a logging advisor, two profiles, a Dockerfile and tests (mocked model or Testcontainers), plus a `ticketverse-ai` entry in the TicketVerse Compose file. On the 2-core codespace start only `ticketverse-ai` and Postgres. Done when: both containers run via Compose, tests are green and tag `ticketverse-ai-v0.1` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-`11-ai-system-design/`: LLM gateway design, RAG-at-scale sizing sheet, support-agent cost model, two timed practice designs, recorded mock and a 1-page enterprise RAG design doc.
+`ticketverse/ticketverse-ai` v0.1 (Spring Boot 4.1 + Spring AI 2.0): ChatClient endpoints, external prompt templates, streaming, record mapping, JDBC chat memory, local/cloud profiles, Dockerfile and a Compose entry.
 
 ## ✅ Self-check (Sunday test preview)
-- Design an LLM gateway: what are its responsibilities and failure modes?
-- How do you isolate tenants and enforce document ACLs in RAG?
-- Estimate memory for 10M 768-dimension vectors and explain how to reduce it.
-- Where would you place guardrails in an agentic system?
-- How do you build a feedback loop that improves an AI product over time?
-- How would you cut LLM cost by 50% without hurting quality much?
-- How do you roll out a new model version safely?
+- What is `ChatClient`, and how does it relate to `ChatModel`?
+- What does `.stream().content()` return, and how does it reach the browser?
+- How does `.entity()` produce structured output in Spring AI?
+- What are advisors? Name three built-in ones.
+- How do you implement per-conversation memory that survives restarts?
+- How do you switch from Ollama to a cloud model without code changes?
 
 ## 🚀 Stretch (optional)
-Redesign the support agent as an explicit workflow (per [Building effective agents](https://www.anthropic.com/research/building-effective-agents)) instead of an open-ended agent and compare risks and cost.
+Implement one endpoint with [LangChain4j](https://docs.langchain4j.dev/) AI Services in a branch and compare the API style, or add the [Google GenAI chat](https://docs.spring.io/spring-ai/reference/api/chat/google-genai-chat.html) profile for Gemini.

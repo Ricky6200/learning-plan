@@ -1,45 +1,44 @@
-# 🤖 AI Engineering · Week 03 — How LLMs Actually Work
+# 🤖 AI Engineering · Week 03 — Python III: Generators, Decorators, Typing and Data
 
 > 📅 **Mon 09 Nov 2026 → Sun 15 Nov 2026** · Season 1 — Foundation Forge  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 02](Week-02.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-03.md) · [Week 04 →](Week-04.md)
+[← Week 02](Week-02.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-03.md) · [Week 04 →](Week-04.md)
 
-**Why this week:** Interviewers probe fundamentals: tokens, attention, training stages, sampling and hallucinations. Intuition here lets you reason about cost, latency and quality instead of guessing.
+**Why this week:** LLM SDKs stream with generators, frameworks configure you through decorators, agent state is typed with TypedDict, and every evaluation ends in a NumPy array or a pandas table. Learning these idioms now means the AI code of later weeks reads like familiar code.
 
 ## 🗓️ Sessions
 
-### Monday 09 Nov · 45 min — AI/ML/DL/GenAI map and gradient descent intuition
-- 📚 **Learn:** AI > ML > deep learning > GenAI; supervised learning, training vs inference, loss, gradient descent, overfitting. Watch 3Blue1Brown [Large Language Models explained briefly](https://www.youtube.com/watch?v=LPZh9BOjkQs) (8 min) and [Gradient descent](https://www.youtube.com/watch?v=IHZwWFHWa-w) (first 12 min). Reference: [Google ML Crash Course](https://developers.google.com/machine-learning/crash-course) linear regression module.
-- 🛠️ **Do:** In `02-llm-playground/01_gradient_descent.ipynb`, fit y = 3x + 2 on noisy data with hand-written gradient descent in NumPy (about 20 lines). Plot loss per epoch and try 3 learning rates. Done when: learned w is about 3 and b about 2, and you note what happens when the learning rate is too high.
+### Monday 09 Nov · 45 min — Iterators and generators, sync and async
+- 📚 **Learn:** The iteration protocol (`__iter__`/`__next__`), generator functions with `yield`, generator expressions, lazy pipelines (nothing runs until you iterate), `yield from`, `itertools.islice` and `itertools.batched`; async generators (`async def` + `yield`, consumed with `async for`) are how streamed LLM tokens arrive. Read: [How to use generators and yield (Real Python)](https://realpython.com/introduction-to-python-generators/) (first four sections). Optional: [itertools](https://docs.python.org/3/library/itertools.html).
+- 🛠️ **Do:** In `02-python-data/gen.py` write `read_lines(path)` (yields stripped lines), `batched_words(lines, n)` and an async generator `fake_tokens(text, delay=0.05)` that yields one word at a time. Stream a sentence to the terminal with `async for` and `print(tok, end=' ', flush=True)`. Add 3 pytest tests (laziness, batch sizes, token order). Done when: tests pass and you can explain in one line why `read_lines` needs almost no memory for a huge file.
 
-### Tuesday 10 Nov · 45 min — Tokenization: BPE, vocabularies and token costs
-- 📚 **Learn:** Tokens are not words: byte-pair encoding, vocabulary size, special tokens, why Hindi and code cost more tokens, tokens drive cost and context limits. Play with [Tiktokenizer](https://tiktokenizer.vercel.app/); read the [tiktoken README](https://github.com/openai/tiktoken). Optional: Karpathy [Let's build the GPT Tokenizer](https://www.youtube.com/watch?v=zduSFxRajkE) (first 15 min).
-- 🛠️ **Do:** In `02_tokens.ipynb` use `tiktoken.get_encoding('o200k_base')` to count tokens for: an English paragraph, the same text in Hindi (Devanagari), Hinglish, a JSON object and a Java method. Tabulate tokens per character and estimated cost at a sample price per 1M tokens. Done when: the table is filled and you can explain why Hindi costs more tokens.
+### Tuesday 10 Nov · 45 min — Decorators and context managers
+- 📚 **Learn:** Functions are objects, closures capture variables, and a decorator is a function that wraps another (`functools.wraps` keeps its name); `@retry`, `@app.get` and `@mcp.tool` all follow this pattern. `contextlib.contextmanager` turns a generator into a `with` block (setup, `yield`, cleanup). `logging.basicConfig(level=logging.INFO)` gives timestamped logs instead of prints. Read: [Primer on Python decorators (Real Python)](https://realpython.com/primer-on-python-decorators/) (simple decorators and decorators with arguments). Optional: [contextlib](https://docs.python.org/3/library/contextlib.html).
+- 🛠️ **Do:** In `02-python-data/wrappers.py` write `@timed` (logs the duration with `logging`), a parameterised `@retry(times=3, on=(TimeoutError,))` and a `timer(label)` context manager via `@contextmanager`. Apply them to a function that fails twice, then succeeds. Add 3 tests using pytest's `caplog`. Done when: tests pass and the log shows 2 retries, the success and the measured time.
 
-### Thursday 12 Nov · 45 min — Embeddings, transformers and attention
-- 📚 **Learn:** Embeddings turn tokens into meaning vectors; attention lets each token weigh the others (query/key/value), multi-head attention, positional information, next-token prediction. Watch 3Blue1Brown [Transformers, the tech behind LLMs](https://www.youtube.com/watch?v=wjZofJX0v4M) at 1.25x; explore the interactive [Transformer Explainer](https://poloclub.github.io/transformer-explainer/); skim [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/).
-- 🛠️ **Do:** Write a 10-line 'attention explained to a Java developer' note, then compute toy scaled dot-product attention in NumPy for 3 tokens (random Q, K, V, softmax, weighted sum) in `03_attention.ipynb`. Done when: each row of attention weights sums to 1 and your note explains Q/K/V in your own words.
+### Thursday 12 Nov · 45 min — Typing for real code: Literal, Enum, TypedDict, Annotated
+- 📚 **Learn:** `Literal['onsite', 'remote']` restricts values, `Enum` names a closed set (like the Java enums of Java W3 Wed), `TypedDict` types plain dicts (LangGraph state uses it), `Annotated[T, meta]` attaches metadata that frameworks read (pydantic `Field`, LangGraph reducers), plus `Callable`; a checker such as mypy finds bugs without running code. Read: [typing module](https://docs.python.org/3/library/typing.html) (the TypedDict, Literal and Annotated entries). Optional: [Enum HOWTO](https://docs.python.org/3/howto/enum.html).
+- 🛠️ **Do:** In `02-python-data/typing_lab.py` model a job-search state: `Seniority(Enum)`, `Remote = Literal['onsite', 'hybrid', 'remote']` and `class SearchState(TypedDict)` with `query: str` and `results: Annotated[list[str], 'append-only']`. Write `merge(state, update)` that appends results, then add 3 deliberate type errors and run `uvx mypy typing_lab.py`. Done when: mypy reports your 3 errors, you fix them, and it then reports no issues.
 
-### Friday 13 Nov · 45 min — Pretraining, SFT, RLHF, reasoning models, hallucinations
-- 📚 **Learn:** Pretraining (next-token prediction on internet text), SFT (instruction data), preference tuning (RLHF/DPO), reasoning models (RL on verifiable tasks, thinking tokens), context windows, why hallucinations happen. Watch Karpathy [Intro to Large Language Models](https://www.youtube.com/watch?v=zjkBMFhNj_g) 0:00-25:00 at 1.25x; skim [Understanding Reasoning LLMs](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms).
-- 🛠️ **Do:** Create `llm_lifecycle.md` with a Mermaid diagram from raw data to deployed chat model, labelling data, objective and rough cost at each stage. Add 3 causes of hallucination and 3 mitigations you will build later (RAG with citations, refusals, evals). Done when: the diagram renders on GitHub and you can explain it aloud in 2 minutes.
+### Friday 13 Nov · 45 min — NumPy arrays and matplotlib plots
+- 📚 **Learn:** ndarrays (shape, dtype), vectorised maths instead of loops, broadcasting, `@` for dot products, `np.linalg.norm`, seeded random arrays; matplotlib `plt.plot`/`plt.imshow`, labels and saving a figure. You will compute cosine similarity, attention weights and loss curves with exactly these tools. Read: [NumPy: the absolute basics for beginners](https://numpy.org/doc/stable/user/absolute_beginners.html) (array creation, basic operations, broadcasting). Optional: [Matplotlib quick start](https://matplotlib.org/stable/users/explain/quick_start.html).
+- 🛠️ **Do:** In `02-python-data/numpy_lab.ipynb` (`uv add numpy matplotlib`) build 5 random 8-dimensional vectors and compute pairwise cosine similarity with one vectorised expression; then time a pure-Python loop vs NumPy on 1,000 x 384 vectors. Plot the similarity matrix with `plt.imshow` and save it as PNG. Done when: both methods agree to 6 decimals, NumPy is at least 10x faster and the PNG is committed.
 
-### Saturday 14 Nov · 45 min — BUILD: tokenizer + sampling playground notebook
-- 📚 **Learn:** Decoding strategies: greedy, temperature, top-k, top-p (nucleus), repetition penalties; why temperature 0 is still not guaranteed deterministic across providers. Read the sampling sections of [How to generate text](https://huggingface.co/blog/how-to-generate).
-- 🛠️ **Do:** Build `04_sampling_playground.ipynb`: from a hand-made next-token probability table (10 tokens), implement greedy, temperature (0.2/1.0/1.5), top-k and top-p sampling; draw 1,000 samples each and plot the distributions. Include your W3 token-cost table and a findings section. Done when: plots show how temperature and top-p reshape the distribution and the notebook is pushed.
+### Saturday 14 Nov · 45 min — BUILD: weather data analysis with pandas and pytest
+- 📚 **Learn:** pandas DataFrame basics: reading CSV/JSON, selecting and filtering, `groupby` + `agg`, dates with `pd.to_datetime`, monthly resampling and plotting from a DataFrame; keep transformations as pure functions you can unit-test. Read: [10 minutes to pandas](https://pandas.pydata.org/docs/user_guide/10min.html) (selection, grouping, time series). Optional: [Open-Meteo historical weather API](https://open-meteo.com/en/docs/historical-weather-api).
+- 🛠️ **Do:** Extend your W2 client to download one year of daily maximum temperature and rainfall for 5 cities from the historical API into `weather.csv`. In `02-python-data/analysis.py` write pure functions `monthly_means(df)`, `hottest_days(df, n)` and `rainy_days_per_city(df)`, with 4 pytest tests on a tiny hand-made DataFrame, then plot the monthly means. Done when: `uv run pytest` is green and the chart plus a 5-line findings note are in the README.
 
 ## 📦 Deliverable (by Saturday night)
-`02-llm-playground/` with gradient-descent, tokens, attention and sampling notebooks plus `llm_lifecycle.md` (diagram + hallucination notes).
+`02-python-data/`: generator, decorator/context-manager and typing labs with tests, a NumPy similarity notebook and a tested pandas weather analysis with a chart and findings.
 
 ## ✅ Self-check (Sunday test preview)
-- What is a token, and why do token counts differ across languages?
-- Explain self-attention (Q, K, V) in three sentences.
-- What do pretraining, SFT and preference tuning (RLHF/DPO) each add?
-- How do temperature and top-p change outputs? When would you keep temperature low?
-- What is a context window, and what happens when a conversation exceeds it?
-- Why do LLMs hallucinate? Name two mitigations.
-- How do reasoning models differ from standard chat models in cost and latency?
+- What is the difference between a list comprehension and a generator expression, and when does it matter?
+- How does an async generator differ from a normal generator? Where will you meet one in LLM code?
+- Write a decorator that logs how long a function takes. Why use `functools.wraps`?
+- What do `TypedDict`, `Literal` and `Annotated` add over a plain `dict` and `str`?
+- What is broadcasting in NumPy? Give an example with a (5, 384) and a (384,) array.
+- How do `groupby` and `agg` work in pandas?
 
 ## 🚀 Stretch (optional)
-Watch Karpathy's [Deep Dive into LLMs like ChatGPT](https://www.youtube.com/watch?v=7xTGNNLPyMI) in 30-minute chunks over the next three weekends, keeping timestamped notes.
+Finish the remaining sections of 10 minutes to pandas, or cache the downloader with `functools.lru_cache` plus an on-disk JSON cache and measure the speed-up.

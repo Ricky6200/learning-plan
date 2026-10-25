@@ -1,40 +1,40 @@
-# 🏗️ System Design · Week 23 — Kafka internals, ad clicks, top-K (Boss week)
+# 🏗️ System Design · Week 23 — Uber and Ticketmaster at scale
 
-> 📅 **Mon 29 Mar 2027 → Sun 04 Apr 2027** · Season 5 — Cloud Ascension · ⚔️ **BOSS WEEK**  
+> 📅 **Mon 29 Mar 2027 → Sun 04 Apr 2027** · Season 5 — Cloud Ascension  
 > ⏱️ Slots: Mon, Wed, Thu · 45 min + Sat 45 min PRACTICE · Sunday test: 30 min
 
-[← Week 22](Week-22.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-23.md) · [Week 24 →](Week-24.md)
+[← Week 22](Week-22.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-23.md) · [Week 24 →](Week-24.md)
 
-**Why this week:** Designing a message queue and stream aggregations shows deep understanding of logs, partitions and exactly-once trade-offs; top-K and leaderboards are common product questions.
+**Why this week:** Ride-hailing teaches geo indexes and high write rates; the Ticketmaster/BookMyShow HLD is the distributed version of the seat-locking code you wrote for TicketVerse.
 
 ## 🗓️ Sessions
 
-### Monday 29 Mar · 45 min — Distributed message queue: Kafka internals
-- 📚 **Learn:** Log segments + index files, partition leaders/followers, ISR, `acks=all` + `min.insync.replicas`, high watermark, KRaft controller quorum (ZooKeeper removed in Kafka 4.0), consumer-group rebalancing, idempotent producer + transactions, retention vs compaction, zero-copy reads. Read [Kafka deep dive (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/kafka); watch its [video](https://www.youtube.com/watch?v=DU8o-OTeoCc); go deeper: [Kafka internals course (Confluent)](https://developer.confluent.io/courses/architecture/get-started/).
-- 🛠️ **Do:** In `hld/14-message-queue/README.md` design 'Kafka-lite' with the framework in 30 minutes, then 15 minutes comparing with real Kafka. Done when: you can explain what happens to acknowledged writes when a partition leader dies, for `acks=1` vs `acks=all`.
+### Monday 29 Mar · 45 min — Uber/Ola: location updates, geo index, matching
+- 📚 **Learn:** Driver location pings every ~4 s (write-heavy), geo indexes (geohash, quadtree, H3 cells; Redis GEO), nearest-driver search, matching with offers + timeouts, locking a driver to avoid double assignment, ETA, surge (awareness). Read 'Quadtrees', 'Geohash' and 'Which Should You Use?' in [Proximity search (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/proximity-search). Optional: [QuadTrees and Hilbert curves (Gaurav Sen, 22 min)](https://www.youtube.com/watch?v=OcUKFIjhKu0).
+- 🛠️ **Do:** In `hld/10-ride-hailing/README.md` do steps 1-5 in a 25-minute sprint; estimate writes/s for 1M active drivers pinging every 4 s and the memory for their latest positions. Done when: the estimate is shown and you chose a geo index with one reason.
 
-### Wednesday 31 Mar · 45 min — Ad-click aggregation: stream processing and exactly-once
-- 📚 **Learn:** Click ingestion -> Kafka -> stream processor (e.g., Flink) with tumbling 1-minute windows -> OLAP store; dedupe by click ID; late events and watermarks; reconciliation with a batch job; fraud filtering; query API for advertisers. Read [Design an ad click aggregator (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/ad-click-aggregator); watch its [walkthrough](https://www.youtube.com/watch?v=Zcv_899yqhI).
-- 🛠️ **Do:** Timer on: full framework in 40 minutes in `hld/15-ad-clicks/README.md` for 10k clicks/s average and 50k/s peak. Done when: all 7 sections are filled and you can explain how a click is counted exactly once even when a processor crashes.
+### Wednesday 31 Mar · 45 min — Uber deep dives: matching consistency, hot cells, trips
+- 📚 **Learn:** Driver lock with TTL during an offer (no double booking), dense-city hot cells (finer cells, sharding by region), the location stream through Kafka, trip state machine, failure handling when a driver goes silent. Read [Redis geospatial docs](https://redis.io/docs/latest/develop/data-types/geospatial/). Optional: [H3 docs](https://h3geo.org/docs/).
+- 🛠️ **Do:** Add 3 deep dives (consistent matching, hot cells, location ingestion) + an Excalidraw diagram, then spend 5 minutes comparing with [Design Uber (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/uber). Done when: the one-page write-up + PNG are committed and you can explain why a driver never receives two simultaneous ride offers.
 
-### Thursday 01 Apr · 45 min — Top-K / leaderboards: heavy hitters and count-min sketch
-- 📚 **Learn:** Exact top-K (sharded counters + min-heap merge) vs approximate (count-min sketch + heap), sliding time windows, precomputed windows vs on-demand, Redis sorted sets for leaderboards. Read [Top-K (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/top-k); watch [Bloom filters, count-min sketch, HyperLogLog (Hello Interview)](https://www.youtube.com/watch?v=IgyU0iFIoqM); reference: [Redis sorted sets](https://redis.io/docs/latest/develop/data-types/sorted-sets/).
-- 🛠️ **Do:** 25 min: implement `labs/topk/CountMinSketch` (width, depth, `add`, `estimate`) and `TopK` with a min-heap; test on a skewed stream that the true top 5 are found and estimates never undercount. 20 min: sketch a game leaderboard with Redis ZSETs (commands for score update, top 10, my rank). Done when: tests pass and the ZSET design is in `notes/21-topk.md`.
+### Thursday 01 Apr · 45 min — Ticketmaster/BookMyShow HLD: holds, contention, waiting room
+- 📚 **Learn:** Seat-map reads (cache/CDN), seat holds via Redis TTL locks vs DB row locks, booking state machine, payment timeout releases holds, virtual waiting room for spikes, search via Elasticsearch, idempotent booking API. Read [Shopify inventory reservations (Hello Interview)](https://www.hellointerview.com/learn/system-design/in-the-wild/shopify-inventory-reservations). Optional: [Thundering herd on ticket booking (Concept && Coding, Hindi, 12 min)](https://www.youtube.com/watch?v=1aamH7sA8FY).
+- 🛠️ **Do:** Timer on, 25 minutes: framework steps 1-5 in `hld/11-ticketverse-booking/README.md`, mapped onto TicketVerse (reuse your W11 LLD and your Java W15 locking choices). Done when: you can explain how 1M users hitting a concert drop at 10:00 are protected and how no seat is ever sold twice.
 
-### Saturday 03 Apr · 45 min — BOSS BATTLE: Timed 45-min HLD mock (random case)
-- 📚 **Learn:** Boss rules: your AI mentor (or a peer) picks a random case you have NOT presented aloud yet, e.g., [Design LeetCode](https://www.hellointerview.com/learn/system-design/problem-breakdowns/leetcode), [Design Tinder](https://www.hellointerview.com/learn/system-design/problem-breakdowns/tinder) or [FB live comments](https://www.hellointerview.com/learn/system-design/problem-breakdowns/fb-live-comments) (all Hello Interview); read the breakdown only after the mock.
-- 🛠️ **Do:** Run a full 45-minute mock with the W19 time splits, recorded, the interviewer asking 3 follow-ups. Score with the same 8-line rubric (0-3 each). Done when: recording, scorecard and 3 improvement actions are in `boss/W23.md`; >= 17/24 clears the boss.
+### Saturday 03 Apr · 45 min — PRACTICE: Virtual waiting room + Ticketmaster review
+- 📚 **Learn:** Waiting room = FIFO queue of visitors + admission at a controlled rate (token bucket) + a signed, expiring admission token checked by the booking API; users can poll their position. Reuse your W11 `TokenBucketLimiter`. Compare Thursday's design with the deep dives of [Design Ticketmaster (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/ticketmaster).
+- 🛠️ **Do:** 25-min timer: `labs/waitingroom/VirtualWaitingRoom` - `join(userId)` returns a ticket, `position(ticket)`, `admitBatch()` admits N per second via the token bucket, and admitted users get an expiring token. Done when: tests prove FIFO admission, rate limiting, token expiry, and no double admission under 50 concurrent joins; finish the Ticketmaster diagram on Sunday.
 
 ## 📦 Deliverable (by Saturday night)
-`hld/14-message-queue/` and `hld/15-ad-clicks/` (write-up + PNG each), `labs/topk` with tests, `notes/21-topk.md`, and the Boss scorecard in `boss/W23.md`.
+`hld/10-ride-hailing/` and `hld/11-ticketverse-booking/` (write-up + PNG + ADR each) and `labs/waitingroom` with passing tests.
 
 ## ✅ Self-check (Sunday test preview)
-- What is the ISR, and how do `acks=all` + `min.insync.replicas` protect data?
-- How does Kafka achieve high throughput (sequential I/O, batching, zero-copy)?
-- What changed in Kafka 4.0 regarding ZooKeeper?
-- Ad clicks: how do you handle late-arriving events in windowed aggregation?
-- Count-min sketch: why does it overestimate but never underestimate?
-- How would you build a real-time leaderboard for 10M players?
+- How do you find the nearest available drivers quickly?
+- Geohash vs quadtree vs H3: trade-offs?
+- How do you stop one driver from being matched to two riders?
+- Ticketmaster: Redis TTL hold vs DB row lock: which and why?
+- How does a virtual waiting room protect the booking system?
+- What happens to a held seat when payment times out?
 
 ## 🚀 Stretch (optional)
-Re-run the boss case a week later with a peer as interviewer and compare scores.
+Add surge pricing to the Uber design: which data feeds it, where it is computed and how often it refreshes. Extra: [Design Uber walkthrough (Hello Interview)](https://www.youtube.com/watch?v=lsKU38RKQSo); [Ticketmaster walkthrough (Hello Interview)](https://www.youtube.com/watch?v=fhdPyoO6aXI).

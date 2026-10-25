@@ -1,44 +1,44 @@
-# 🤖 AI Engineering · Week 12 — Agents II: LangGraph and CareerPilot v0
+# 🤖 AI Engineering · Week 12 — Evals: Prove DocuMind Works
 
 > 📅 **Mon 11 Jan 2027 → Sun 17 Jan 2027** · Season 3 — Spring Citadel  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 11](Week-11.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-12.md) · [Week 13 →](Week-13.md)
+[← Week 11](Week-11.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-12.md) · [Week 13 →](Week-13.md)
 
-**Why this week:** LangGraph is the most requested agent framework in 2026 job descriptions. Its typed state, persistence and human-in-the-loop features fix exactly what your scratch agent struggled with.
+**Why this week:** 'How do you know it works?' is the number-one AI interview follow-up. Teams hire engineers who prove quality with datasets, metrics and traces, not vibes.
 
 ## 🗓️ Sessions
 
-### Monday 11 Jan · 45 min — LangGraph state, nodes and edges
-- 📚 **Learn:** A graph is typed state (TypedDict or pydantic) + nodes (functions returning state updates) + edges; reducers such as `add_messages`; `START` and `END`; compile, then invoke or stream. Read: [Thinking in LangGraph](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph); course: [LangChain Academy: Introduction to LangGraph](https://academy.langchain.com/courses/intro-to-langgraph) Module 1, lessons 1-4.
-- 🛠️ **Do:** Build a 3-node graph `parse_jd -> gap_analysis -> summarize` reusing your W5 parser and W11 gap tool; state holds `jd_text`, `job`, `gaps`, `summary`. Print updates with `graph.stream(..., stream_mode='updates')`. Done when: one JD flows through all nodes and you can point to each state update.
+### Monday 11 Jan · 45 min — Golden datasets and error analysis
+- 📚 **Learn:** Eval-driven development: build a golden set (question, reference answer, relevant chunk IDs) covering easy, hard, unanswerable and multi-hop cases; read outputs before trusting metrics; group failures into categories (error analysis). Read: [Your AI product needs evals (Hamel Husain)](https://hamel.dev/blog/posts/evals/) (about 15 min). Optional: [LLM evals FAQ](https://hamel.dev/blog/posts/evals-faq/).
+- 🛠️ **Do:** Create `09-documind/evals/golden.jsonl` with 15 items (3+ unanswerable, 3+ multi-hop), each with expected chunk or page IDs. Run v1, read every answer and tag failures (retrieval miss, wrong citation, hallucination, wrong refusal). Done when: the 15 items exist and a failure-category count table is in `evals/README.md` (grow to 30 items via this week's stretch).
 
-### Tuesday 12 Jan · 45 min — Conditional routing, ToolNode and prebuilt agents
-- 📚 **Learn:** `add_conditional_edges` with routing functions, `ToolNode` executing tool calls, recursion limits, `Command` for update + goto; LangChain 1.x `create_agent` is a prebuilt agent built on LangGraph. Read: [Graph API overview](https://docs.langchain.com/oss/python/langgraph/graph-api) (conditional edges, Command) and [LangChain agents](https://docs.langchain.com/oss/python/langchain/agents); Academy Module 1, lessons 5-6.
-- 🛠️ **Do:** Rebuild the W11 agent as a graph: `agent` node (model with tools bound) and a `ToolNode`, with a conditional edge that loops to tools while the last message has tool calls. Add a router sending chit-chat straight to `END`. Done when: your 8 W11 scenarios pass at least as often as before.
+### Tuesday 12 Jan · 45 min — Retrieval metrics: recall@k, MRR, nDCG
+- 📚 **Learn:** Recall@k (did we fetch the relevant chunks?), precision@k (the W4 precision idea, per ranked list), MRR (rank of the first hit), nDCG (graded relevance with a position discount); evaluate retrieval separately from generation. Read: [Evaluation measures in information retrieval](https://en.wikipedia.org/wiki/Evaluation_measures_%28information_retrieval%29) (precision/recall, MRR and nDCG sections).
+- 🛠️ **Do:** Write `eval_retrieval.py` computing recall@5, recall@10, MRR and nDCG@10 from the golden set in pure Python, unit-tested against a tiny hand-computed example. Compare v0 (vector only) with v1 (hybrid + re-rank). Done when: tests pass and a v0-vs-v1 metrics table is printed.
 
-### Thursday 14 Jan · 45 min — Checkpointers, persistence, memory and streaming
-- 📚 **Learn:** Checkpointers save state per `thread_id` (InMemorySaver for tests, SqliteSaver/PostgresSaver for real use), resume conversations, inspect history and time-travel; stores for long-term memory; stream modes `updates`, `messages`, `values`. Read: [Persistence](https://docs.langchain.com/oss/python/langgraph/persistence) and [Streaming](https://docs.langchain.com/oss/python/langgraph/streaming); Academy Module 2.
-- 🛠️ **Do:** Add `SqliteSaver` (package `langgraph-checkpoint-sqlite`) so CareerPilot resumes conversations per `thread_id` after a restart, and stream LLM tokens with `stream_mode='messages'`. Inspect `get_state_history` and replay from an earlier checkpoint. Done when: a restarted app continues the same thread and you demo one time-travel replay.
+### Thursday 14 Jan · 45 min — Generation metrics with RAGAS/DeepEval; judge pitfalls
+- 📚 **Learn:** Faithfulness (claims supported by context), response relevancy, context precision/recall; LLM-as-judge pitfalls: position, verbosity and self-preference bias, non-determinism, cost; calibrate judges against human labels. Read: [RAGAS available metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/) (Faithfulness and Response Relevancy). Optional: [DeepEval metrics introduction](https://deepeval.com/docs/metrics-introduction).
+- 🛠️ **Do:** Run RAGAS (Faithfulness, Response Relevancy) or DeepEval (FaithfulnessMetric) on 10 golden items with a free-tier judge model, pausing between calls to respect rate limits. Hand-label the same 10 for faithfulness and compute judge-human agreement. Done when: scores and agreement % are recorded with 2 examples where the judge was wrong.
 
-### Friday 15 Jan · 45 min — Human-in-the-loop interrupts and subgraphs
-- 📚 **Learn:** `interrupt()` pauses a node and surfaces a payload; resume with `Command(resume=...)`; approve, edit and reject patterns; interrupts require a checkpointer; subgraphs compose features or teams. Read: [Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts) and [Subgraphs](https://docs.langchain.com/oss/python/langgraph/use-subgraphs); Academy Module 3 (breakpoints, human feedback).
-- 🛠️ **Do:** Add an `approve_plan` node calling `interrupt({'plan': plan})`. The CLI shows the plan, accepts approve/edit/reject and resumes with `Command(resume=...)`. Move gap analysis into a subgraph. Done when: reject regenerates, edit uses your text, approve saves the plan, and all of it survives a restart.
+### Friday 15 Jan · 45 min — Tracing and experiments with Langfuse
+- 📚 **Learn:** Traces and spans per request (retrieve, re-rank, generate), tokens, cost and latency per step, attaching scores to traces, datasets and experiments; Langfuse's SDK is built on OpenTelemetry (you go deeper on OpenTelemetry in W19). Read: [Langfuse get started](https://langfuse.com/docs/observability/get-started); the free Hobby plan is enough. Optional: [Langfuse evaluation overview](https://langfuse.com/docs/evaluation/overview).
+- 🛠️ **Do:** Instrument DocuMind with Langfuse (OpenAI drop-in wrapper or manual spans for retrieve, re-rank and generate). Run the golden set and attach your retrieval metrics as scores. Done when: Langfuse shows one trace per golden item with per-step latency, tokens and scores, and you identify the slowest step.
 
-### Saturday 16 Jan · 45 min — BUILD: CareerPilot v0 graph with human approval
-- 📚 **Learn:** Product slice: input a JD, output an approved 2-week prep plan saved to your tracker; deterministic steps as plain nodes, LLM calls only where judgement is needed. Hindi option: [CampusX Agentic AI using LangGraph](https://www.youtube.com/playlist?list=PLKnIA16_RmvYsvB8qkUQuJmJNuiCUJFPL).
-- 🛠️ **Do:** Ship CareerPilot v0: `parse_jd -> gap_analysis (subgraph) -> draft_plan -> approve_plan (interrupt) -> save`, SqliteSaver persistence, streaming output and Langfuse tracing. Expose `POST /runs` and `POST /runs/{id}/resume` in FastAPI. Done when: 3 real JDs produce approved plans, traces appear in Langfuse and tag `v0.1-careerpilot` is pushed.
+### Saturday 16 Jan · 45 min — BUILD: DocuMind eval report in 45 minutes
+- 📚 **Learn:** Timed build: the report must support a decision (baseline vs improved, metric deltas, cost and latency, 3 annotated failures, next actions). Template: TL;DR, setup, metrics, errors, decision. Self-score /100: correct metrics 30, comparison 20, error analysis 20, cost/latency 15, clarity 15. Reference: [Patterns for building LLM systems](https://eugeneyan.com/writing/llm-patterns/) (evals section).
+- 🛠️ **Do:** Run v0 and v1 on the golden set, auto-generate `EVAL_REPORT.md` tables with a script, add Langfuse screenshots and 3 annotated failures, then pick the default configuration with a justification. Done when: your self-score is 80+, the report is committed, and tag `eval-report-w12` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-`07-careerpilot/` v0.1 on LangGraph: typed state, conditional routing, ToolNode loop, SQLite persistence, interrupt-based approval, a subgraph, FastAPI run/resume endpoints and Langfuse traces.
+`09-documind/evals/`: golden set (15 items in session, 30 with the stretch), tested retrieval-metrics script, RAGAS/DeepEval run with judge calibration, Langfuse tracing and `EVAL_REPORT.md` (v0 vs v1).
 
 ## ✅ Self-check (Sunday test preview)
-- What problems does LangGraph solve compared with a hand-written while-loop agent?
-- What is a reducer in LangGraph state, and why does `add_messages` exist?
-- How does a checkpointer enable both memory and human-in-the-loop?
-- Explain `interrupt()` and `Command(resume=...)` with an example.
-- When would you use a subgraph?
-- Which streaming modes exist, and when do you use each?
+- What makes a good golden dataset for a RAG system?
+- Define recall@k, MRR and nDCG, and say when you would use each.
+- What does faithfulness measure, and how does it differ from answer relevancy?
+- Name three biases of LLM-as-judge and how to mitigate them.
+- Why evaluate retrieval and generation separately?
+- What would you put on an eval dashboard for a RAG product?
 
 ## 🚀 Stretch (optional)
-Finish Academy Module 4 and add a parallel fan-out that researches two companies at once with a map-reduce step.
+Grow the golden set to 30 items (15 more, including 2+ multi-hop), add a correct-refusal-rate metric for unanswerable questions, and compare 20 synthetic questions with your hand-written ones.

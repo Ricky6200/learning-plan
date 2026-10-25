@@ -1,40 +1,41 @@
-# 🏗️ System Design · Week 21 — Uber and Ticketmaster at scale
+# 🏗️ System Design · Week 21 — HLD gaps: streams, job scheduler, Yelp mock
 
 > 📅 **Mon 15 Mar 2027 → Sun 21 Mar 2027** · Season 5 — Cloud Ascension  
 > ⏱️ Slots: Mon, Wed, Thu · 45 min + Sat 45 min PRACTICE · Sunday test: 30 min
 
-[← Week 20](Week-20.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-21.md) · [Week 22 →](Week-22.md)
+[← Week 20](Week-20.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-21.md) · [Week 22 →](Week-22.md)
 
-**Why this week:** Ride-hailing teaches geo indexes and high write rates; the Ticketmaster/BookMyShow HLD is the distributed version of the seat-locking code you wrote for TicketVerse.
+**Why this week:** Batch vs stream processing and OLAP stores show up in every analytics design (view counts, ad clicks, metrics), a distributed job scheduler tests leases and idempotent execution, and an unseen proximity mock keeps your HLD sharp while you apply for jobs.
 
 ## 🗓️ Sessions
 
-### Monday 15 Mar · 45 min — Uber/Ola: location updates, geo index, matching
-- 📚 **Learn:** Driver location pings every ~4 s (write-heavy), geo indexes (geohash, quadtree, H3 cells; Redis GEO), nearest-driver search, matching with offers + timeouts, locking a driver to avoid double assignment, ETA, surge (awareness). Read [Design Uber (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/uber) and [Proximity search (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/proximity-search); watch [QuadTrees and Hilbert curves (Gaurav Sen)](https://www.youtube.com/watch?v=OcUKFIjhKu0).
-- 🛠️ **Do:** In `hld/10-ride-hailing/README.md` do steps 1-5 in 30 minutes; estimate writes/s for 1M active drivers pinging every 4 s and the memory for their latest positions. 15 min: compare with Hello Interview. Done when: the estimate is shown and you chose a geo index with one reason.
+### Monday 15 Mar · 45 min — Batch vs stream processing, windows, watermarks, OLAP
+- 📚 **Learn:** Batch (Spark: bounded data, high throughput, minutes-hours latency) vs stream (Flink/Kafka Streams: unbounded, seconds); tumbling, sliding and session windows; event time vs processing time; watermarks and late events; Lambda (batch + speed layers) vs Kappa (stream only, replay from the log); OLAP stores (columnar: ClickHouse, Druid, Pinot) for slice-and-dice queries. Read 'Basic Concepts' (through 'Windows') in [Flink deep dive (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/flink). Optional: [Big data architectures (Azure)](https://learn.microsoft.com/en-us/azure/architecture/databases/guide/big-data-architectures).
+- 🛠️ **Do:** In `notes/22-batch-vs-stream.md`: a batch vs stream table (latency, cost, correctness, tools); pick one for 4 cases (daily payouts, live view counter, fraud alerts, monthly invoices); by hand, put 6 click events with event times into 1-minute tumbling windows with a 30-second allowed lateness and show which late event is dropped; one row on OLTP vs OLAP. Done when: every pick names its latency need and the window table is correct.
 
-### Wednesday 17 Mar · 45 min — Uber deep dives: matching consistency, hot cells, trips
-- 📚 **Learn:** Driver lock with TTL during an offer (no double booking), dense-city hot cells (finer cells, sharding by region), location stream through Kafka, trip state machine, failure handling when a driver goes silent. Read [Redis geospatial docs](https://redis.io/docs/latest/develop/data-types/geospatial/) and [H3 docs](https://h3geo.org/docs/); full walkthrough (optional): [Design Uber (Hello Interview)](https://www.youtube.com/watch?v=lsKU38RKQSo).
-- 🛠️ **Do:** Add 3 deep dives (consistent matching, hot cells, location ingestion) + an Excalidraw diagram. Done when: the one-page write-up + PNG are committed and you can explain why a driver never receives two simultaneous ride offers.
+### Wednesday 17 Mar · 45 min — Distributed job scheduler HLD (steps 1-5)
+- 📚 **Learn:** Requirements: one-off, delayed and cron jobs; 10k jobs/s; run within ~2 s of the due time; at-least-once execution; job status. Core ideas: a jobs table plus an executions table keyed by time bucket, a scheduler that scans only the current bucket and pushes due executions to a queue, workers that lease an execution, idempotent job handlers. You sketched this on W17 Sunday - now read 'Functional Requirements' through 'High-Level Design' of [Design a job scheduler (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/job-scheduler) and note what you missed. Optional: [Managing long-running tasks (Hello Interview)](https://www.hellointerview.com/learn/system-design/patterns/long-running-tasks).
+- 🛠️ **Do:** Timer on, 25 minutes: steps 1-5 in `hld/20-job-scheduler/README.md` (start from your W17 Sunday mini-design): requirements, estimate (10k jobs/s, executions storage per day), API, data model with the time-bucket key, high-level diagram. Done when: the data model shows how the scheduler finds due jobs without scanning the whole table.
 
-### Thursday 18 Mar · 45 min — Ticketmaster/BookMyShow HLD: holds, contention, waiting room
-- 📚 **Learn:** Seat-map reads (cache/CDN), seat holds via Redis TTL locks vs DB row locks, booking state machine, payment timeout releases holds, virtual waiting room for spikes, search via Elasticsearch, idempotent booking API. Read [Design Ticketmaster (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/ticketmaster) and [Shopify inventory reservations (Hello Interview)](https://www.hellointerview.com/learn/system-design/in-the-wild/shopify-inventory-reservations); Hindi: [Thundering herd on ticket booking (Concept && Coding)](https://www.youtube.com/watch?v=1aamH7sA8FY).
-- 🛠️ **Do:** Timer on: full framework in 40 minutes in `hld/11-ticketverse-booking/README.md`, mapped onto TicketVerse (reuse the W10 LLD and your Java W13 implementation choices). Done when: you can explain how 1M users hitting a concert drop at 10:00 are protected and how no seat is ever sold twice.
+### Thursday 18 Mar · 45 min — Job scheduler deep dives: leases, retries, idempotency
+- 📚 **Learn:** Deep dives: precise timing (a short-interval in-memory delay queue in front of the time-bucket scan), worker leases with heartbeats and visibility timeouts (W14 fencing tokens stop a zombie worker), retries with backoff + DLQ, idempotent execution via an execution id, scheduler high availability (partition buckets across scheduler instances). Read [Slack's job queue redesign (Hello Interview)](https://www.hellointerview.com/learn/system-design/in-the-wild/slack-job-queue). Optional: [Temporal deep dive (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/temporal).
+- 🛠️ **Do:** Add 3 deep dives (2-second precision, a worker dying mid-job, a job that must not run twice) + an Excalidraw diagram + one ADR to `hld/20-job-scheduler/`. Done when: you can explain what happens, second by second, when a worker crashes after starting a job, and the PNG is committed.
 
-### Saturday 20 Mar · 45 min — PRACTICE: Virtual waiting room + Ticketmaster write-up
-- 📚 **Learn:** Waiting room = FIFO queue of visitors + admission at a controlled rate (token bucket) + signed admission token checked by the booking API; users can poll their position. Reuse your W10 `TokenBucketLimiter`. Context: [Ticketmaster walkthrough (Hello Interview)](https://www.youtube.com/watch?v=fhdPyoO6aXI).
-- 🛠️ **Do:** 25 min: `labs/waitingroom/VirtualWaitingRoom` - `join(userId)` returns a ticket, `position(ticket)`, `admitBatch()` admits N per second via the token bucket, admitted users get an expiring token. 20 min: finish the Ticketmaster diagram. Done when: tests prove FIFO admission, rate limiting, token expiry, and no double admission under 50 concurrent joins.
+### Saturday 20 Mar · 45 min — PRACTICE: Unseen 45-min HLD mock - Design Yelp
+- 📚 **Learn:** Unseen mock rules as in W20 (blank canvas, recording, framework time splits). Case: Yelp - search businesses near me with filters and ratings, view a business, write reviews. Geo primer (deep dive in W23): a geohash turns latitude/longitude into a string cell id where a shared prefix means nearby; search the user's cell plus its 8 neighbours. Optional: read [Design Yelp (Hello Interview)](https://www.hellointerview.com/learn/system-design/problem-breakdowns/yelp) only after the mock.
+- 🛠️ **Do:** Run the 45-minute mock end to end, recorded, then score it with the 8-line rubric (0-3 each). Done when: `mocks/W21-yelp.md` has the score, your 3 weakest moments and one fix for each.
 
 ## 📦 Deliverable (by Saturday night)
-`hld/10-ride-hailing/` and `hld/11-ticketverse-booking/` (write-up + PNG each) and `labs/waitingroom` with passing tests.
+`notes/22-batch-vs-stream.md`, `hld/20-job-scheduler/` (write-up + PNG + ADR) and the Yelp mock recording + scorecard in `mocks/W21-yelp.md`.
 
 ## ✅ Self-check (Sunday test preview)
-- How do you find the nearest available drivers quickly?
-- Geohash vs quadtree vs H3: trade-offs?
-- How do you stop one driver from being matched to two riders?
-- Ticketmaster: Redis TTL hold vs DB row lock: which and why?
-- How does a virtual waiting room protect the booking system?
-- What happens to a held seat when payment times out?
+- Batch vs stream: when is a nightly batch job the better answer?
+- Event time vs processing time: what is a watermark, and what happens to a late event?
+- Lambda vs Kappa architecture: what does each cost you?
+- Why do OLAP stores use columnar storage?
+- Job scheduler: how does the scheduler find due jobs without a full table scan?
+- How do you guarantee a scheduled job runs at least once but its effect happens only once?
+- Yelp: how do you find businesses within 5 km quickly?
 
 ## 🚀 Stretch (optional)
-Add surge pricing to the Uber design: which data feeds it, where it is computed and how often it refreshes.
+Read [What is OLAP? (ClickHouse)](https://clickhouse.com/docs/concepts/olap) and add an OLAP-backed 'views per minute' dashboard to your job-scheduler or Yelp design. Compare your Yelp mock with the [Proximity search deep dive (Hello Interview)](https://www.hellointerview.com/learn/system-design/deep-dives/proximity-search).

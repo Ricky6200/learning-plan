@@ -1,49 +1,49 @@
-# ☕ Java Backend · Week 23 — Azure deployment: TicketVerse live, Season 5 boss
+# ☕ Java Backend · Week 23 — Kubernetes I: pods, deployments, services, config
 
-> 📅 **Mon 29 Mar 2027 → Sun 04 Apr 2027** · Season 5 — Cloud Ascension · ⚔️ **BOSS WEEK**  
+> 📅 **Mon 29 Mar 2027 → Sun 04 Apr 2027** · Season 5 — Cloud Ascension  
 > ⏱️ Slots: Mon–Fri · 60 min (Block B) + Sat 60 min BUILD · Sunday test: 30 min
 
-[← Week 22](Week-22.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-23.md) · [Week 24 →](Week-24.md)
+[← Week 22](Week-22.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-23.md) · [Week 24 →](Week-24.md)
 
-**Why this week:** Deploying your own system to a real cloud with managed data services, identity-based secrets and telemetry is the strongest proof of SDE-2 readiness; it also mirrors your Azure track lab this week.
+**Why this week:** Kubernetes is the default runtime for Java microservices; interviewers expect you to explain the control loop, Deployments vs Pods, Services, probes and resource limits from hands-on use.
 
 ## 🗓️ Sessions
 
-### Monday 29 Mar · 60 min — Platform choice: AKS vs Container Apps; ACR; budgets and scripts
-- 📚 **Learn:** AKS (full Kubernetes, reuse Helm chart, more ops) vs Azure Container Apps (managed, scale to zero, built-in ingress, Dapr optional). **Primary target: Azure Container Apps** (matches the Azure track's W23 Boss; AKS gets its own lab there). Azure Container Registry, resource-group-per-environment, naming, Central India region, budgets and alerts. [Azure Container Apps overview](https://learn.microsoft.com/en-us/azure/container-apps/overview), [AKS documentation](https://learn.microsoft.com/en-us/azure/aks/), [Azure: Create budgets](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets).
-- 🛠️ **Do:** Write ADR-003 (AKS vs ACA for TicketVerse) with a monthly cost estimate from the Azure Pricing Calculator; create `infra/deploy.sh` (az CLI or Bicep) for resource group, ACR, Log Analytics and a budget alert at 50% and 90%; import your GHCR images into ACR. Done when: the script is idempotent (second run makes no changes) and images are listed in ACR.
+### Monday 29 Mar · 60 min — Kubernetes architecture, declarative model, kubectl, local cluster
+- 📚 **Learn:** Control plane (API server, etcd, scheduler, controller manager) and nodes (kubelet, kube-proxy, container runtime); desired state and reconciliation loops; kubectl get/describe/logs/exec/apply; local clusters with kind. kubectl + kind come from IT this week; fallback: a 4-core Codespace (Docker-in-Docker + kind) pulling your public GHCR images, or Killercoda for plain manifests (it cannot see local images). Read: [Kubernetes: Components](https://kubernetes.io/docs/concepts/overview/components/). Optional: [kind: Quick start](https://kind.sigs.k8s.io/docs/user/quick-start/).
+- 🛠️ **Do:** Create a kind cluster; list nodes and system pods; pull `nginx` through the mirror and `kind load docker-image` it (kind nodes cannot use your Docker login), run it imperatively, then write a Pod YAML and `kubectl apply` it; use `describe`, `logs`, `exec` and `get -o yaml`; delete the pod and note nothing recreates it. Done when: you can draw the control plane and explain what happened at each step of `kubectl apply`.
 
-### Tuesday 30 Mar · 60 min — Managed data: PostgreSQL Flexible Server, Managed Redis, Event Hubs Kafka
-- 📚 **Learn:** Azure Database for PostgreSQL Flexible Server (Burstable tier, firewall vs private access, TLS, Flyway against it); Azure Managed Redis (the current Redis offering); Event Hubs Kafka endpoint (Standard tier, SASL_SSL) vs running Kafka in-cluster; connection settings per Spring profile. [Azure PostgreSQL Flexible Server overview](https://learn.microsoft.com/en-us/azure/postgresql/overview), [Azure Managed Redis overview](https://learn.microsoft.com/en-us/azure/redis/overview), [Event Hubs for Apache Kafka](https://learn.microsoft.com/en-us/azure/event-hubs/azure-event-hubs-apache-kafka-overview).
-- 🛠️ **Do:** Extend the script: PostgreSQL Flexible Server (smallest Burstable) with catalog and booking databases, the smallest Azure Managed Redis, and an Event Hubs Standard namespace with your topics as event hubs. Add a `cloud` Spring profile and run booking-service locally against these services (Flyway migrates, the outbox relay publishes to Event Hubs). Done when: one booking saga completes using only Azure data services.
+### Tuesday 30 Mar · 60 min — ReplicaSets and Deployments: rolling updates and rollbacks
+- 📚 **Learn:** Labels and selectors; a ReplicaSet keeps N pods; a Deployment manages ReplicaSets for rolling updates (`maxSurge`, `maxUnavailable`), revision history, `kubectl rollout status/undo`; why you never create bare pods in production. Read: [Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/). Optional: [Abhishek Veeramalla: Kubernetes (playlist)](https://www.youtube.com/playlist?list=PLdpzxOOAlwvJdsW6A0jCz_3VaANuFMLpc).
+- 🛠️ **Do:** Load your catalog-service image into kind (`kind load docker-image`; in a Codespace pull it from GHCR instead), write a Deployment with 3 replicas, delete a pod and watch it come back, roll out a new image tag and watch ReplicaSets change, then roll back. Done when: `kubectl rollout history` shows 2+ revisions and you can explain maxSurge/maxUnavailable with your numbers.
 
-### Wednesday 31 Mar · 60 min — Secrets and identity: Key Vault, managed identity, Workload ID
-- 📚 **Learn:** Never ship secrets in images or Git; Azure Key Vault; managed identities; on AKS, Microsoft Entra Workload ID federates a Kubernetes ServiceAccount to an identity; on ACA, assign a managed identity and reference Key Vault secrets; Spring Cloud Azure integration. [Azure Key Vault overview](https://learn.microsoft.com/en-us/azure/key-vault/general/overview), [AKS: Workload identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview), [Spring Cloud Azure docs](https://learn.microsoft.com/en-us/azure/developer/java/spring-framework/).
-- 🛠️ **Do:** Store DB, Redis and Event Hubs credentials in Key Vault; give each service an identity with `get` permission only on its own secrets; wire secrets into the apps via Key Vault references (ACA) or Workload ID + Spring Cloud Azure (AKS). Grep the repo and image env for secrets. Done when: services start in Azure with zero secrets in Git, images or plain env vars.
+### Wednesday 31 Mar · 60 min — Services, cluster DNS, namespaces, port-forward
+- 📚 **Learn:** Service types (ClusterIP, NodePort, LoadBalancer, headless) and endpoints; how kube-proxy routes; DNS names `<svc>.<ns>.svc.cluster.local`; namespaces for isolation; `kubectl port-forward` for local testing. Read: [Kubernetes: Service](https://kubernetes.io/docs/concepts/services-networking/service/). Optional: [Kubernetes: kubectl quick reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/).
+- 🛠️ **Do:** Create namespace `ticketverse`; deploy catalog-service with a ClusterIP Service; run a temporary curl pod and call it by short and full DNS name; port-forward to call it from your laptop; scale to 3 and watch endpoints change. Done when: calls succeed by DNS and `kubectl get endpointslices` shows 3 pod IPs.
 
-### Thursday 01 Apr · 60 min — Deploy all services, public HTTPS entry, CI deploy via OIDC
-- 📚 **Learn:** ACA: one container app per service, internal vs external ingress, revisions and traffic split. AKS: Helm chart with Azure values, a Gateway API implementation for public traffic, ACR pull via managed identity. Deploy from GitHub Actions using the OIDC login you set up in W22. [Azure Container Apps: Java overview](https://learn.microsoft.com/en-us/azure/container-apps/java-overview), [AKS: Deploy a cluster with Azure CLI](https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli), [GitHub Docs: OIDC in Azure](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure).
-- 🛠️ **Do:** Deploy gateway (public HTTPS), catalog, booking, payment-mock, notification and Keycloak (internal where possible); add a `deploy-azure` job to `cd.yml` gated by a `production` environment approval. Run the smoke script against the public URL. Done when: the saga passes over HTTPS on the Azure URL and a redeploy happens from GitHub Actions without any stored Azure secret.
+### Thursday 01 Apr · 60 min — ConfigMaps, Secrets and probes with Spring Boot health groups
+- 📚 **Learn:** ConfigMaps and Secrets as env vars or files (Secrets are base64, not encrypted by default); startup, liveness and readiness probes and their failure behaviour; Spring Boot liveness/readiness health groups and graceful startup. Read: [Kubernetes: Configure probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/). Optional: [Kubernetes: ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/).
+- 🛠️ **Do:** Move catalog-service settings into a ConfigMap and DB credentials into a Secret; add startup, liveness and readiness probes using `/actuator/health/liveness` and `/readiness`; break the DB password and observe readiness failing (no traffic) while liveness stays healthy. Done when: you can explain why a DB outage should fail readiness, not liveness.
 
-### Friday 02 Apr · 60 min — Application Insights via OpenTelemetry, KQL, cost guardrails, teardown
-- 📚 **Learn:** Azure Monitor OpenTelemetry for Java (Application Insights agent or Spring Boot integration): application map, end-to-end transactions, failures; basic KQL over requests/dependencies/traces; cost guardrails: smallest SKUs, scale-to-zero/min replicas, stop dev database at night, delete-by-resource-group teardown. [Enable OpenTelemetry in Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=java), [App Insights for Spring Boot](https://learn.microsoft.com/en-us/azure/azure-monitor/app/java-spring-boot), [AKS cost best practices](https://learn.microsoft.com/en-us/azure/aks/best-practices-cost).
-- 🛠️ **Do:** Connect all services to Application Insights; find one booking's end-to-end transaction and the application map; write 3 saved KQL queries (p95 by operation, failed dependencies, bookings per hour from custom metrics); write `infra/teardown.sh` that deletes the resource group and verifies it is gone. Done when: queries are in `docs/kql.md` and teardown is tested on a throwaway resource group.
+### Friday 02 Apr · 60 min — Requests and limits, QoS classes, OOMKilled, JVM sizing in pods
+- 📚 **Learn:** CPU/memory requests (scheduling) vs limits (enforcement); CPU throttling vs memory OOMKill; QoS classes (Guaranteed, Burstable, BestEffort); sizing the JVM heap with `MaxRAMPercentage` inside limits (W11 rules); ResourceQuota/LimitRange awareness. Read: [Kubernetes: Resource management](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/). Optional: [Kubernetes: Debug pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/).
+- 🛠️ **Do:** Set requests/limits for catalog-service, read its QoS class, then lower the memory limit until the pod is OOMKilled and read the reason in `kubectl describe`; fix with a sane limit and `-XX:MaxRAMPercentage=75`; watch CPU throttling under a quick load loop. Done when: `docs/k8s-sizing.md` records the limits you chose and why.
 
-### Saturday 03 Apr · 60 min — BOSS BATTLE: Live TicketVerse demo URL and verified teardown
-- 📚 **Learn:** Rules: 60 minutes; scripts and pipeline only (no portal click-ops except viewing); evidence or it did not happen. Checklist: deploy or verify the deployment, run both saga paths on the public URL, show Application Insights traces and the cost-to-date, record a 5-minute demo video, then tear everything down. [Azure Container Apps docs](https://learn.microsoft.com/en-us/azure/container-apps/), [Azure CLI docs](https://learn.microsoft.com/en-us/cli/azure/).
-- 🛠️ **Do:** Run `deploy.sh` (or the CD workflow), wait for health, run the smoke script against the live URL, capture an Application Insights end-to-end trace and the cost analysis view, record the demo, then run `teardown.sh` and show the resource group no longer exists. Done when: all steps complete within 60 minutes, `v5.0.0` is tagged, the video and screenshots are linked in the README, and the bill stays within budget.
+### Saturday 03 Apr · 60 min — BUILD: Catalog and booking services on local Kubernetes
+- 📚 **Learn:** Plain manifests per service: Deployment, Service, ConfigMap, Secret, probes, resources; Postgres as a simple Deployment + PVC for now (StatefulSet next week); booking calls catalog through Service DNS. Read: [Kubernetes: Learn Kubernetes basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/). Optional: [Spring Guide: Spring Boot on Kubernetes](https://spring.io/guides/gs/spring-boot-kubernetes/).
+- 🛠️ **Do:** In `k8s/`, write manifests for Postgres, catalog-service and booking-service (+ Redis); apply them to namespace `ticketverse`; port-forward booking-service and run the hold-and-book smoke test; perform a rolling update and a rollback of booking-service during traffic. Done when: all pods are Ready, the smoke test passes, and the update causes zero failed requests.
 
 ## 📦 Deliverable (by Saturday night)
-`infra/` scripts (deploy + teardown), ADR-003, TicketVerse running on Azure (managed PostgreSQL, Managed Redis, Event Hubs Kafka, Key Vault + identities, App Insights) deployed via OIDC pipeline; demo video; verified teardown.
+`k8s/` manifests for catalog, booking, Redis and Postgres with ConfigMaps, Secrets, probes and resources; rollout/rollback demo; sizing notes; the kind (or Codespace) cluster workflow in the README.
 
 ## ✅ Self-check (Sunday test preview)
-- AKS vs Azure Container Apps: which did you choose for TicketVerse and why?
-- How does Workload ID (or managed identity) remove secrets from your deployment?
-- What changes when Spring Kafka talks to the Event Hubs Kafka endpoint?
-- How did you keep the Azure bill under control, and how do you verify teardown?
-- Which Application Insights views or KQL queries help you debug a slow booking?
-- Public vs internal ingress: which services should be reachable from the internet?
-- What would you change to make this deployment production-grade (HA, backups, private networking)?
+- What do the API server, etcd, scheduler and controller manager each do?
+- Pod vs ReplicaSet vs Deployment: why not create pods directly?
+- ClusterIP vs NodePort vs LoadBalancer: when do you use each?
+- Liveness vs readiness vs startup probes: what happens when each fails?
+- Requests vs limits; what happens when a container exceeds its memory limit vs its CPU limit?
+- Are Kubernetes Secrets encrypted? How would you protect them properly?
+- How does a rolling update avoid downtime, and how do you roll back?
 
 ## 🚀 Stretch (optional)
-Convert `deploy.sh` to Bicep modules and run a what-if deployment before applying ([Bicep overview](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview)).
+Repeat Monday on the [Killercoda Kubernetes playground](https://killercoda.com/playgrounds/scenario/kubernetes) without notes to test your recall.

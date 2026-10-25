@@ -1,49 +1,49 @@
-# ☕ Java Backend · Week 17 — Kafka fundamentals: partitions, groups, delivery semantics
+# ☕ Java Backend · Week 17 — Microservices: DDD boundaries, gateway, service calls
 
 > 📅 **Mon 15 Feb 2027 → Sun 21 Feb 2027** · Season 4 — Distributed Kingdom  
 > ⏱️ Slots: Mon–Fri · 60 min (Block B) + Sat 60 min BUILD · Sunday test: 30 min
 
-[← Week 16](Week-16.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-17.md) · [Week 18 →](Week-18.md)
+[← Week 16](Week-16.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-17.md) · [Week 18 →](Week-18.md)
 
-**Why this week:** Kafka is the default event backbone in Indian product companies; interviews probe partitions and ordering, consumer groups and rebalancing, acks/ISR and exactly-once.
+**Why this week:** Interviewers test judgement: when to split, how to draw boundaries and how services talk. This week you design the split and put a gateway in front of the monolith; next week you extract the services one by one.
 
 ## 🗓️ Sessions
 
-### Monday 15 Feb · 60 min — Kafka architecture: brokers, topics, partitions, replication, ISR, KRaft
-- 📚 **Learn:** Append-only log, topics and partitions, offsets, segments; brokers, leaders and followers, replication factor, ISR and `min.insync.replicas`; KRaft controllers (ZooKeeper removed in 4.0); retention by time/size. [Confluent: Kafka 101 partitions](https://developer.confluent.io/courses/apache-kafka/partitions/), [Kafka 4.3: Introduction](https://kafka.apache.org/43/getting-started/introduction/), [Confluent: Kafka 101 (video playlist)](https://www.youtube.com/playlist?list=PLa7VYi0yPIH0KbnJQcMv5N9iW8HkZHztH).
-- 🛠️ **Do:** Run Kafka 4.3 in Docker (`apache/kafka`, single-node KRaft); create `bookings` with 3 partitions; produce and consume with the CLI scripts (with and without keys); run `--describe` on the topic and on a consumer group; sketch broker/partition/leader/ISR on paper. Done when: you can explain every column of the describe output.
+### Monday 15 Feb · 60 min — Monolith vs microservices trade-offs; DDD bounded contexts and aggregates
+- 📚 **Learn:** Benefits (independent deploy/scale, team autonomy) vs costs (network failures, distributed data, ops); monolith-first and the modular monolith; DDD: ubiquitous language, bounded contexts, aggregates as consistency boundaries, context maps. Read: [Martin Fowler: Microservice trade-offs](https://martinfowler.com/articles/microservice-trade-offs.html). Optional: [Martin Fowler: Bounded context](https://martinfowler.com/bliki/BoundedContext.html).
+- 🛠️ **Do:** Write `docs/adr/ADR-001-split-into-services.md` (context, options, decision, consequences) and a Mermaid context map: Catalog, Booking, Payment, Notification, Identity (Keycloak). Name each aggregate and its invariant (e.g., a Booking's seats belong to one show). Reorganize the monolith's packages by context (`catalog`, `booking`, ...). Done when: the ADR and map are committed and every class lives in exactly one context package.
 
-### Tuesday 16 Feb · 60 min — Producers: acks, idempotence, retries, batching, keys and ordering
-- 📚 **Learn:** `acks=0/1/all`; idempotent producer (default on) and `max.in.flight.requests.per.connection`; retries and `delivery.timeout.ms`; batching with `linger.ms`/`batch.size`; compression; key -> partition (murmur2) gives per-key ordering; async send callbacks. [Confluent: Kafka producers](https://developer.confluent.io/courses/apache-kafka/producers/), [Kafka 4.3: Producer configs](https://kafka.apache.org/43/configuration/producer-configs/), [Confluent: Kafka and Java getting started](https://developer.confluent.io/get-started/java/).
-- 🛠️ **Do:** Write a plain-Java producer (kafka-clients 4.x) that sends 10,000 `BookingEvent` JSON strings keyed by showId, logging partition/offset in the callback for a few; compare throughput for `linger.ms=0` vs `20` and `compression.type=none` vs `lz4`. Done when: a results table is committed and all events for one key landed in one partition, in order.
+### Tuesday 16 Feb · 60 min — Decomposition, database-per-service, sync vs async, strangler fig
+- 📚 **Learn:** Decompose by subdomain/business capability; database-per-service and why shared databases couple teams; duplicating read data (booking keeps show/seat snapshots); sync REST for queries vs async events for state changes; API composition; the strangler fig: put a facade in front and move features out one at a time. Read: [microservices.io: Database per service](https://microservices.io/patterns/data/database-per-service.html). Optional: [Martin Fowler: Strangler fig application](https://martinfowler.com/bliki/StranglerFigApplication.html).
+- 🛠️ **Do:** Write `docs/split-plan.md`: a table giving every table one owning service (catalog, booking, payment, notification), the snapshot fields booking copies from catalog, each cross-context interaction marked sync or async with a reason, and the 3 extraction steps for W18 (catalog; booking + common; payment and notification). Done when: no table has two owners and every cross-context call in the code is listed.
 
-### Wednesday 17 Feb · 60 min — Consumers: groups, offsets, commits, rebalancing, new group protocol
-- 📚 **Learn:** Consumer groups and partition assignment; poll loop and `max.poll.interval.ms`; `auto.offset.reset`; auto vs manual commits (sync/async) and their duplicate/loss trade-offs; rebalancing (eager vs cooperative); Kafka 4.x next-generation protocol KIP-848 (`group.protocol=consumer`). [Confluent: Kafka consumers](https://developer.confluent.io/courses/apache-kafka/consumers/), [Kafka 4.3: Consumer rebalance protocol](https://kafka.apache.org/43/operations/consumer-rebalance-protocol/), [Confluent: Consumer group protocol](https://developer.confluent.io/courses/architecture/consumer-group-protocol/).
-- 🛠️ **Do:** Write a plain-Java consumer with manual commit after processing; run 3 instances in one group, observe assignments, kill one and time the rebalance; repeat with `group.protocol=consumer`; add a 4th instance and see it idle. Done when: notes record assignments before/after each change and which messages were reprocessed.
+### Wednesday 17 Feb · 60 min — Spring Cloud Gateway in front of the monolith: routes, filters
+- 📚 **Learn:** API gateway responsibilities (routing, auth at the edge, rate limiting, CORS, request IDs) vs BFF; Spring Cloud Gateway Server Web MVC (blocking, fits your MVC stack) vs the WebFlux variant; routes, predicates and filters; validate the JWT at the edge and pass it downstream. Use the Spring Cloud 2025.1.x BOM, which matches Boot 4.1.x. Read: [Spring Cloud Gateway: Server Web MVC](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webmvc.html). Optional: [microservices.io: API gateway](https://microservices.io/patterns/apigateway.html).
+- 🛠️ **Do:** Create a separate Boot app `gateway/` (its own POM for now; W18 makes the repo multi-module) routing `/api/**` to the monolith, so public URLs never change during the split; add a filter that sets `X-Request-Id` when missing and log it via MDC in the monolith (W12); validate the JWT at the gateway and keep resource-server checks in the app (defense in depth). Done when: all smoke calls work through the gateway port only and the same request id appears in both logs.
 
-### Thursday 18 Feb · 60 min — Delivery semantics, transactions, retention vs compaction, share groups
-- 📚 **Learn:** At-most/at-least/exactly-once; transactional producer + `read_committed` (EOS covers Kafka-to-Kafka; database side effects need idempotency or an outbox); delete vs compact cleanup, tombstones; share groups (queues for Kafka) became production-ready in Kafka 4.2. [Confluent: Kafka transactions](https://developer.confluent.io/courses/architecture/transactions/), [Kafka 4.3: Topic configs](https://kafka.apache.org/43/configuration/topic-configs/), [Kafka 4.2 release notes blog](https://kafka.apache.org/blog/2026/02/17/apache-kafka-4.2.0-release-announcement/).
-- 🛠️ **Do:** Write a transactional producer that writes `booking-confirmed` and `seat-status` atomically, abort every 3rd transaction, and compare `read_committed` vs `read_uncommitted` consumers. Create a compacted `seat-status` topic with small `segment.ms`, write 5 updates per key plus one tombstone, and observe what remains. Done when: the aborted records are invisible to `read_committed` and compaction keeps the latest value per key.
+### Thursday 18 Feb · 60 min — Service discovery and configuration: Kubernetes DNS vs Eureka
+- 📚 **Learn:** Client-side discovery (Eureka + load-balanced clients) vs server-side discovery (Kubernetes Services/DNS, which TicketVerse will use); externalized configuration via env vars, profiles and config trees; 12-factor config; health endpoints as readiness signals. Read: [Spring Boot: Externalized configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html). Optional: [microservices.io: Server-side discovery](https://microservices.io/patterns/server-side-discovery.html).
+- 🛠️ **Do:** Move every URL, credential and tunable into env vars with safe local defaults; in compose, services find each other by service name (DNS); add liveness/readiness health groups; write a 10-line comparison of Eureka vs Kubernetes DNS for TicketVerse in `docs/adr/ADR-002-discovery.md`. Done when: no hard-coded host or password remains (grep proves it).
 
-### Friday 19 Feb · 60 min — Event design, schemas and evolution, consumer lag, partition sizing
-- 📚 **Learn:** Event naming and envelopes (eventId, type, version, occurredAt, key); JSON vs Avro/Protobuf; Schema Registry compatibility modes (backward/forward/full); consumer lag monitoring; choosing partition counts (throughput, ordering key, consumer parallelism); retention planning. [Confluent: Schema Registry concepts](https://developer.confluent.io/courses/schema-registry/key-concepts/), [Kafka 4.3: Basic operations](https://kafka.apache.org/43/operations/basic-kafka-operations/), [Engineering Digest: Kafka playlist (Hindi)](https://www.youtube.com/playlist?list=PLA3GkZPtsafbAjKYkhWnD6GdhRtm6JrD1).
-- 🛠️ **Do:** Write `docs/events.md` defining 6 TicketVerse events (BookingRequested, SeatsHeld, PaymentSucceeded, PaymentFailed, BookingConfirmed, BookingCancelled) with key, envelope fields and versioning rules; evolve one event backward-compatibly. Slow your consumer and watch lag grow with `kafka-consumer-groups.sh --describe`. Done when: the doc justifies each key and partition count, and lag numbers are recorded.
+### Friday 19 Feb · 60 min — Inter-service calls: HTTP interface clients, timeouts, OpenFeign awareness
+- 📚 **Learn:** `@HttpExchange` service clients on `RestClient`; connect/read timeouts on every call; mapping remote errors to your own exceptions; testing with `MockRestServiceServer`; OpenFeign is feature-complete, so new code prefers HTTP service clients; service-to-service tokens arrive in W18. Read: [Spring: REST clients](https://docs.spring.io/spring-framework/reference/integration/rest-clients.html) (HTTP service client section). Optional: [Baeldung: HTTP interface in Spring](https://www.baeldung.com/spring-6-http-interface).
+- 🛠️ **Do:** Inside the monolith, make booking read show data only through a `CatalogClient` `@HttpExchange` interface (`getShow`, `getSeats`) on `RestClient` with 2 s timeouts, calling the catalog API over HTTP even though it is the same app; map 404 to `ShowNotFoundException`. Test with `MockRestServiceServer`: 200, 404, and a timeout (`withException(new SocketTimeoutException())`). Done when: the 3 client tests pass and booking code no longer imports catalog repositories.
 
-### Saturday 20 Feb · 60 min — BUILD: Ordering and consumer-group experiments lab
-- 📚 **Learn:** Experiment method: hypothesis -> setup -> run -> observe -> conclusion. Focus: per-key ordering, effect of no key, group scaling, duplicates during rebalancing with late commits, idempotence on/off. [Kafka 4.3: Design](https://kafka.apache.org/43/design/design/), [Baeldung: Exactly-once processing in Kafka](https://www.baeldung.com/kafka-exactly-once).
-- 🛠️ **Do:** Run 5 experiments with your plain-Java clients: (1) keyed ordering per partition, (2) unkeyed spread, (3) scale consumers 1 -> 3 -> 4, (4) kill a consumer before commit and count duplicates, (5) consumer that commits before processing loses messages on crash. Write `kafka-lab/LAB_REPORT.md` with evidence. Done when: each experiment has a hypothesis, output snippet and a one-line lesson.
+### Saturday 20 Feb · 60 min — BUILD: Strangler-ready monolith behind the gateway
+- 📚 **Learn:** A modular monolith is one deployable with a package per bounded context, cross-context calls only through clients or events, and each context owning its tables; that makes next week's extraction a move, not a rewrite. Images: jar built on the host + `COPY` into `eclipse-temurin:25-jre` (W11). Read: [Martin Fowler: Monolith first](https://martinfowler.com/bliki/MonolithFirst.html). Optional: [Spring Modulith reference](https://docs.spring.io/spring-modulith/reference/).
+- 🛠️ **Do:** Update `compose.yaml`: Postgres, Redis, Keycloak, the monolith and the gateway (images built W11-style); write `scripts/smoke.ps1` (or `.sh`) that gets a token, lists shows via the gateway, holds and books seats; update the README container diagram. Done when: `docker compose up` followed by the smoke script passes from a clean state and nothing reaches the monolith except through the gateway.
 
 ## 📦 Deliverable (by Saturday night)
-`kafka-lab` module: plain-Java producer/consumer clients, throughput table, rebalance notes (classic vs KIP-848), transactions + compaction demos, event catalog doc, 5-experiment lab report.
+ADR-001/002, context map and `docs/split-plan.md`; Spring Cloud Gateway (MVC) in front of the modular monolith with request ids and edge JWT checks; env-based config + health groups; `CatalogClient` HTTP interface with timeouts and tests; compose stack + smoke script.
 
 ## ✅ Self-check (Sunday test preview)
-- How does Kafka guarantee ordering, and what breaks it?
-- Explain acks=all together with min.insync.replicas=2 and replication factor 3.
-- What does the idempotent producer prevent?
-- Auto vs manual offset commits: where can you lose or duplicate messages?
-- What triggers a rebalance, and what does the new KIP-848 protocol improve?
-- Is exactly-once possible when a consumer writes to PostgreSQL? How do you get effectively-once?
-- Retention vs log compaction: when do you use each? What is a tombstone?
+- When would you NOT split a monolith into microservices?
+- What is a bounded context, and how did you draw TicketVerse's boundaries?
+- Why database-per-service, and how do you query data owned by another service?
+- What does an API gateway do, and what should it NOT do?
+- What is the strangler fig pattern, and why put the gateway in front of the monolith first?
+- Client-side vs server-side discovery: which does Kubernetes give you?
+- Why must every remote call have a timeout? What happens without one?
 
 ## 🚀 Stretch (optional)
-Try a share group with the Kafka 4.x console share consumer and compare it with a classic consumer group on one partition.
+Watch one video from [Java Brains: Microservices Level 1](https://www.youtube.com/playlist?list=PLqq-6Pq4lTTZSKAFG6aCDVDP86Qx4lNas) and note what has changed since the Eureka/Hystrix era. Extra: run Spring Modulith's `ApplicationModules.of(App.class).verify()` on the monolith and compare its findings with your split plan.

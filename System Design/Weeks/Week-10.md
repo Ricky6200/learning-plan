@@ -1,40 +1,41 @@
-# 🏗️ System Design · Week 10 — BookMyShow LLD and rate limiting
+# 🏗️ System Design · Week 10 — LLD under time pressure: mock + file system
 
 > 📅 **Mon 28 Dec 2026 → Sun 03 Jan 2027** · Season 3 — Spring Citadel  
 > ⏱️ Slots: Mon, Wed, Thu · 45 min + Sat 45 min PRACTICE · Sunday test: 30 min
 
-[← Week 09](Week-09.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-10.md) · [Week 11 →](Week-11.md)
+[← Week 09](Week-09.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-10.md) · [Week 11 →](Week-11.md)
 
-**Why this week:** Seat booking under concurrency is the heart of TicketVerse (Java W13 builds it for real on Postgres/Redis), and rate limiters are a top HLD and machine-coding question.
+**Why this week:** Machine-coding rounds are 90-minute marathons: this week turns Java W8-W9 concurrency into LLD habits and runs your first full-length unseen mock while Season 2 is fresh. New Year's Day is Friday 1 Jan - SD has no Friday session, so the week runs as normal.
 
 ## 🗓️ Sessions
 
-### Monday 28 Dec · 45 min — Rate limiting algorithms and distributed rate limiting
-- 📚 **Learn:** Why and where (client, gateway, service); token bucket (allows bursts), leaky bucket (smooth outflow), fixed window (boundary spikes), sliding-window log (exact, memory-heavy), sliding-window counter (approximate); HTTP 429 + `Retry-After`; Redis counters + Lua for atomicity; per-user vs per-IP keys. Watch [Rate limiter system design (ByteByteGo)](https://www.youtube.com/watch?v=YXkOdWBwqaA); read [Scaling your API with rate limiters (Stripe)](https://stripe.com/blog/rate-limiters).
-- 🛠️ **Do:** In `notes/12-rate-limiting.md` build a 5-algorithm table (burst behaviour, memory per key, accuracy, typical use) and choose an algorithm for: OTP login, public API free/pro tiers, payment webhooks, seat-hold endpoint during a blockbuster release. Hand-trace a token bucket (capacity 10, refill 5/s, bursts at t = 0, 0.5, 1.0 s). Done when: the hand trace is written as expected values you will assert on Saturday.
+### Monday 28 Dec · 45 min — Concurrency for LLD: lock per aggregate, lock ordering, queues
+- 📚 **Learn:** LLD concurrency checklist: find the shared mutable state; guard each aggregate (one floor, one show) with its own lock instead of one global lock; take several locks in a fixed order (sorted ids) to avoid deadlock; use `ConcurrentHashMap.compute/merge/putIfAbsent` for atomic check-then-act; hand work between threads with a `BlockingQueue` (producer-consumer, Java W8). Read [Concurrency in LLD (Hello Interview)](https://www.hellointerview.com/learn/low-level-design/concurrency/intro). Optional: [Concurrency in LLD interviews (Hello Interview, 23 min)](https://www.youtube.com/watch?v=d8rmosXttTE).
+- 🛠️ **Do:** Multi-gate Parking Lot: make your W7 `park()`/`unpark()` safe when 4 entry gates call them at once - one lock per `Floor`, and `ConcurrentHashMap.remove(ticketId)` for unpark. Race test: 4 gate threads park 200 cars into 100 spots, started together by a `CountDownLatch`. Done when: exactly 100 cars park, no spot holds two cars, the test passes 10 runs in a row, and `lld/parkinglot/CONCURRENCY.md` names the lock that guards each piece of state.
 
-### Wednesday 30 Dec · 45 min — BookMyShow LLD: entities, seat-hold flow, locking choices
-- 📚 **Learn:** Entities: `City`, `Cinema`, `Screen`, `Seat`, `Show`, `ShowSeat` (AVAILABLE/HELD/BOOKED), `Booking`, `Payment`. Flow: search -> select -> hold with TTL -> pay -> confirm or release. Locking options: per-show lock, optimistic version check, DB `SELECT ... FOR UPDATE`, Redis `SET NX PX`. Hindi: [BookMyShow LLD](https://www.youtube.com/watch?v=wCyzvDn3Pp8) and [Optimistic vs pessimistic locking](https://www.youtube.com/watch?v=D3XhDu--uoI) (Concept && Coding); reference: [Movie ticket booking problem](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/movie-ticket-booking-system.md).
-- 🛠️ **Do:** Write `lld/bookmyshow/DESIGN.md`: requirements, class diagram, a sequence diagram for hold -> pay -> confirm/expire, and a 5-line ADR choosing your in-memory locking approach plus what TicketVerse will use in Postgres/Redis (Java W13). Done when: the ADR names the race you prevent and explains how expiry releases seats.
+### Wednesday 30 Dec · 45 min — Unseen mock part 1: car rental CLI (minutes 0-45)
+- 📚 **Learn:** Mock rules: one 90-minute mock split over today and Thursday, no references, the playbook clock from `LLD_MACHINE_CODING_FRAMEWORK.md` (0-10 clarify, 10-30 entities + class diagram, 30-45 start the core). Input arrives as commands on standard input: read line by line with `BufferedReader` or `Scanner` (Java W1 Sat) and split on spaces. Read only after Thursday: [Car rental problem (awesome-low-level-design)](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/car-rental-system.md).
+- 🛠️ **Do:** Problem: a car-rental CLI. Commands: `ADD_BRANCH <id> <city>`, `ADD_CAR <branch> <carId> <type> <pricePerDay>`, `SEARCH <city> <type> <fromDay> <toDay>` (cheapest first), `BOOK <user> <carId> <fromDay> <toDay>`, `CANCEL <bookingId>`, `RETURN <bookingId> <day>` (late days cost 1.5x). Today: assumptions in `lld/mock-w10/DESIGN.md`, class diagram, model classes and a command parser dispatching to a `RentalService`. Done when: the design is committed and `ADD_BRANCH`/`ADD_CAR` work end to end from a sample input file.
 
-### Thursday 31 Dec · 45 min — BookMyShow core: thread-safe seat holds with TTL
-- 📚 **Learn:** `ConcurrentHashMap.compute` vs an explicit `ReentrantLock` per show; all-or-nothing multi-seat holds (lock in a fixed order to avoid deadlock); lazy expiry with an injected `Clock`; testing races with `ExecutorService` + `CountDownLatch`. Read [Concurrency in LLD (Hello Interview)](https://www.hellointerview.com/learn/low-level-design/concurrency/intro) and the [ConcurrentHashMap docs](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ConcurrentHashMap.html).
-- 🛠️ **Do:** Implement `SeatHoldService`: `hold(showId, seatIds, userId)` (all-or-nothing, returns `holdId`), `confirm(holdId)`, `release(holdId)`, expiry after 5 minutes via `Clock`. Tests: 100 threads race for the same 2 seats -> exactly 1 wins; an expired hold frees its seats; confirm after expiry fails. Done when: the race test passes 20 runs in a row (`@RepeatedTest(20)`).
+### Thursday 31 Dec · 45 min — Unseen mock part 2: car rental (minutes 45-90) + scoring
+- 📚 **Learn:** Second half of the clock: 45-70 core rules (overlap check `from <= otherTo && otherFrom <= to`, cheapest-first search with a `Comparator`, late fee), 70-80 tests or a scripted input file, 80-90 refactor + README of assumptions. Score yourself 0-3 on requirements, model, patterns, working code, tests, extensibility, communication. Afterwards compare your flow with [Delivery (Hello Interview LLD)](https://www.hellointerview.com/learn/low-level-design/in-a-hurry/delivery).
+- 🛠️ **Do:** Finish `SEARCH`, `BOOK`, `CANCEL` and `RETURN`, then run a 12-line input file that books, rejects an overlapping booking, cancels and returns late; afterwards read the awesome-low-level-design write-up and note 3 gaps. Done when: the output matches your expected output, the 7-line scorecard is in `mocks/W10-lld.md`, and 2 extension answers (new car type, weekend pricing) are written.
 
-### Saturday 02 Jan · 45 min — PRACTICE: Token-bucket and sliding-window limiters in Java
-- 📚 **Learn:** Lazy refill math (`tokens = min(capacity, tokens + elapsed x rate)`), per-key buckets in a `ConcurrentHashMap`, a fake clock for deterministic tests. Compare afterwards with [rate limiting code (awesome-system-design-resources)](https://github.com/ashishps1/awesome-system-design-resources/tree/main/implementations/java/rate_limiting); LLD angle: [Rate limiter LLD (Gaurav Sen)](https://www.youtube.com/watch?v=Eg5uH5sU3zw).
-- 🛠️ **Do:** Create `labs/ratelimiter`: interface `RateLimiter.tryAcquire(key)`, `TokenBucketLimiter` (capacity, refill per second) and `SlidingWindowLogLimiter` (limit per window, `Deque<Long>` per key). Done when: >= 6 tests pass: burst up to capacity, refill after time, window boundary, per-key isolation, Monday's hand trace, and 50 threads never over-admit.
+### Saturday 02 Jan · 45 min — PRACTICE: In-memory file system (Composite + path parsing)
+- 📚 **Learn:** Composite again (W4 Thu): an `Entry` with `Directory` and `File`; a directory keeps children in a `TreeMap<String, Entry>` so listings are sorted. Path parsing: split on `/`, skip empty parts, walk from the root; `mkdir` creates missing parents. Read 'Requirements' and 'Class Design' in [File system (Hello Interview LLD)](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/file-system). Optional: [File system with Composite (Concept && Coding, Hindi, 22 min)](https://www.youtube.com/watch?v=FLkCkUY7Wu0).
+- 🛠️ **Do:** 25-min timer: `FileSystem` with `mkdir(path)` (creates parents), `ls(path)` (sorted names; a file path lists just that file), `addContent(path, text)` (creates or appends) and `read(path)`. Done when: tests pass for nested `mkdir`, `ls` on root/directory/file, append twice then read, and a missing path throwing a clear exception; move/rename and size totals go to the stretch.
 
 ## 📦 Deliverable (by Saturday night)
-`notes/12-rate-limiting.md`, `lld/bookmyshow` (design + thread-safe seat holds) and `labs/ratelimiter` with >= 6 green tests.
+`lld/parkinglot/CONCURRENCY.md` + the multi-gate race test, the car-rental mock (`lld/mock-w10/`, input file, scorecard in `mocks/W10-lld.md`) and `lld/filesystem` with passing tests.
 
 ## ✅ Self-check (Sunday test preview)
-- Token bucket vs leaky bucket: how does each treat bursts?
-- Why is a fixed-window counter unfair at window boundaries?
-- How would you rate-limit across 20 API servers? What does Redis + Lua solve?
-- BookMyShow: how do you stop two users from booking the same seat?
-- Optimistic vs pessimistic locking for seat booking: when would you use each?
-- How are expired seat holds released, and what if the releasing process crashes?
+- How do you choose lock granularity in an LLD problem (one global lock vs one per aggregate)?
+- Two threads need locks on seats 5 and 9. How do you avoid deadlock?
+- Which `ConcurrentHashMap` methods give atomic check-then-act, and why is `containsKey` + `put` unsafe?
+- Where would a `BlockingQueue` (producer-consumer) appear in a machine-coding solution?
+- In your car-rental mock, how do you detect overlapping bookings?
+- What did you spend too long on in the 90-minute mock, and what will you cut next time?
+- How does Composite keep `ls` uniform for files and directories?
 
 ## 🚀 Stretch (optional)
-Redis version: token bucket as a Lua script called via Jedis or Lettuce against Docker `redis:8`, tested with Testcontainers.
+Add `move`/`rename` and `size(path)` to the file system and a weekend-pricing strategy to car rental. Read [Concurrency: correctness (Hello Interview LLD)](https://www.hellointerview.com/learn/low-level-design/concurrency/correctness) and classify each bug you fixed in the parking lot as check-then-act or read-modify-write. From W11 on, inject `java.time.Clock` (Java W7 Thu) instead of your own `TimeSource`: `Clock.fixed` and `Clock.offset` make expiry tests deterministic ([Clock docs](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Clock.html)).

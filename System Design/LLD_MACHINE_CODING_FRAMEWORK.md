@@ -18,7 +18,7 @@ Machine-coding rounds (common at Indian product companies such as Flipkart, Swig
 | 70–80 | **Tests / demo** | 5–8 JUnit tests or a driver showing every requirement; one race test if state is shared | Deterministic time via injected `Clock` |
 | 80–90 | **Refactor & explain** | Rename, extract, remove duplication; README of assumptions and extension points | Prepare 2–3 "how I'd extend" answers |
 
-### 45-minute compressed version (used in this plan's sessions and boss battles)
+### 45-minute compressed version (boss battles W9 and W15, the W27 LLD mock)
 
 | Clock | Phase |
 |---|---|
@@ -27,6 +27,20 @@ Machine-coding rounds (common at Indian product companies such as Flipkart, Swig
 | 12–35 | Core code for the happy path + the most important rule |
 | 35–42 | 4–6 tests (happy path, 2 edge cases, invalid input, race if relevant) |
 | 42–45 | Commit + note what you'd add next |
+
+### 25-minute core sprint (regular practice sessions)
+
+| Clock | Phase |
+|---|---|
+| Learn block (≤ 15 min) | Read the requirements / reference class design named in the session; sketch your classes on paper |
+| 0–20 | Code the core path + the most important rule (the session's `Done when:` line) |
+| 20–25 | 3–5 tests that prove the `Done when:` line; commit |
+
+Everything else (payments, extra pieces, async variants) becomes an **extension question** in the week's stretch.
+
+### Full 90-minute unseen mocks (split across two sessions)
+
+**W10** car rental with command-line input (Wed = minutes 0–45, Thu = 45–90) · **W28** hotel booking, API-style (Mon + Wed) and digital wallet with command-line input (Thu + Sat). Stop exactly at minute 45, write a 3-line "next steps" note, resume from it in the next session, then score yourself with Section 8 and log it in `mocks/`.
 
 ---
 
@@ -84,6 +98,26 @@ public final class ParkingService {
 
 `pom.xml` essentials (versions as of Oct 2026): JDK **25** (`<maven.compiler.release>25</maven.compiler.release>`), `org.junit:junit-bom` **6.1.x** + `junit-jupiter` (test scope), `org.assertj:assertj-core` **3.27.x**, `maven-surefire-plugin` **3.5.x**.
 
+**Use a Java feature only after the Java track teaches it:** lambdas (Java W4 Fri primer, W6), `Optional` (Java W6), records and `java.time.Clock` (Java W7), threads and locks (Java W8–W9). Before those weeks, write plain final classes, return values instead of `Optional`, inject a tiny `interface TimeSource { long nowMillis(); }` instead of `Clock` (W4 boss, W7 Parking Lot) and keep katas single-threaded; switch to `Clock` from W11. The skeleton above is the "from W11" version.
+
+**Command-line input (W10 car rental, W28 digital wallet):** read lines, split on whitespace, dispatch by command name — one handler per command keeps "add a new command" to one line.
+
+```java
+Map<String, Consumer<String[]>> handlers = new HashMap<>();
+handlers.put("ADD_CAR", a -> rental.addCar(a[1], a[2], CarType.valueOf(a[3]), Long.parseLong(a[4])));
+handlers.put("BOOK", a -> System.out.println(rental.book(a[1], a[2], Integer.parseInt(a[3]), Integer.parseInt(a[4]))));
+try (BufferedReader in = new BufferedReader(new InputStreamReader(System.in))) {
+    String line;
+    while ((line = in.readLine()) != null) {
+        if (line.isBlank()) continue;
+        String[] a = line.trim().split("\\s+");
+        handlers.getOrDefault(a[0], x -> System.out.println("UNKNOWN_COMMAND " + x[0])).accept(a);
+    }
+}
+```
+
+Keep a sample input file and its expected output next to `DESIGN.md`; running it is your demo.
+
 ---
 
 ## 3. Requirement-clarification questions
@@ -120,17 +154,17 @@ Example (Parking Lot): nouns → `ParkingLot`, `Floor`, `Spot`, `Vehicle`, `Tick
 |---|---|---|
 | Algorithm/rule varies or is chosen at runtime | **Strategy** | Fees (Parking Lot), split types (Splitwise), dispatch (Elevator), pricing kata |
 | Behaviour depends on current state; illegal actions per state | **State** | Vending Machine, ATM, order lifecycle, elevator car |
-| Others must react to an event | **Observer** | Reservation available (Library), order status (Food delivery), notifications |
+| Others must react to an event | **Observer** | Checkout events (W5 kata), order status (Food delivery), notifications |
 | Request passes through ordered handlers | **Chain of Responsibility** | Logger levels/handlers, ATM cash dispenser, ticket escalation |
 | Undo/redo, queue or log actions | **Command** | Text editor, chess move history |
 | Fixed algorithm skeleton, varying steps | **Template Method** | Report exporters, notification rendering |
 | Create one of many types without `switch` | **Factory (registry map)** | Notification senders, payment processors |
 | Many optional parameters, immutable result | **Builder** | `Notification`, `Booking` requests |
 | Exactly one shared instance | **Singleton** (prefer DI; enum if needed) | Logger, ID generator |
-| Add behaviour by wrapping | **Decorator** | Retrying/rate-limited senders, I/O streams |
-| Control access (cache, lazy, auth) | **Proxy** | Caching price proxy |
-| Incompatible external API | **Adapter** | Legacy payment SDK |
-| Part–whole trees | **Composite** | File system sizes |
+| Add behaviour by wrapping | **Decorator** | `DataSource` compression/encryption (W4), logging decorator (W4 boss), retrying sender (W16) |
+| Control access (cache, lazy, auth) | **Proxy** | Lazy report proxy (W4), caching price proxy with TTL (W4 boss) |
+| Incompatible external API | **Adapter** | Legacy payment SDK (W4), FX quote SDK (W4 boss) |
+| Part–whole trees | **Composite** | File tree sizes (W4), in-memory file system (W10) |
 | Central coordinator between many objects | **Mediator** | Auction room, chat room |
 | Snapshot and restore | **Memento** | Editor checkpoints |
 
@@ -140,13 +174,15 @@ Example (Parking Lot): nouns → `ParkingLot`, `Floor`, `Spot`, `Vehicle`, `Tick
 
 ## 6. Concurrency checklist (run it for every problem with shared state)
 
+Practised first in **W9** (thread-safe LRU + TTL) and **W10 Mon** (multi-gate Parking Lot), right after Java W8–W9 teach threads, executors, locks and latches.
+
 - [ ] **List shared mutable state** (spots, seats, balances, stock, queues, counters).
 - [ ] Prefer **immutability** (records, `List.copyOf`) and **confinement** (one owner thread) where possible.
 - [ ] Use **atomic map operations** — `ConcurrentHashMap.compute/merge/putIfAbsent` — instead of check-then-act (`if (!map.containsKey(k)) map.put(k, v)` is a race).
 - [ ] For compound updates across objects, use **one lock per aggregate** (`ReentrantLock` per show/room/account) and **acquire multiple locks in a fixed order** (sorted IDs) to avoid deadlock.
 - [ ] Counters → `AtomicLong`/`LongAdder`; flags → `volatile` or atomics.
 - [ ] **Never hold a lock during slow I/O** (payment calls, sleeps) — reserve under lock, call outside, confirm under lock.
-- [ ] Time-based rules (holds, TTL, fines) use an injected **`Clock`**; expiry is checked lazily and/or by a scheduled sweeper.
+- [ ] Time-based rules (holds, TTL, fines) use an injected **`Clock`** (your own `TimeSource` interface before Java W7); expiry is checked lazily and/or by a scheduled sweeper.
 - [ ] Make operations **idempotent** where retries are possible (request IDs).
 - [ ] Executors are **shut down**; blocking queues are **bounded** (backpressure).
 - [ ] Write at least one **race test** (below) and repeat it (`@RepeatedTest(20)`).
@@ -207,34 +243,42 @@ Synthesised from common machine-coding guidelines — use it to self-score every
 
 ## 9. LLD problems in this plan
 
+22 LLD / machine-coding problems (4 of them unseen timed mocks), plus the pattern katas and labs you also practise as machine coding:
+
 | Week | Problem | Key patterns & skills | Extension question to practise |
 |---|---|---|---|
-| W1 | Bank / Library (diagram + skeleton) | UML, OOP pillars | Add a new account type |
-| W2 | `OrderManager` God-class refactor | SRP, OCP, DIP, characterization tests | Swap email for SMS without touching the service |
-| W3 | Notification factory kata | Factory registry, Builder | Add Slack in one class |
-| W4 | LRU cache with TTL (Boss) | HashMap + DLL, `ReentrantLock`, `Clock` | Switch to LFU |
+| W1 | Hotel booking (diagram + skeleton) | UML, OOP pillars | Add a new room type |
+| W2 | `OrderManager` God-class refactor (kata) | SRP, OCP, DIP, characterization tests | Swap email for SMS without touching the service |
+| W3 | Notification factory kata | Factory registry (`EnumMap`), Builder | Add Slack in one class |
+| W4 | Pattern-stacked `PriceService` (Boss) | Adapter, caching Proxy with TTL (`TimeSource`), logging Decorator | Add `invalidate(sku)` and hit/miss counters |
 | W5 | Pricing + notifications kata | Strategy, Observer | Add a new discount rule |
 | W6 | Tic-Tac-Toe | O(1) win detection, Game/Board/Player | N players, undo |
 | W6 | Snake & Ladder | Strategy (dice), queue of players | Multiple dice, crooked dice |
-| W7 | Parking Lot | Strategy (allocation, fees), Factory | Multiple gates concurrently, EV charging |
-| W7 | Vending Machine | State | New coin type, refunds |
-| W8 | Elevator | State, Strategy (LOOK/nearest car) | Add express elevators |
-| W8 | Logging framework | Chain of Responsibility, Singleton, Strategy (formatter) | Async logging |
-| W9 | Splitwise | Strategy (split types), heaps for simplify debts | Groups, currency |
-| W9 | Library management | Observer (reservations), Strategy (fines) | Multiple branches |
-| W10 | BookMyShow seat holds | Per-show locks, TTL holds, race tests | Seat hold across two screens |
-| W12 | Kafka-like pub-sub | Partitions, offsets, consumer groups, DLQ | Retention, compaction |
-| W12 | Job scheduler | `DelayQueue`, thread pool, retries with backoff | Cron expressions, priorities |
-| W13 | ATM | State, Chain of Responsibility (cash) | New denomination |
-| W13 | Meeting-room scheduler | `TreeMap` interval checks, Strategy (room choice) | Recurring meetings |
-| W14 | Chess (or Cricbuzz) | Polymorphism, Command (history) | Castling, undo |
-| W14 | Inventory / order management | Reservations with TTL, order State, no-oversell | Multi-warehouse allocation |
-| W15 | Notification system | Factory, Template Method, Decorator (retry, rate limit), bounded queue | Per-channel circuit breaker |
-| W15 | Food delivery | Order State, Strategy (assignment), Observer | Batch two orders per rider |
-| W16 | Thread-safe KV store with TTL | Atomic ops, lazy + active expiry, LRU eviction | Persistence via append-only log |
-| W25 | Unseen problem (e.g., Amazon Locker) — mock | Everything | Interviewer's choice |
+| W7 | Parking Lot | Strategy (allocation, fees), Factory, `TimeSource` | EV charging, payments |
+| W7 | Vending Machine | State | New coin type, fewest-coins change |
+| W8 | Elevator | State, Strategy (LOOK/nearest car) | Two cars splitting requests, express elevators |
+| W8 | Logging framework | Chain of Responsibility, Singleton, Strategy (formatter) | Thread-safe / async logging (stretch after Java W8) |
+| W9 | Splitwise | Strategy (split types), two heaps for simplify debts | Groups, currency |
+| W9 | Thread-safe LRU + TTL (lab) | `LinkedHashMap(accessOrder=true)` + one `ReentrantLock` + injected clock | Switch to LFU |
+| W10 | Multi-gate Parking Lot | Lock per floor, atomic `ConcurrentHashMap` ops, `CountDownLatch` race test | Exit gates, lock-free spot counters |
+| W10 | Car rental CLI — unseen 90-min mock | Command parser, overlap checks, `Comparator` | Weekend pricing, new car type |
+| W10 | In-memory file system | Composite, path parsing, sorted children | `move`/`rename`, size totals |
+| W11 | BookMyShow seat holds | Locks in sorted order, TTL holds, race tests, ADR | `release`, holds across two screens |
+| W11 | Token-bucket rate limiter (lab) | Lazy refill, per-key buckets, fake clock | Sliding-window log |
+| W13 | Kafka-like pub-sub (lab) | Partitions, offsets, consumer groups, DLQ | Retention, compaction |
+| W13 | Job scheduler | `DelayQueue`, dispatcher thread, worker pool, cancel | Fixed-rate jobs, retries with backoff |
+| W14 | ATM | State, Chain of Responsibility (₹500/200/100 notes) | Deposits, mini-statement |
+| W14 | Meeting-room scheduler | `TreeMap` interval checks, Strategy (room choice) | Recurring meetings |
+| W15 | Chess | Polymorphism (King/Rook/Knight core), Command (history) | Bishop, Queen, pawns, castling |
+| W15 | Inventory / order management | Reservations with TTL, order State, no-oversell | Multi-warehouse allocation |
+| W16 | Notification system | Factory, Template Method, Decorator (retry), DLQ | Async queue, rate-limited sender, quiet hours, circuit breaker |
+| W16 | Food delivery | Order State, Strategy (assignment), Observer | Ride sharing: drivers accept or decline offers |
+| W17 | Thread-safe KV store with TTL | Atomic ops, lazy + active expiry | LRU eviction, append-only log |
+| W27 | Unseen problem (e.g., Amazon Locker) — 45-min mock | Everything | Interviewer's choice |
+| W28 | Hotel booking — unseen 90-min mock (API-style) | Date ranges, all-or-nothing booking, race test | Dynamic pricing, room upgrades |
+| W28 | Digital wallet CLI — unseen 90-min mock | Two-wallet lock ordering, money in paise, offers | Idempotent transfers, reversals |
 
-Compare your solution afterwards with [awesome-low-level-design problems](https://github.com/ashishps1/awesome-low-level-design) and the free Hello Interview LLD breakdowns ([Connect Four](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/connect-four), [Elevator](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/elevator), [Amazon Locker](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/amazon-locker)).
+Compare your solution afterwards with [awesome-low-level-design problems](https://github.com/ashishps1/awesome-low-level-design) and the free sections of the Hello Interview LLD breakdowns ([Parking Lot](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/parking-lot), [Elevator](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/elevator), [File system](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/file-system), [Inventory management](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/inventory-management), [Connect Four](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/connect-four), [Amazon Locker](https://www.hellointerview.com/learn/low-level-design/problem-breakdowns/amazon-locker)).
 
 ---
 

@@ -1,44 +1,44 @@
-# 🤖 AI Engineering · Week 14 — Multi-Agent Systems and Framework Tour
+# 🤖 AI Engineering · Week 14 — Agents I: Tool Loops From Scratch
 
-> 📅 **Mon 25 Jan 2027 → Sun 31 Jan 2027** · Season 3 — Spring Citadel · ⚔️ **BOSS WEEK**  
+> 📅 **Mon 25 Jan 2027 → Sun 31 Jan 2027** · Season 3 — Spring Citadel  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 13](Week-13.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-14.md) · [Week 15 →](Week-15.md)
+[← Week 13](Week-13.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-14.md) · [Week 15 →](Week-15.md)
 
-**Why this week:** Interviewers ask when multi-agent designs are worth the cost and how to evaluate them. Knowing several frameworks lets you pick the right tool instead of the trendy one.
+**Why this week:** Agentic features (tools, multi-step reasoning, memory) dominate 2026 AI job descriptions. Knowing the raw loop lets you use any framework safely and debug it under pressure. (Tue 26 Jan is Republic Day: a light session.)
 
 ## 🗓️ Sessions
 
-### Monday 25 Jan · 45 min — Multi-agent patterns: supervisor, hierarchical, handoffs
-- 📚 **Learn:** Single agent + tools first; supervisor (central router), hierarchical teams, handoffs (an agent transfers control), subagents exposed as tools; costs: multiplied tokens, context sharing, error propagation. Read: [LangChain multi-agent](https://docs.langchain.com/oss/python/langchain/multi-agent) and [How we built our multi-agent research system (Anthropic)](https://www.anthropic.com/research/multi-agent-research-system).
-- 🛠️ **Do:** Design CareerPilot v1 in `multi_agent.md`: researcher (company and role research), planner (prep plan) and interviewer (mock Q&A with feedback) under a supervisor. Define each agent's tools, inputs, outputs and handoff rules, and estimate tokens per run vs single agent. Done when: the doc has a Mermaid diagram and a 'why not single-agent?' justification.
+### Monday 25 Jan · 45 min — Agent vs workflow and the augmented LLM
+- 📚 **Learn:** Workflows follow predefined code paths; agents let the LLM choose the steps. Start with the simplest solution; the augmented LLM = model + retrieval + tools + memory; know when NOT to build an agent. Read: [Building effective agents (Anthropic)](https://www.anthropic.com/research/building-effective-agents). Optional: [A practical guide to building agents (OpenAI, PDF)](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf).
+- 🛠️ **Do:** Create `10-careerpilot/design.md`: list 6 CareerPilot tasks (parse JD, skill gap, prep plan, company research, mock interview, track applications) and classify each as single LLM call, workflow or agent with a one-line justification. Done when: the table exists and at least two tasks are deliberately not agents.
 
-### Tuesday 26 Jan · 45 min — Implement supervisor and subagents in LangGraph
-- 📚 **Learn:** Supervisor as a routing node or subagents-as-tools; handoffs with `Command(goto=..., update=...)`; shared vs private state; give each agent only the tools it needs. Read the tutorials [Subagents: personal assistant](https://docs.langchain.com/oss/python/langchain/multi-agent/subagents-personal-assistant) and [Handoffs: customer support](https://docs.langchain.com/oss/python/langchain/multi-agent/handoffs-customer-support).
-- 🛠️ **Do:** Implement supervisor + researcher + planner in LangGraph (interviewer comes Thursday). The researcher uses your search tools or MCP server; the planner reuses the W12 plan subgraph. Log which agent acted at each step. Done when: 'prepare me for a backend role at Company X' routes researcher -> planner -> supervisor final answer.
+### Tuesday 26 Jan · 45 min — Workflow patterns: routing and parallelization (light)
+- 📚 **Learn:** Prompt chaining with gates, routing (classify, then dispatch), parallelization (sectioning or voting), orchestrator-workers and evaluator-optimizer loops; each trades latency and cost for quality. Re-read the patterns section of [Building effective agents](https://www.anthropic.com/research/building-effective-agents). Optional: code shapes in [LangGraph workflows and agents](https://docs.langchain.com/oss/python/langgraph/workflows-agents) (read only).
+- 🛠️ **Do:** Republic Day, so 20 minutes: implement routing in plain Python with `llmkit` (a message goes to `jd_parse`, `prep_plan` or `chit_chat`) and run it on 3 inputs, logging calls and tokens. Done when: all 3 inputs reach the right handler and the log shows calls and tokens per input.
 
-### Thursday 28 Jan · 45 min — Framework tour: Agents SDK, Agent Framework, Pydantic AI
-- 📚 **Learn:** Compare primitives: OpenAI Agents SDK (agents, handoffs, guardrails, sessions, tracing), Microsoft Agent Framework 1.x (agents + graph workflows; successor to Semantic Kernel and AutoGen), Pydantic AI (typed agents and outputs), CrewAI (role-based crews, awareness). Read: [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/), [Microsoft Agent Framework overview](https://learn.microsoft.com/en-us/agent-framework/overview/), [Pydantic AI](https://pydantic.dev/docs/ai/overview/).
-- 🛠️ **Do:** Build the interviewer agent twice: with the OpenAI Agents SDK (`OpenAIChatCompletionsModel` on a free OpenAI-compatible endpoint, `set_tracing_disabled(True)` if you have no OpenAI key) and with Pydantic AI (typed `Feedback` output). Same prompt, same 3 questions. Fill `frameworks.md`: setup effort, typing, tracing, multi-agent support, when to use. Done when: both versions run and the table ends with a recommendation.
+### Thursday 28 Jan · 45 min — ReAct and a tool-calling agent loop without frameworks
+- 📚 **Learn:** ReAct = reason, act, observe until done; native tool calling replaces text parsing; loop guardrails: max steps, tool allow-list, argument validation, errors returned as observations, final-answer detection. Read: [ReAct paper](https://arxiv.org/abs/2210.03629) (abstract and figure 1). Optional: [LLM Powered Autonomous Agents (Lilian Weng)](https://lilianweng.github.io/posts/2023-06-23-agent/) (planning, tool use).
+- 🛠️ **Do:** Write `agent.py` (about 80 lines, no framework): call the model with tool schemas, execute requested tools, append results, stop on a final answer or after 6 steps. Tools: `search_jobs(query)` over local JSON, `get_skill_gap(job_id)`, `calc(expression)` with safe parsing. Done when: a 3-step task (find Java + AI jobs in Bengaluru, then my gap for the best one) completes with a printed trace.
 
-### Friday 29 Jan · 45 min — Agent evaluation: task success, trajectories, tool-call accuracy
-- 📚 **Learn:** Evaluate outcomes (task success) and process (trajectory match, tool-call accuracy, argument correctness, steps and cost); rubric-based LLM judging for open-ended outputs; keep a regression set. Read: [DeepEval tool correctness](https://deepeval.com/docs/metrics-tool-correctness) and [RAGAS metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/) (agent and tool-use section); optional course: [Evaluating AI Agents](https://www.deeplearning.ai/courses/evaluating-ai-agents).
-- 🛠️ **Do:** Write 12 scenarios with expected agents/tools and success criteria. `eval_agents.py` computes task success, tool-call accuracy (name + key arguments), average steps and tokens. Run it on the W12 single-agent graph and the multi-agent version. Done when: a comparison table shows which design wins and at what cost.
+### Friday 29 Jan · 45 min — Agent memory: short-term, long-term, context engineering
+- 📚 **Learn:** Short-term memory (message window, running summary, trimming) vs long-term memory (profile facts, episodic logs, vector recall); context engineering: give the model the smallest high-signal context. Read: [Effective context engineering for AI agents (Anthropic)](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents). Optional: [LangChain memory concepts](https://docs.langchain.com/oss/python/concepts/memory).
+- 🛠️ **Do:** Add a message window plus running summary, and a long-term `profile.json` the agent reads and updates through `remember(fact)` and `recall(topic)` tools (simple embedding search). Set a token budget per turn. Done when: a fresh session recalls your target role and skills, and prompts stay under your budget.
 
-### Saturday 30 Jan · 45 min — BOSS BATTLE: CareerPilot v1 multi-agent demo and mini eval
-- 📚 **Learn:** Rules: 45 minutes starting from Tuesday/Thursday code; deliver a supervisor with 3 working agents, human approval kept, and the 12-scenario eval. Rubric /100: routing 25, three agents functional 25, human-in-the-loop 15, eval run + table 25, demo/README 10. Hindi recap: [Krish Naik Hindi GenAI + Agentic AI playlist](https://www.youtube.com/playlist?list=PLTDARY42LDV567lWN_5BtoVGjMFKbthGu).
-- 🛠️ **Do:** Wire the interviewer into the supervisor, run end-to-end on 2 real JDs, run `eval_agents.py`, record a 2-minute demo and update the README with architecture and eval table. Done when: rubric score is 80+, task success is 75%+ on the 12 scenarios and tag `v1.0-careerpilot` is pushed.
+### Saturday 30 Jan · 45 min — BUILD: from-scratch CareerPilot agent with three tools
+- 📚 **Learn:** Tool design: clear names and descriptions, typed arguments, small outputs, idempotency, error messages the model can act on; log every step for debugging. Read: [Writing effective tools for agents (Anthropic)](https://www.anthropic.com/research/writing-tools-for-agents).
+- 🛠️ **Do:** Ship `10-careerpilot/agent_v0`: CLI agent with `search_jobs`, `skill_gap` and `save_application` (SQLite, using your W8 SQL), max-steps limit, tool allow-list, pydantic argument validation and JSONL traces. Write 8 scenario tests with expected tool sequences and run them. Done when: 6+ of 8 scenarios pass, traces show every step, and tag `v0.1-careerpilot-scratch` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-`07-careerpilot/` v1.0: supervisor multi-agent system (researcher, planner, interviewer) with human approval, `frameworks.md` comparison, 12-scenario agent eval (task success, tool-call accuracy) and a demo video.
+`10-careerpilot/`: agent-vs-workflow design doc, a routing workflow, from-scratch tool loop with memory, 8 scenario tests and JSONL traces.
 
 ## ✅ Self-check (Sunday test preview)
-- When is a multi-agent architecture justified over one agent with tools?
-- Supervisor vs handoffs vs hierarchical teams: sketch and compare.
-- How do you evaluate an agent's trajectory and tool calls?
-- Compare LangGraph, OpenAI Agents SDK and Microsoft Agent Framework.
-- What are the main failure modes of multi-agent systems?
-- How do you control cost and latency in a multi-agent system?
+- Workflow vs agent: how do you decide? Give an example of each.
+- Describe the tool-calling loop and its stop conditions.
+- What are the orchestrator-workers and evaluator-optimizer patterns?
+- How do you prevent infinite loops and runaway cost in agents?
+- Short-term vs long-term memory: how would you implement each?
+- What makes a tool description good for an LLM?
 
 ## 🚀 Stretch (optional)
-Port the planner to [Microsoft Agent Framework workflows](https://learn.microsoft.com/en-us/agent-framework/workflows/overview) to prepare for the W22 Foundry work.
+Implement the other two patterns from Tuesday (parallelization with `asyncio.gather` + a vote, evaluator-optimizer with at most two revisions), or complete Unit 1 of the [Hugging Face Agents Course](https://huggingface.co/learn/agents-course/unit1/introduction).

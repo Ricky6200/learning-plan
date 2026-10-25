@@ -58,6 +58,10 @@ ORDER = {  # integrated daily order per day (after DSA + Java)
     "Mon": ["ai", "sd"], "Tue": ["azure", "ai"], "Wed": ["sd", "azure"], "Thu": ["ai", "sd"],
     "Fri": ["azure", "ai"], "Sat": ["ai", "sd", "azure"],
 }
+ORDER_OVERRIDE = {  # (week, day) -> block order after DSA, when one track's work depends on another's on the same day
+    (28, "Sat"): {"order": ["azure", "java", "ai", "sd"],
+                  "note": "🔀 **Saturday runs in a different order:** DSA → ☁️ Azure lab (provisions the stack) → ☕ Java deploy → 🤖 AI live check, then teardown → 🏗️ System Design."},
+}
 XP = {"Easy": 5, "Medium": 10, "Hard": 20}
 TARGET = {"Easy": "15m", "Medium": "25m", "Hard": "40m"}
 RESOLVE_TARGET = {"Easy": "10m", "Medium": "20m", "Hard": "35m"}
@@ -331,6 +335,8 @@ def gen_planner(mods):
             out += f"## {FULL[dn]} · {dd:%d %b} · {hrs}{' · 🎉' if dd in HOLIDAYS else ''}\n"
             if dd in HOLIDAYS:
                 out += f"> {HOLIDAYS[dd]}\n\n"
+            if (n, dn) in ORDER_OVERRIDE:
+                out += f"> {ORDER_OVERRIDE[(n, dn)]['note']}\n\n"
             probs = " · ".join(lc(i) + (" 🔥 weekend challenge" if challenge(dn, i, rs) else "") for i in dw["days"][dn])
             rv = daily_resolves(dsa, n, dn)
             if rs:
@@ -340,18 +346,16 @@ def gen_planner(mods):
                 out += f"- [ ] 🧩 **DSA · 60m** — 🔁 {label}: {' · '.join(lc(i, True) for i in rv)} → Solve: {probs}\n"
             else:
                 out += f"- [ ] 🧩 **DSA · 60m** — Solve: {probs}\n"
-            if "java" in other:
-                ses = next(x for x in other["java"][n]["sessions"] if x["day"] == dn)
-                out += f"- [ ] ☕ **Java · {ses['mins']}m** — {ses['topic']}\n"
-            for k in ORDER[dn]:
+            for k in ORDER_OVERRIDE.get((n, dn), {}).get("order", ["java"] + ORDER[dn]):
                 if k in other:
                     ses = next((x for x in other[k][n]["sessions"] if x["day"] == dn), None)
                     if ses:
-                        out += f"- [ ] {TRACKS[k]['emoji']} **{TRACKS[k]['name']} · {ses['mins']}m** — {ses['topic']}\n"
+                        label = "Java" if k == "java" else TRACKS[k]["name"]
+                        out += f"- [ ] {TRACKS[k]['emoji']} **{label} · {ses['mins']}m** — {ses['topic']}\n"
             out += "\n"
         sun = day_date(n, "Sun")
-        contest = (f"- [ ] 🏆 **LeetCode Weekly Contest · 8:00 AM IST · 90m** — on alternate Sundays from Week 10 it replaces the DSA part (45 min) of today's test; take the rest of the test afterwards\n"
-                   if n >= 10 and n % 2 == 0 else
+        contest = (f"- [ ] 🏆 **LeetCode Weekly Contest · 8:00 AM IST · 90m** — on alternate Sundays from Week 10 (not boss weeks) it replaces the DSA part (45 min) of today's test; take the rest of the test afterwards\n"
+                   if n >= 10 and n % 2 == 0 and n not in BOSS else
                    f"- [ ] (Optional, 8:00 AM IST) [LeetCode Weekly Contest](https://leetcode.com/contest/) — timed practice on unseen problems\n")
         out += (f"## Sunday · {sun:%d %b} · 3.5 h — {'⚔️ BOSS BATTLE TEST' if boss else 'Weekly Test Day'}{' · 🎉' if sun in HOLIDAYS else ''}\n"
                 + (f"> {HOLIDAYS[sun]}\n\n" if sun in HOLIDAYS else "") +

@@ -1,6 +1,6 @@
-# 🗓️ Week 24 · 05 Apr → 11 Apr 2027 · Season 6 — Final Boss: The Offer
+# 🗓️ Week 24 · 05 Apr → 11 Apr 2027 · Season 5 — Cloud Ascension
 
-> ⭐ XP available: ~505 (blocks 250 · DSA 155 · test 100)  
+> ⭐ XP available: ~495 (blocks 250 · DSA 145 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-24.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-24.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-24.md) · [🏗️ System Design](../System%20Design/Weeks/Week-24.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-24.md)  
 **Tracker:** [Dashboard](../00_Progress_Tracker/PROGRESS_DASHBOARD.md) · [Daily log](../00_Progress_Tracker/DAILY_LOG.md) · [Weakness tracker](../00_Progress_Tracker/WEAKNESS_TRACKER.md)
@@ -9,53 +9,53 @@
 | Track | Theme |
 |---|---|
 | 🧩 DSA | Design Data Structures + Math |
-| ☕ Java Backend | Spring AI assistant: Ask TicketVerse |
-| 🤖 AI Engineering | TicketVerse AI: Search, Booking Agent, Summaries |
-| 🏗️ System Design | Monitoring, collaborative editing, LLM platforms |
+| ☕ Java Backend | Kubernetes II: Gateway API, autoscaling, state, Helm |
+| 🤖 AI Engineering | Spring AI II: Tools, RAG and MCP |
+| 🏗️ System Design | Payment system and Dynamo-style KV store |
 | ☁️ Azure Cloud | Observability: OpenTelemetry, Application Insights, KQL |
 
 ## 🔧 Fix-it items (added by your AI mentor after last Sunday's test)
 - [ ] _none yet — the mentor fills this in after each test_
 
 ## Monday · 05 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Solve: [LC 146 · LRU Cache](https://leetcode.com/problems/lru-cache/) (M) · [LC 460 · LFU Cache](https://leetcode.com/problems/lfu-cache/) (H)
-- [ ] ☕ **Java · 60m** — Spring AI 2.x ChatClient, model choice, prompts, streaming
-- [ ] 🤖 **AI Engineering · 45m** — Semantic event search with PgVectorStore and Kafka sync
-- [ ] 🏗️ **System Design · 45m** — Metrics monitoring & alerting (time-series DB)
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve: [211. Design Add and Search Words Data Structure](https://leetcode.com/problems/design-add-and-search-words-data-structure/) (M) → Solve: [LC 380 · Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) (M) · [LC 1146 · Snapshot Array](https://leetcode.com/problems/snapshot-array/) (M)
+- [ ] ☕ **Java · 60m** — Gateway API: GatewayClass, Gateway, HTTPRoute with Envoy Gateway
+- [ ] 🤖 **AI Engineering · 45m** — Tool calling with @Tool on Spring beans
+- [ ] 🏗️ **System Design · 45m** — Payment system: idempotency, ledger, PSP integration
 
 ## Tuesday · 06 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Solve: [LC 380 · Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) (M) · [LC 706 · Design HashMap](https://leetcode.com/problems/design-hashmap/) (E)
-- [ ] ☕ **Java · 60m** — Structured output, advisors and per-user chat memory
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve: [421. Maximum XOR of Two Numbers in an Array](https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/) (M) → Solve: [LC 981 · Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/) (M) · [LC 341 · Flatten Nested List Iterator](https://leetcode.com/problems/flatten-nested-list-iterator/) (M)
+- [ ] ☕ **Java · 60m** — Horizontal Pod Autoscaler with metrics-server and load
 - [ ] ☁️ **Azure Cloud · 45m** — OpenTelemetry concepts + the Microsoft OpenTelemetry Distro (Python)
-- [ ] 🤖 **AI Engineering · 45m** — Booking agent via MCP tools with human confirmation
+- [ ] 🤖 **AI Engineering · 45m** — Embeddings, VectorStore and PgVectorStore
 
 ## Wednesday · 07 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Solve: [LC 341 · Flatten Nested List Iterator](https://leetcode.com/problems/flatten-nested-list-iterator/) (M) · [LC 284 · Peeking Iterator](https://leetcode.com/problems/peeking-iterator/) (M)
-- [ ] ☕ **Java · 60m** — Tool calling into catalog and booking APIs, with safety
-- [ ] 🏗️ **System Design · 45m** — Google Docs: collaborative editing with OT and CRDTs
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve: [187. Repeated DNA Sequences](https://leetcode.com/problems/repeated-dna-sequences/) (M) → Solve: [LC 1472 · Design Browser History](https://leetcode.com/problems/design-browser-history/) (M) · [LC 1396 · Design Underground System](https://leetcode.com/problems/design-underground-system/) (M)
+- [ ] ☕ **Java · 60m** — StatefulSets, PV/PVC, Jobs and CronJobs
+- [ ] 🏗️ **System Design · 45m** — Payment deep dives: webhooks, reconciliation, failures
 - [ ] ☁️ **Azure Cloud · 45m** — Distributed tracing across services and messaging
 
 ## Thursday · 08 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Solve: [LC 1472 · Design Browser History](https://leetcode.com/problems/design-browser-history/) (M) · [LC 1396 · Design Underground System](https://leetcode.com/problems/design-underground-system/) (M)
-- [ ] ☕ **Java · 60m** — RAG over FAQs and policies with PgVectorStore; evaluation
-- [ ] 🤖 **AI Engineering · 45m** — Review summarization with citations and caching
-- [ ] 🏗️ **System Design · 45m** — LLM chat / RAG platform at scale
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve: [307. Range Sum Query - Mutable](https://leetcode.com/problems/range-sum-query-mutable/) (M) → Solve: [LC 2034 · Stock Price Fluctuation ](https://leetcode.com/problems/stock-price-fluctuation/) (M)
+- [ ] ☕ **Java · 60m** — RBAC, Kustomize awareness, troubleshooting broken workloads
+- [ ] 🤖 **AI Engineering · 45m** — ETL pipeline and RAG advisors
+- [ ] 🏗️ **System Design · 45m** — Vector clocks + quorum store lab
 
 ## Friday · 09 Apr · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Solve: [LC 895 · Maximum Frequency Stack](https://leetcode.com/problems/maximum-frequency-stack/) (H) · [LC 2034 · Stock Price Fluctuation ](https://leetcode.com/problems/stock-price-fluctuation/) (M)
-- [ ] ☕ **Java · 60m** — MCP server exposing booking tools; LangChain4j awareness
+- [ ] 🧩 **DSA · 60m** — 🔁 Re-solve: [729. My Calendar I](https://leetcode.com/problems/my-calendar-i/) (M) → Solve: [LC 43 · Multiply Strings](https://leetcode.com/problems/multiply-strings/) (M) · [LC 2013 · Detect Squares](https://leetcode.com/problems/detect-squares/) (M)
+- [ ] ☕ **Java · 60m** — Helm charts: templates, values, install, upgrade, rollback
 - [ ] ☁️ **Azure Cloud · 45m** — KQL for logs and metrics: requests, dependencies, exceptions
-- [ ] 🤖 **AI Engineering · 45m** — Capstone evals and guardrails for TicketVerse AI
+- [ ] 🤖 **AI Engineering · 45m** — MCP server and client with Spring AI; LangChain4j awareness
 
 ## Saturday · 10 Apr · 4.5 h
-- [ ] 🧩 **DSA · 60m** — Solve: [LC 2013 · Detect Squares](https://leetcode.com/problems/detect-squares/) (M) · [LC 43 · Multiply Strings](https://leetcode.com/problems/multiply-strings/) (M) · [LC 149 · Max Points on a Line](https://leetcode.com/problems/max-points-on-a-line/) (H) 🔥 weekend challenge
-- [ ] ☕ **Java · 60m** — BUILD: Ask TicketVerse v1 end to end
-- [ ] 🤖 **AI Engineering · 45m** — BUILD: TicketVerse AI features integrated end-to-end
-- [ ] 🏗️ **System Design · 45m** — PRACTICE: Diagram polish + 3 verbal reps
+- [ ] 🧩 **DSA · 60m** — 🔁 2 timed re-solves: [712. Minimum ASCII Delete Sum for Two Strings](https://leetcode.com/problems/minimum-ascii-delete-sum-for-two-strings/) (M) · [516. Longest Palindromic Subsequence](https://leetcode.com/problems/longest-palindromic-subsequence/) (M) → Solve: [LC 460 · LFU Cache](https://leetcode.com/problems/lfu-cache/) (H) 🔥 weekend challenge
+- [ ] ☕ **Java · 60m** — BUILD: TicketVerse Helm chart on local Kubernetes
+- [ ] 🤖 **AI Engineering · 45m** — BUILD: Ask TicketVerse assistant with tools and RAG
+- [ ] 🏗️ **System Design · 45m** — PRACTICE: Dynamo-style KV store write-up (timed)
 - [ ] ☁️ **Azure Cloud · 60m** — LAB: Troubleshoot Container Apps from logs, events and KQL
 
 ## Sunday · 11 Apr · 3.5 h — Weekly Test Day
-- [ ] (Optional, 8:00 AM IST) [LeetCode Weekly Contest](https://leetcode.com/contest/) — great practice from Week 8 onward
+- [ ] 🏆 **LeetCode Weekly Contest · 8:00 AM IST · 90m** — on alternate Sundays from Week 10 (not boss weeks) it replaces the DSA part (45 min) of today's test; take the rest of the test afterwards
 - [ ] 📝 **Weekly test · 150m** — start a session and paste: `Read 00_Progress_Tracker\AI_MEMORY.md and WEEKLY_TEST_PROTOCOL.md. Run my Week 24 test now.`
 - [ ] 🔍 **Retro · 30m** — mentor updates scoreboard, weak areas, XP; you note 1 win + 1 fix
 - [ ] 👀 **Preview & revise · 30m** — finish the 🔥 weekend challenge if pending · DSA spaced revision (in the DSA week file) · skim next week

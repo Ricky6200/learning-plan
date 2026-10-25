@@ -1,44 +1,44 @@
-# 🤖 AI Engineering · Week 24 — TicketVerse AI: Search, Booking Agent, Summaries
+# 🤖 AI Engineering · Week 24 — Spring AI II: Tools, RAG and MCP
 
-> 📅 **Mon 05 Apr 2027 → Sun 11 Apr 2027** · Season 6 — Final Boss: The Offer  
+> 📅 **Mon 05 Apr 2027 → Sun 11 Apr 2027** · Season 5 — Cloud Ascension  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 23](Week-23.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-24.md) · [Week 25 →](Week-25.md)
+[← Week 23](Week-23.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-24.md) · [Week 25 →](Week-25.md)
 
-**Why this week:** Integrating AI into a real distributed system (semantic search, an agent that books safely, grounded summaries, evals and guardrails) is the story that wins SDE-2 'Java + AI' offers. Runs alongside Java track W24.
+**Why this week:** Tool calling, RAG and MCP in Spring AI turn TicketVerse into an AI-powered product and give you Java-side answers in AI system interviews.
 
 ## 🗓️ Sessions
 
-### Monday 05 Apr · 45 min — Semantic event search with PgVectorStore and Kafka sync
-- 📚 **Learn:** Event search = embeddings of title + description + tags, structured filters (city, date, price) and a ranking blend (semantic score + popularity + date proximity); keep embeddings in sync from catalog events (Kafka consumer on created/updated). Reuse: [PGvector store](https://docs.spring.io/spring-ai/reference/api/vectordbs/pgvector.html) and your W8 hybrid ideas.
-- 🛠️ **Do:** In `ticketverse-ai` add `GET /ai/search?q=&city=&date=`: backfill event embeddings, add a Kafka listener for updates, query PgVectorStore with metadata filters and blend in popularity. Label 15 queries and compute nDCG@10 with your Python eval script. Done when: nDCG@10 is 0.7+ and a newly created event becomes searchable within seconds.
+### Monday 05 Apr · 45 min — Tool calling with @Tool on Spring beans
+- 📚 **Learn:** `@Tool` and `@ToolParam` on bean methods, tool definitions sent to the model, `returnDirect`, tool context for passing user identity safely, exception handling; start with read-only tools. The model never runs code; your application does. Read: [Tool calling](https://docs.spring.io/spring-ai/reference/api/tools.html).
+- 🛠️ **Do:** Create `ShowTools` with `@Tool searchShows(city, date, genre)` and `@Tool checkSeats(showId)` calling the TicketVerse catalog and booking APIs (or stubs if a service is not running in your codespace). Register them with `.tools(showTools)` and ask 'Any comedy shows in Pune on Saturday with 2 seats together?'. Done when: logs show both tools called with correct arguments and the answer uses tool data.
 
-### Tuesday 06 Apr · 45 min — Booking agent via MCP tools with human confirmation
-- 📚 **Learn:** Safe agentic booking: read tools (search, seats) vs write tools (hold, book) behind confirmation; two-phase flow: propose -> user confirms -> execute with an idempotency key; user identity comes from the request context, never from the model. Read: [Spring AI tool calling](https://docs.spring.io/spring-ai/reference/api/tools.html) (tool context) and [MCP security best practices](https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices).
-- 🛠️ **Do:** Expose `holdSeats` and `confirmBooking` as tools/MCP tools where `confirmBooking` requires a server-issued confirmation token returned to the UI; the model can only propose. Forward the user's JWT to downstream services. Done when: the agent cannot book without the explicit confirm call and repeated confirms never double-book.
+### Tuesday 06 Apr · 45 min — Embeddings, VectorStore and PgVectorStore
+- 📚 **Learn:** `EmbeddingModel`, the portable `VectorStore` API, `PgVectorStore` (HNSW, cosine distance, dimensions must match your embedding model, as in W9), metadata filter expressions. Read: [PGvector store](https://docs.spring.io/spring-ai/reference/api/vectordbs/pgvector.html). Optional: model [nomic-embed-text](https://ollama.com/library/nomic-embed-text) (768 dimensions).
+- 🛠️ **Do:** Add the pgvector store starter, set dimensions to match your embedding model, and index 30 TicketVerse FAQ and policy snippets (refunds, cancellations, accessibility) with a `category` metadata field. Query with and without a filter. Done when: `similaritySearch` returns relevant snippets and the `category == 'refund'` filter works.
 
-### Thursday 08 Apr · 45 min — Review summarization with citations and caching
-- 📚 **Learn:** Map-reduce summarization over many reviews, aspect-based sentiment (sound, seating, value), structured output with cited review IDs to avoid invented claims, Redis caching with invalidation on new reviews; treat review text as untrusted input. Read: [Spring AI structured output](https://docs.spring.io/spring-ai/reference/api/structured-output.html) and [Simon Willison on prompt injection](https://simonwillison.net/series/prompt-injection/).
-- 🛠️ **Do:** Add `GET /ai/events/{id}/review-summary`: summarise review batches (map), merge them (reduce) into `ReviewSummary(summary, pros, cons, aspects, citedReviewIds)`, cache in Redis and invalidate on new-review events. Done when: 3 events produce summaries whose cited review IDs exist and support the claims (spot-check).
+### Thursday 08 Apr · 45 min — ETL pipeline and RAG advisors
+- 📚 **Learn:** ETL: `DocumentReader` (PDF, Markdown, Tika) -> `TokenTextSplitter` -> `VectorStore`; RAG via `QuestionAnswerAdvisor` (artifact `spring-ai-vector-store-advisor`) or the modular `RetrievalAugmentationAdvisor` (artifact `spring-ai-rag`: query transformers, retrievers, augmenters). Read: [Retrieval Augmented Generation](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html). Optional: [ETL pipeline](https://docs.spring.io/spring-ai/reference/api/etl-pipeline.html).
+- 🛠️ **Do:** Write policies as Markdown, ingest them via ETL at startup (idempotently), and add `POST /ai/ask-policy` using `QuestionAnswerAdvisor` with a similarity threshold; then try `RetrievalAugmentationAdvisor` with a query-rewrite transformer. Done when: 10 policy questions are answered with sources and an off-topic question gets a polite refusal.
 
-### Friday 09 Apr · 45 min — Capstone evals and guardrails for TicketVerse AI
-- 📚 **Learn:** Capstone eval suite: task success, tool-call accuracy, correct refusals, search nDCG, summary faithfulness; guardrails: input limits, indirect-injection tests via review text, PII redaction, per-user rate limits. Reuse W9/W14/W15 scripts. Read: [DeepEval task completion](https://deepeval.com/docs/metrics-task-completion) and the [OWASP Top 10 for LLMs](https://genai.owasp.org/llm-top-10/).
-- 🛠️ **Do:** Write 20 assistant scenarios (search, policy Q&A, booking with and without confirmation, malicious review text) and run them through a Python harness against the REST API; add the attack cases to CI. Done when: task success is 85%+, tool-call accuracy 90%+, zero unconfirmed bookings, and the report is committed.
+### Friday 09 Apr · 45 min — MCP server and client with Spring AI; LangChain4j awareness
+- 📚 **Learn:** Spring AI MCP Boot starters: a server (WebMVC, Streamable HTTP) exposing `@McpTool`/`@McpResource` methods, and a client starter that consumes external MCP servers as tools; LangChain4j is the alternative Java AI library (AI Services, tools, RAG). Read: [MCP overview](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-overview.html). Optional: [MCP server annotations](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-annotations-server.html).
+- 🛠️ **Do:** Expose `searchShows` and `checkSeats` as MCP tools from `ticketverse-ai` over Streamable HTTP and call them from VS Code and MCP Inspector. Then add the MCP client starter so `ticketverse-ai` consumes your W16 `careerpilot-mcp` over HTTP as tools. Done when: VS Code chat searches TicketVerse shows through MCP and Spring logs show both server-side and client-side MCP tool calls.
 
-### Saturday 10 Apr · 45 min — BUILD: TicketVerse AI features integrated end-to-end
-- 📚 **Learn:** Integration checklist: gateway routes, auth propagation, Compose/Kubernetes manifests, per-environment config, timeouts and fallbacks, dashboards (Grafana + traces), and a runbook for AI failures (provider down -> degrade gracefully). Read: [Spring AI observability](https://docs.spring.io/spring-ai/reference/observability/index.html).
-- 🛠️ **Do:** Run the full TicketVerse stack with `ticketverse-ai` behind the gateway: semantic search, assistant with tools + RAG, confirmed booking flow and review summaries. Fix integration bugs together with the Java track and update the architecture diagram and eval report. Done when: an end-to-end script (search -> ask -> propose -> confirm) passes on a fresh environment and tag `ticketverse-v2.0-ai` is pushed.
+### Saturday 10 Apr · 45 min — BUILD: Ask TicketVerse assistant with tools and RAG
+- 📚 **Learn:** Assistant design: show search -> tools, policy questions -> RAG, booking -> not allowed yet; system prompt rules, memory per user, guardrails (`SafeGuardAdvisor`, input length limits), evaluation with Spring AI evaluators. Read: [Evaluation testing](https://docs.spring.io/spring-ai/reference/api/testing.html). Optional (Hindi): [Chai aur Code Spring Boot + RAG project](https://www.youtube.com/watch?v=R8VBA_KtUo0).
+- 🛠️ **Do:** Ship `POST /ai/assistant/{conversationId}` combining memory, tools, the RAG advisor, logging and safeguards. Add 10 evaluation cases using `RelevancyEvaluator`/`FactCheckingEvaluator` or JUnit assertions on tool calls, and a sequence diagram in the README. Done when: 8+ of 10 cases pass, booking requests are refused with guidance and tag `ticketverse-ai-v0.2` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-TicketVerse with AI: semantic event search (nDCG@10 0.7+), tool/MCP booking agent with human confirmation and idempotency, cited review summaries, 20-scenario eval + attack cases in CI, end-to-end script.
+`ticketverse-ai` v0.2: `@Tool` show search and seat check, PgVectorStore FAQ/policy RAG via ETL and advisors, MCP server and client, assistant endpoint with memory and guardrails, 10-case evaluation.
 
 ## ✅ Self-check (Sunday test preview)
-- How do you keep embeddings in sync with a changing catalog?
-- How do you let an agent book tickets safely?
-- What is an idempotency key, and why does the booking tool need one?
-- How would you evaluate the TicketVerse assistant before release?
-- What indirect prompt-injection risks do user reviews introduce?
-- How does the AI service degrade when the LLM provider is down?
+- How does Spring AI's `@Tool` work end to end?
+- QuestionAnswerAdvisor vs RetrievalAugmentationAdvisor: when do you use which?
+- How do you keep embedding dimensions consistent between the model and PgVectorStore?
+- How do you expose Spring beans as MCP tools?
+- How would you stop the assistant from booking tickets without confirmation?
+- Spring AI vs LangChain4j: how would you choose for a team?
 
 ## 🚀 Stretch (optional)
-Add a 'similar events' recommendation endpoint using vector similarity over events a user previously booked.
+Grow the evaluation to 15 cases, or rebuild the assistant with LangChain4j AI Services in a branch and compare code size, features and testing support.

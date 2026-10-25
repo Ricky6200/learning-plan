@@ -1,44 +1,44 @@
-# 🤖 AI Engineering · Week 15 — AI Security and Guardrails
+# 🤖 AI Engineering · Week 15 — Agents II: LangGraph and the CareerPilot Boss
 
-> 📅 **Mon 01 Feb 2027 → Sun 07 Feb 2027** · Season 4 — Distributed Kingdom  
+> 📅 **Mon 01 Feb 2027 → Sun 07 Feb 2027** · Season 3 — Spring Citadel · ⚔️ **BOSS WEEK**  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 14](Week-14.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-15.md) · [Week 16 →](Week-16.md)
+[← Week 14](Week-14.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-15.md) · [Week 16 →](Week-16.md)
 
-**Why this week:** Every enterprise AI review asks about prompt injection, data leakage and excessive agency. A tested guardrail suite separates you from demo-only candidates.
+**Why this week:** LangGraph is the most requested agent framework in 2026 job descriptions. Its typed state, persistence and human-in-the-loop features fix exactly what your scratch agent struggled with, and the season ends with a timed CareerPilot build.
 
 ## 🗓️ Sessions
 
-### Monday 01 Feb · 45 min — OWASP Top 10 for LLM Applications 2025 and agentic risks
-- 📚 **Learn:** LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure, LLM03 Supply Chain, LLM04 Data and Model Poisoning, LLM05 Improper Output Handling, LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM08 Vector and Embedding Weaknesses, LLM09 Misinformation, LLM10 Unbounded Consumption. Read: [OWASP Top 10 for LLMs](https://genai.owasp.org/llm-top-10/); skim [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/).
-- 🛠️ **Do:** Threat-model DocuMind and CareerPilot in `SECURITY.md`: map each OWASP item to a concrete risk in your apps (poisoned PDF -> LLM01/LLM08, `update_status` tool -> LLM06, no token caps -> LLM10), rate likelihood and impact, and list one mitigation each. Done when: all 10 items are mapped with a next step.
+### Monday 01 Feb · 45 min — LangGraph state, nodes and edges
+- 📚 **Learn:** A graph is typed state (a `TypedDict` from W3, or pydantic) + nodes (functions returning state updates) + edges; reducers such as `add_messages` are attached with `Annotated`; `START` and `END`; compile, then invoke or stream. Read: [Thinking in LangGraph](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph). Optional: [LangChain Academy: Introduction to LangGraph](https://academy.langchain.com/courses/intro-to-langgraph) Module 1, lessons 1-4.
+- 🛠️ **Do:** Build a 3-node graph `parse_jd -> gap_analysis -> summarize` reusing your W7 parser and W14 gap tool; state holds `jd_text`, `job`, `gaps`, `summary`. Print updates with `graph.stream(..., stream_mode='updates')`. Done when: one JD flows through all nodes and you can point to each state update.
 
-### Tuesday 02 Feb · 45 min — Prompt injection, jailbreaks and the lethal trifecta
-- 📚 **Learn:** Direct vs indirect injection (through documents, web pages, tool outputs, emails), jailbreaks, why keyword filters fail, and the lethal trifecta: private data + untrusted content + an exfiltration channel. Read: [The lethal trifecta (Simon Willison)](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/) and [Azure Prompt Shields concepts](https://learn.microsoft.com/en-us/azure/ai-services/content-safety/concepts/jailbreak-detection).
-- 🛠️ **Do:** Attack your own DocuMind: plant 5 indirect injections in a PDF (hidden instructions, fake citations, 'send this to...' requests) and try 5 direct jailbreak prompts. Optional warm-up: Lakera's [Agent Breaker game](https://play.lakera.ai/agent-breaker). Done when: `attacks.md` lists 10 attacks with success/fail and the root cause of each success.
+### Tuesday 02 Feb · 45 min — Conditional routing, ToolNode and prebuilt agents
+- 📚 **Learn:** `add_conditional_edges` with routing functions, `ToolNode` executing tool calls, recursion limits, `Command` for update + goto; LangChain 1.x `create_agent` is a prebuilt agent built on LangGraph. Read: [Graph API overview](https://docs.langchain.com/oss/python/langgraph/graph-api) (conditional edges, Command). Optional: [LangChain agents](https://docs.langchain.com/oss/python/langchain/agents).
+- 🛠️ **Do:** Rebuild the W14 agent as a graph: an `agent` node (model with tools bound) and a `ToolNode`, with a conditional edge that loops to tools while the last message has tool calls. Add a router sending chit-chat straight to `END`. Done when: your 8 W14 scenarios pass at least as often as before.
 
-### Thursday 04 Feb · 45 min — PII redaction, data leakage and output validation
-- 📚 **Learn:** Detect and anonymise PII before logging or sending text to third-party APIs; never put secrets in prompts; validate outputs (schema, allow-lists, citation checks) and never execute or render raw model output (XSS/SQL risks). Read: [Microsoft Presidio](https://microsoft.github.io/presidio/) and [LangChain guardrails](https://docs.langchain.com/oss/python/langchain/guardrails).
-- 🛠️ **Do:** Create a `guardrails/` module: Presidio-based redaction for logs and traces (email, phone, plus a custom recognizer for Indian phone and PAN formats), output schema validation, citation verification (every cited chunk must exist) and Markdown/HTML sanitising. Done when: unit tests prove PII is masked in traces and fake citations are rejected.
+### Thursday 04 Feb · 45 min — Checkpointers, persistence, memory and streaming
+- 📚 **Learn:** Checkpointers save state per `thread_id` (InMemorySaver for tests, SqliteSaver or PostgresSaver for real use), resume conversations, inspect history and time-travel; stores hold long-term memory; stream modes `updates`, `messages`, `values`. Read: [Persistence](https://docs.langchain.com/oss/python/langgraph/persistence). Optional: [Streaming](https://docs.langchain.com/oss/python/langgraph/streaming).
+- 🛠️ **Do:** Add `SqliteSaver` (package `langgraph-checkpoint-sqlite`) so CareerPilot resumes conversations per `thread_id` after a restart, and stream LLM tokens with `stream_mode='messages'`. Inspect `get_state_history` and replay from an earlier checkpoint. Done when: a restarted app continues the same thread and you demo one time-travel replay.
 
-### Friday 05 Feb · 45 min — Least privilege, human approval, content safety, red-teaming tools
-- 📚 **Learn:** Least-privilege tools (read vs write, scoped credentials), human approval for irreversible actions, per-run step/token/cost caps (LLM10), content-safety APIs, automated red-teaming with promptfoo or PyRIT. Read: [promptfoo red teaming](https://www.promptfoo.dev/docs/red-team/), [Azure AI Content Safety](https://learn.microsoft.com/en-us/azure/ai-services/content-safety/overview); awareness: [PyRIT](https://github.com/Azure/PyRIT).
-- 🛠️ **Do:** Harden CareerPilot: split tools into read and write, require approval for writes, cap steps and tokens per run, and wrap tool outputs as delimited untrusted data. Install promptfoo (Node.js 22.22+) and run a small red-team config against your `/ask` endpoint. Done when: the promptfoo report is generated and 2+ previously successful attacks now fail.
+### Friday 05 Feb · 45 min — Human-in-the-loop interrupts and subgraphs
+- 📚 **Learn:** `interrupt()` pauses a node and surfaces a payload; resume with `Command(resume=...)`; approve, edit and reject patterns; interrupts require a checkpointer; subgraphs package a feature as a reusable graph. Read: [Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts). Optional: [Subgraphs](https://docs.langchain.com/oss/python/langgraph/use-subgraphs).
+- 🛠️ **Do:** Add an `approve_plan` node calling `interrupt({'plan': plan})`; the CLI shows the plan, accepts approve/edit/reject and resumes with `Command(resume=...)`. Move gap analysis into a subgraph. Commit the result as the skeleton for Saturday. Done when: reject regenerates, edit uses your text, approve saves the plan, and all of it survives a restart.
 
-### Saturday 06 Feb · 45 min — BUILD: guardrails and injection test suite for CareerPilot
-- 📚 **Learn:** Defence in depth: input checks, privilege separation, output validation, monitoring; treat attacks like unit tests and run them in CI next week. Free course: [Red Teaming LLM Applications](https://www.deeplearning.ai/courses/red-teaming-llm-applications).
-- 🛠️ **Do:** Create `security/attack_suite.yaml` with 25+ cases (direct, indirect, PII exfiltration, excessive agency, unbounded consumption) and a pytest or promptfoo runner reporting block rate. Fix issues until 90%+ are blocked while the W14 task-success score drops by at most 5 points. Done when: the report is committed, `SECURITY.md` is updated and tag `v1.1-careerpilot-secure` is pushed.
+### Saturday 06 Feb · 45 min — BOSS BATTLE: CareerPilot v0 graph in 45 minutes
+- 📚 **Learn:** Rules: 45-minute timer, start from Friday's skeleton, docs allowed, no AI code generation, commit every 15 minutes. Rubric /100: complete flow (parse -> gap subgraph -> draft plan -> approval -> save) 30, interrupt and resume 25, persistence across restarts 20, 3 tests 15, README 10. Optional (Hindi): [CampusX Agentic AI using LangGraph](https://www.youtube.com/playlist?list=PLKnIA16_RmvYsvB8qkUQuJmJNuiCUJFPL).
+- 🛠️ **Do:** Ship CareerPilot v0: `parse_jd -> gap_analysis (subgraph) -> draft_plan -> approve_plan (interrupt) -> save`, with SqliteSaver persistence and streaming output, run on 3 real JDs; add 3 tests (graph compiles, interrupt payload, resume saves). Done when: the rubric score is 80+, 3 JDs produce approved plans and tag `v0.1-careerpilot` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-OWASP-mapped `SECURITY.md`, `guardrails/` module (PII redaction, output and citation validation, sanitising), hardened tools with approvals and caps, 25+ case attack suite with 90%+ blocked.
+`10-careerpilot/` v0.1 on LangGraph: typed state, conditional routing, ToolNode loop, SQLite persistence, interrupt-based approval and a subgraph (boss tag `v0.1-careerpilot`).
 
 ## ✅ Self-check (Sunday test preview)
-- Name five OWASP Top 10 for LLM Applications 2025 risks with an example each.
-- Direct vs indirect prompt injection: give a RAG example of the indirect kind.
-- What is the lethal trifecta, and how do you break it?
-- Why is 'add a stronger system prompt' not a security control?
-- How do you keep PII out of logs, traces and third-party LLM calls?
-- What is excessive agency, and how do least privilege and human approval address it?
+- What problems does LangGraph solve compared with a hand-written while-loop agent?
+- What is a reducer in LangGraph state, and why does `add_messages` exist?
+- How does a checkpointer enable both memory and human-in-the-loop?
+- Explain `interrupt()` and `Command(resume=...)` with an example.
+- When would you use a subgraph?
+- Which streaming modes exist, and when do you use each?
 
 ## 🚀 Stretch (optional)
-Run a [PyRIT](https://github.com/Azure/PyRIT) scan or extend promptfoo with an OWASP preset and compare the findings with your suite.
+Expose `POST /runs` and `POST /runs/{id}/resume` in FastAPI with Langfuse tracing, or finish Academy Module 4 and add a parallel fan-out that researches two companies at once.

@@ -1,44 +1,44 @@
-# 🤖 AI Engineering · Week 18 — Fine-Tuning with LoRA: FineTune Lab
+# 🤖 AI Engineering · Week 18 — AI Security and Guardrails
 
 > 📅 **Mon 22 Feb 2027 → Sun 28 Feb 2027** · Season 4 — Distributed Kingdom  
 > ⏱️ Slots: Mon, Tue, Thu, Fri · 45 min + Sat 45 min BUILD · Sunday test: 25 min
 
-[← Week 17](Week-17.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-18.md) · [Week 19 →](Week-19.md)
+[← Week 17](Week-17.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-18.md) · [Week 19 →](Week-19.md)
 
-**Why this week:** Interviewers expect you to know when fine-tuning beats prompting or RAG and how LoRA/QLoRA work. A measured before/after experiment is strong resume evidence.
+**Why this week:** Every enterprise AI review asks about prompt injection, data leakage and excessive agency. A tested guardrail suite separates you from demo-only candidates.
 
 ## 🗓️ Sessions
 
-### Monday 22 Feb · 45 min — Fine-tune vs prompt vs RAG: the decision
-- 📚 **Learn:** Prompting changes behaviour fast, RAG adds knowledge, fine-tuning fixes format/style or makes small models cheaper and faster on narrow tasks; needs data, evals and maintenance; SFT vs preference tuning (DPO) vs distillation (teacher -> student). Read: [Unsloth fine-tuning guide](https://docs.unsloth.ai/get-started/fine-tuning-llms-guide) (what and when) and [Post-training of LLMs](https://www.deeplearning.ai/courses/post-training-of-llms) (overview).
-- 🛠️ **Do:** Define the FineTune Lab task: JD text -> compact JSON (title, seniority, skills, years_min, remote). Write a one-page `09-finetune-lab/DECISION.md` comparing prompting, RAG and fine-tuning for it, with success metrics (JSON validity, field F1, latency, cost) and a hypothesis. Done when: the memo states measurable targets.
+### Monday 22 Feb · 45 min — OWASP Top 10 for LLM Applications 2025 and agentic risks
+- 📚 **Learn:** LLM01 Prompt Injection, LLM02 Sensitive Information Disclosure, LLM03 Supply Chain, LLM04 Data and Model Poisoning, LLM05 Improper Output Handling, LLM06 Excessive Agency, LLM07 System Prompt Leakage, LLM08 Vector and Embedding Weaknesses, LLM09 Misinformation, LLM10 Unbounded Consumption. Read: [OWASP Top 10 for LLMs](https://genai.owasp.org/llm-top-10/). Optional: [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/).
+- 🛠️ **Do:** Threat-model DocuMind and CareerPilot in `SECURITY.md`: map each OWASP item to a concrete risk in your apps (poisoned PDF -> LLM01/LLM08, `update_status` tool -> LLM06, no token caps -> LLM10), rate likelihood and impact, and list one mitigation each. Done when: all 10 items are mapped with a next step.
 
-### Tuesday 23 Feb · 45 min — Dataset preparation and distillation from a teacher model
-- 📚 **Learn:** Chat-format training data, train/validation/test splits, quality over quantity (300-1,000 clean examples), de-duplication and leakage checks, synthetic labels from a stronger teacher model plus human review, data licensing. Read: [TRL SFTTrainer](https://huggingface.co/docs/trl/sft_trainer) (dataset formats) and the [LLM course: supervised fine-tuning](https://huggingface.co/learn/llm-course/chapter11/1).
-- 🛠️ **Do:** Collect 300-400 JDs (your W5 set plus pages from the free Arbeitnow jobs API), label them with a strong free model in a background script (several JDs per call to respect rate limits), hand-review 30 and fix systematic errors, then split 80/10/10 into chat-format JSONL. Done when: `DATA.md` documents sources, cleaning, split sizes and review findings.
+### Tuesday 23 Feb · 45 min — Prompt injection, jailbreaks and the lethal trifecta
+- 📚 **Learn:** Direct vs indirect injection (through documents, web pages, tool outputs, emails), jailbreaks, why keyword filters fail, and the lethal trifecta: private data + untrusted content + an exfiltration channel. Read: [The lethal trifecta (Simon Willison)](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/). Optional: [Azure Prompt Shields concepts](https://learn.microsoft.com/en-us/azure/ai-services/content-safety/concepts/jailbreak-detection).
+- 🛠️ **Do:** Attack your own DocuMind: plant 5 indirect injections in a PDF (hidden instructions, fake citations, 'send this to...' requests) and try 3 direct jailbreak prompts. Done when: `attacks.md` lists 8 attacks with success/fail and the root cause of each success.
 
-### Thursday 25 Feb · 45 min — LoRA, QLoRA and PEFT on a free Colab GPU
-- 📚 **Learn:** Full fine-tuning vs PEFT; LoRA adds low-rank adapters (rank r, alpha, target modules) to frozen weights; QLoRA = 4-bit base model + LoRA; memory math; merging adapters; free GPUs on Colab or Kaggle. Read: [PEFT LoRA guide](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora), [LoRA paper](https://arxiv.org/abs/2106.09685) and [QLoRA paper](https://arxiv.org/abs/2305.14314) abstracts.
-- 🛠️ **Do:** Open an [Unsloth notebook](https://docs.unsloth.ai/get-started/unsloth-notebooks) for a small (about 1-4B) instruct model on a Colab T4 and run it unchanged on its sample data for a few steps. Record r, alpha, target modules, VRAM used and seconds per step. Done when: the training loop runs and your notes explain each LoRA setting.
+### Thursday 25 Feb · 45 min — PII redaction, data leakage and output validation
+- 📚 **Learn:** Detect and anonymise PII before logging or sending text to third-party APIs (India's DPDP Act 2023 expects personal data to be used only for a stated purpose); never put secrets in prompts; validate outputs (schema, allow-lists, citation checks) and never execute or render raw model output (XSS/SQL risks). Read: [Microsoft Presidio](https://microsoft.github.io/presidio/) (getting started). Optional: [LangChain guardrails](https://docs.langchain.com/oss/python/langchain/guardrails).
+- 🛠️ **Do:** Create a `guardrails/` module: Presidio-based redaction (small spaCy model `en_core_web_sm` to save disk) for email, phone and a custom recognizer for Indian PAN format, plus citation verification (every cited chunk must exist). Done when: unit tests prove PII is masked before logging and fake citations are rejected.
 
-### Friday 26 Feb · 45 min — Train on your data and evaluate against prompting
-- 📚 **Learn:** Training hygiene: 1-3 epochs, watch train vs validation loss, learning rate, overfitting signs; evaluate on the held-out test split with the same metrics as the baseline; save adapters; optional GGUF export for Ollama. Read: [Practical tips for finetuning LLMs using LoRA (Sebastian Raschka)](https://magazine.sebastianraschka.com/p/practical-tips-for-finetuning-llms).
-- 🛠️ **Do:** Swap in your JSONL, train 1-2 epochs, plot losses, then evaluate on the 40-example test split: JSON validity and field-level F1 vs the same base model with your best prompt. Save the adapter to Drive or a private Hugging Face repo. Done when: the base+prompt vs fine-tuned metrics table is recorded.
+### Friday 26 Feb · 45 min — Least privilege, human approval and cost caps
+- 📚 **Learn:** Least-privilege tools (read vs write, scoped credentials), human approval for irreversible actions, per-run step/token/cost caps (LLM10), wrapping tool outputs as clearly delimited untrusted data, content-safety APIs as an extra layer. Read: [OWASP LLM06 Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/). Optional: [Azure AI Content Safety](https://learn.microsoft.com/en-us/azure/ai-services/content-safety/overview).
+- 🛠️ **Do:** Harden CareerPilot: split tools into read and write, require approval for writes, cap steps and tokens per run, and wrap tool outputs as delimited untrusted data. Re-run your successful attacks from Tuesday. Done when: at least 2 previously successful attacks now fail and the change is noted in `SECURITY.md`.
 
-### Saturday 27 Feb · 45 min — BUILD: FineTune Lab report, LoRA vs prompting
-- 📚 **Learn:** Report like an engineer: hypothesis, data, setup (hyperparameters, GPU, time), results with caveats (small n), cost and latency, failure examples, recommendation. Awareness: preference tuning with the [TRL DPO trainer](https://huggingface.co/docs/trl/dpo_trainer).
-- 🛠️ **Do:** Finalize `09-finetune-lab`: notebook plus `REPORT.md` comparing base+prompt, LoRA and a large API model on JSON validity, field F1, latency and estimated cost, with 5 error examples; optionally run the GGUF export in Ollama. Done when: the fine-tuned model beats its prompted baseline by 10+ F1 points or you explain why not, and tag `v1.0-finetune-lab` is pushed.
+### Saturday 27 Feb · 45 min — BUILD: guardrails and injection test suite for CareerPilot
+- 📚 **Learn:** Defence in depth: input checks, privilege separation, output validation, monitoring; treat attacks like unit tests so they can run in CI (W19). Automated red-teaming tools generate many attacks for you. Read: [promptfoo red teaming](https://www.promptfoo.dev/docs/red-team/) (quickstart; needs Node.js 22.22+). Optional course: [Red Teaming LLM Applications](https://www.deeplearning.ai/courses/red-teaming-llm-applications).
+- 🛠️ **Do:** Create `security/attack_suite.yaml` with 15+ cases (direct, indirect, PII exfiltration, excessive agency, unbounded consumption) and a pytest or promptfoo runner reporting the block rate. Fix issues until 90%+ are blocked while the W17 task-success score drops by at most 5 points. Done when: the report is committed, `SECURITY.md` is updated and tag `v1.1-careerpilot-secure` is pushed.
 
 ## 📦 Deliverable (by Saturday night)
-`09-finetune-lab/`: decision memo, reviewed dataset with `DATA.md`, Colab/Unsloth training notebook, saved LoRA adapter and `REPORT.md` comparing prompting vs LoRA vs API.
+OWASP-mapped `SECURITY.md`, `guardrails/` module (PII redaction, citation validation), hardened tools with approvals and caps, a 15+ case attack suite with 90%+ blocked.
 
 ## ✅ Self-check (Sunday test preview)
-- When should you fine-tune instead of prompting or RAG?
-- Explain LoRA: what are rank and alpha, and why is it parameter-efficient?
-- How does QLoRA reduce GPU memory?
-- What is DPO and how does it differ from SFT?
-- What is distillation, and how did you use a teacher model?
-- How do you detect overfitting during fine-tuning?
+- Name five OWASP Top 10 for LLM Applications 2025 risks with an example each.
+- Direct vs indirect prompt injection: give a RAG example of the indirect kind.
+- What is the lethal trifecta, and how do you break it?
+- Why is 'add a stronger system prompt' not a security control?
+- How do you keep PII out of logs, traces and third-party LLM calls?
+- What is excessive agency, and how do least privilege and human approval address it?
 
 ## 🚀 Stretch (optional)
-Try a DPO pass on 100 preference pairs (valid vs invalid JSON) or the SFT unit of the [Hugging Face smol course](https://huggingface.co/learn/smol-course/unit0/1).
+Grow the suite to 25+ cases, run a promptfoo OWASP preset or a [PyRIT](https://github.com/Azure/PyRIT) scan and compare the findings with your suite, or try Lakera's [Agent Breaker game](https://play.lakera.ai/agent-breaker).

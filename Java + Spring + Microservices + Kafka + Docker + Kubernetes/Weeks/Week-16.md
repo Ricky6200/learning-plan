@@ -1,49 +1,49 @@
-# ☕ Java Backend · Week 16 — Resilience and observability: survive and see failures
+# ☕ Java Backend · Week 16 — Spring Security, OAuth2 and the v1.0 release
 
 > 📅 **Mon 08 Feb 2027 → Sun 14 Feb 2027** · Season 4 — Distributed Kingdom  
 > ⏱️ Slots: Mon–Fri · 60 min (Block B) + Sat 60 min BUILD · Sunday test: 30 min
 
-[← Week 15](Week-15.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-16.md) · [Week 17 →](Week-17.md)
+[← Week 15](Week-15.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-16.md) · [Week 17 →](Week-17.md)
 
-**Why this week:** Distributed systems fail partially; interviewers ask how you stop cascades (timeouts, retries, circuit breakers, idempotency) and how you debug across services (metrics, traces, logs).
+**Why this week:** Every product company asks how you secured an API (filter chain, JWT, OAuth2/OIDC, method security), and a tested, tagged v1.0 is what makes TicketVerse resume-worthy. AZ-104 exam week: Friday and Saturday are deliberately lighter.
 
 ## 🗓️ Sessions
 
-### Monday 08 Feb · 60 min — Timeouts, retries with backoff and jitter, idempotency keys
-- 📚 **Learn:** Retry only idempotent or idempotency-keyed operations; exponential backoff with jitter; retry budgets and retry storms; `Idempotency-Key` header stored with the response; Resilience4j Retry vs Spring Framework 7 built-in `@Retryable`. [Resilience4j: Retry](https://resilience4j.readme.io/docs/retry), [Spring Framework: Resilience features](https://docs.spring.io/spring-framework/reference/core/resilience.html), [microservices.io: Idempotent consumer](https://microservices.io/patterns/communication-style/idempotent-consumer.html).
-- 🛠️ **Do:** Add an `idempotency_key` table to booking-service: a repeated `POST /api/bookings` with the same `Idempotency-Key` returns the original response; wrap payment calls in Retry (3 attempts, exponential backoff + jitter, retry only on timeouts/5xx). Done when: a test sends the same request 3 times and gets one booking, and logs show backoff gaps growing.
+### Monday 08 Feb · 60 min — Security filter chain, authN vs authZ, UserDetailsService, BCrypt
+- 📚 **Learn:** DelegatingFilterProxy -> FilterChainProxy -> SecurityFilterChain; SecurityContextHolder; AuthenticationManager/Provider; UserDetailsService; PasswordEncoder (BCrypt, DelegatingPasswordEncoder); `authorizeHttpRequests` rules written with the lambda DSL (the only style Spring Security 7 accepts); 401 vs 403. Read: [Spring Security: Architecture](https://docs.spring.io/spring-security/reference/servlet/architecture.html). Optional: [Engineering Digest: Spring Security (Hindi video)](https://www.youtube.com/watch?v=02WP1FbiNSQ).
+- 🛠️ **Do:** Add `spring-boot-starter-security`; define a `SecurityFilterChain`: public catalog GETs, authenticated holds/bookings, ADMIN for event writes, SUPPORT for read-only booking lookups; a JPA-backed `UserDetailsService` with BCrypt-hashed users (USER, ADMIN, SUPPORT) from a Flyway seed; set `org.springframework.security` logging to TRACE and read the filter list once. Done when: anonymous POST /api/bookings gets 401 and a USER on admin endpoints gets 403.
 
-### Tuesday 09 Feb · 60 min — Circuit breaker, time limiter and graceful fallbacks
-- 📚 **Learn:** Circuit breaker states (CLOSED, OPEN, HALF_OPEN), count vs time sliding windows, failure-rate and slow-call thresholds, wait duration; TimeLimiter for async calls; meaningful fallbacks (booking stays PAYMENT_PENDING) vs hiding errors; Boot 4 starter `resilience4j-spring-boot4` plus actuator. [Resilience4j: CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker), [Martin Fowler: Circuit breaker](https://martinfowler.com/bliki/CircuitBreaker.html), [Java Techie: Resilience4j circuit breaker (video)](https://www.youtube.com/watch?v=b6R4dElDtRc).
-- 🛠️ **Do:** Wrap `PaymentClient` with `@CircuitBreaker(name = "payment", fallbackMethod = ...)`: 50% failure rate over 10 calls opens it, 10 s wait, 3 half-open trial calls; the fallback marks the booking PAYMENT_PENDING. Expose the `circuitbreakers` actuator endpoint. Done when: forcing payment failures shows CLOSED -> OPEN -> HALF_OPEN -> CLOSED in the actuator output.
+### Tuesday 09 Feb · 60 min — JWT and OAuth2/OIDC flows: auth code + PKCE, client credentials
+- 📚 **Learn:** JWT structure (header, claims, signature), RS256 vs HS256, validating `exp/iss/aud`; OAuth2 roles; authorization code + PKCE for users/SPAs, client credentials for service-to-service; OIDC ID token vs access token; why stateless APIs use bearer tokens. Read: [JWT introduction](https://jwt.io/introduction). Optional: [OAuth.net: PKCE](https://oauth.net/2/pkce/).
+- 🛠️ **Do:** Write a JUnit test that signs an RS256 JWT with `NimbusJwtEncoder` and verifies it with `NimbusJwtDecoder` (spring-security-oauth2-jose); tamper one claim and expired `exp` and assert both fail. Draw the auth-code + PKCE sequence as Mermaid in `docs/auth.md`. Done when: 3 token tests pass and the diagram shows every redirect and token exchange.
 
-### Wednesday 10 Feb · 60 min — Rate limiter and bulkhead: protect yourself and dependencies
-- 📚 **Learn:** RateLimiter (permits per refresh period, timeout) to protect expensive endpoints; Bulkhead (semaphore vs fixed thread pool) to isolate a slow dependency so it cannot exhaust request threads; HTTP 429 with `Retry-After`; layering order of resilience decorators. [Resilience4j: RateLimiter](https://resilience4j.readme.io/docs/ratelimiter), [Resilience4j: Bulkhead](https://resilience4j.readme.io/docs/bulkhead), [Daily Code Buffer: Resilience4j tutorial (video)](https://www.youtube.com/watch?v=9AXAUlp3DBw).
-- 🛠️ **Do:** Limit `POST /api/shows/{id}/holds` to 5 requests/second per instance (return 429 ProblemDetail with `Retry-After`); add a semaphore Bulkhead of 10 around payment calls. Fire 50 concurrent requests from a small virtual-thread Java client and count 2xx vs 429 vs bulkhead rejections. Done when: the numbers match your configured limits.
+### Wednesday 10 Feb · 60 min — Keycloak in Docker and Spring Resource Server (JWT)
+- 📚 **Learn:** Keycloak realm, clients (public SPA client with PKCE, confidential service client), realm roles and token mappers; resource server: `http.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))` with `issuer-uri` (Security 7 removed the old `.and()`-chained style); map realm roles to authorities with a `JwtAuthenticationConverter`; Boot 4 starter `spring-boot-starter-security-oauth2-resource-server`. Read: [Spring Security: Resource server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html). Optional: [Keycloak: Getting started with Docker](https://www.keycloak.org/getting-started/getting-started-docker).
+- 🛠️ **Do:** Run Keycloak (`start-dev`, image `keycloak/keycloak` through your mirror) in compose; create realm `ticketverse`, roles USER/ADMIN/SUPPORT, users, a public client and a confidential client; switch TicketVerse to the JWT resource server; get a token with curl (password grant for local testing only, plus client credentials) and call the APIs. Done when: realm roles become `ROLE_USER/ROLE_ADMIN/ROLE_SUPPORT` and Monday's 401/403 rules still hold.
 
-### Thursday 11 Feb · 60 min — Metrics with Micrometer, Prometheus and Grafana dashboards
-- 📚 **Learn:** Micrometer meters (counter, timer, gauge, distribution summary), tags and cardinality limits, `/actuator/prometheus`, histograms for p95/p99, RED and USE methods; Prometheus scraping and PromQL basics; Grafana panels. [Micrometer: Concepts](https://docs.micrometer.io/micrometer/reference/concepts.html), [Spring Boot: Metrics](https://docs.spring.io/spring-boot/reference/actuator/metrics.html), [Prometheus: Getting started](https://prometheus.io/docs/prometheus/latest/getting_started/).
-- 🛠️ **Do:** Add Prometheus and Grafana to compose (profile `obs`); add custom metrics `bookings_confirmed_total`, `seat_hold_failures_total` and a timer around confirm; build a Grafana dashboard: request rate, error rate, p95 latency per endpoint, bookings/min, circuit-breaker state. Done when: the dashboard JSON is committed and panels move during a smoke-test run.
+### Thursday 11 Feb · 60 min — Method security, ownership checks, CORS and CSRF
+- 📚 **Learn:** `@EnableMethodSecurity`, `@PreAuthorize` with roles and ownership (`#userId == authentication.name`), avoiding BOLA (broken object-level authorization); CORS for a browser SPA origin; CSRF protects cookie sessions, so stateless bearer-token APIs disable it consciously. Read: [Spring Security: Method security](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html). Optional: [Spring Security: CSRF](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html).
+- 🛠️ **Do:** Make `GET /api/bookings/{id}` return 404 for bookings the caller does not own (no ID probing) unless the caller has SUPPORT or ADMIN; admin-only event writes via `@PreAuthorize`; allow CORS only from your local SPA origin (localhost, port 5173). Tests with the `jwt()` request post-processor: owner 200, other user 404, SUPPORT 200, anonymous 401. Done when: 4 security tests pass and a comment explains your CSRF decision.
 
-### Friday 12 Feb · 60 min — Distributed tracing with OpenTelemetry and Jaeger; structured logs
-- 📚 **Learn:** Traces, spans, attributes; W3C `traceparent` propagation across HTTP; Micrometer Observation + OpenTelemetry bridge exporting OTLP (Boot 4 `spring-boot-starter-opentelemetry`); Jaeger v2 as OTLP backend; sampling; structured JSON logs with traceId for correlation. [OpenTelemetry: Context propagation](https://opentelemetry.io/docs/concepts/context-propagation/), [Spring Boot: Tracing](https://docs.spring.io/spring-boot/reference/actuator/tracing.html), [Dan Vega: Spring Boot 4 OpenTelemetry (video)](https://www.youtube.com/watch?v=6_Y41z7OIv8).
-- 🛠️ **Do:** Add Jaeger (all-in-one, OTLP) to compose; export traces from all 5 services with sampling 1.0 locally; enable structured JSON console logs including traceId/spanId. Make one booking through the gateway and find its trace. Done when: one trace shows gateway -> booking -> catalog -> payment spans and the same traceId appears in each service's logs.
+### Friday 12 Feb · 60 min — Coverage gate and service unit tests (light day, AZ-104 week)
+- 📚 **Learn:** Test pyramid: many fast unit tests (Mockito, W10), fewer slice tests (W13), a few `@SpringBootTest` + Testcontainers flows; Spring Security test support (`jwt()`, `@WithMockUser`); JaCoCo's `check` goal fails the build below a coverage threshold, and your W14 CI runs it on every push. Read: [Martin Fowler: Practical test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html) (first half). Optional: [JaCoCo Maven plugin](https://www.jacoco.org/jacoco/trunk/doc/maven.html).
+- 🛠️ **Do:** Add JaCoCo with a `check` rule of 0.70 line coverage bound to `verify`; write 3 Mockito unit tests for `BookingService` (hold expired, seat taken, idempotent confirm) using an `ArgumentCaptor`. Push and watch CI enforce the gate. Done when: `./mvnw verify` passes the 70% gate locally and in GitHub Actions.
 
-### Saturday 13 Feb · 60 min — BUILD: Chaos test: kill payment, prove resilience with evidence
-- 📚 **Learn:** Chaos experiment format: steady-state hypothesis, inject failure, observe, roll back, learn; what good degradation looks like (fast failures, no thread exhaustion, honest status codes, recovery without restarts). [microservices.io: Circuit breaker](https://microservices.io/patterns/reliability/circuit-breaker.html), [Jaeger: Getting started](https://www.jaegertracing.io/docs/latest/getting-started/).
-- 🛠️ **Do:** Run a 5-minute booking load loop; `docker compose stop payment-service` for 2 minutes, then start it. Capture: circuit-breaker transitions, Grafana error-rate and p95 panels, a Jaeger trace of a short-circuited call, bookings left PAYMENT_PENDING then reconciled. Write `docs/CHAOS_REPORT.md` with screenshots. Done when: p95 of other endpoints stays within 2x baseline and the system recovers without restarts; tag `v2.0.0`.
+### Saturday 13 Feb · 60 min — BUILD: TicketVerse v1.0 release (light day, AZ-104 week)
+- 📚 **Learn:** Release checklist: a clean clone builds; `mvnw verify` is green (tests + 70% coverage); the README has an architecture diagram, run steps and API examples; a scripted demo; tag `v1.0.0` with GitHub Release notes. Keep it small: fix only what blocks the release. Read: [GitHub Docs: Managing releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository). Optional: [Spring Boot: Docker Compose support](https://docs.spring.io/spring-boot/how-to/docker-compose.html).
+- 🛠️ **Do:** From a fresh clone: `docker compose up` (Postgres, Redis, Keycloak) + the app; scripted demo: get a user token -> browse events -> hold 2 seats -> book -> view own booking -> another user gets 404 -> SUPPORT can view it -> admin creates an event. Tag `v1.0.0` and publish release notes. Done when: the demo passes end-to-end from the clean clone and `v1.0.0` is on GitHub with notes (+200 XP milestone).
 
 ## 📦 Deliverable (by Saturday night)
-TicketVerse with idempotency keys, retries with jitter, circuit breaker + fallback, rate limiter, bulkhead, Prometheus/Grafana dashboard, OpenTelemetry traces in Jaeger, JSON logs, and a chaos report.
+TicketVerse v1.0.0: JWT resource server with Keycloak (USER/ADMIN/SUPPORT), method security with ownership checks, CORS, a 70%+ coverage gate enforced in CI, release notes.
 
 ## ✅ Self-check (Sunday test preview)
-- Which operations are safe to retry, and how do idempotency keys make POST safe?
-- Explain circuit breaker states and the settings you chose for payment.
-- Bulkhead vs rate limiter: what does each protect?
-- Why must metric tags have low cardinality? Give a bad example.
-- How does trace context propagate from the gateway to the booking service?
-- Counter vs gauge vs timer: one TicketVerse example each.
-- What did your chaos test prove, and what would you improve next?
+- Walk through the Spring Security filter chain for a request with a bearer token.
+- Authentication vs authorization; 401 vs 403?
+- Why BCrypt? What does DelegatingPasswordEncoder add?
+- Authorization code + PKCE vs client credentials: who uses which and why?
+- How does a resource server validate a JWT without calling Keycloak on every request?
+- What is BOLA and how did you prevent it in TicketVerse (owner, SUPPORT, ADMIN)?
+- When must CSRF protection stay enabled, and why can a stateless JWT API disable it?
 
 ## 🚀 Stretch (optional)
-Add a Grafana alert rule (error rate > 5% for 2 min) and test it by stopping catalog-service.
+Record a 3-minute demo video of the release flow. Add refresh-token handling to a tiny SPA or Postman collection and document token lifetimes in `docs/auth.md`. Add one `@SpringBootTest` booking flow on Testcontainers Postgres + Redis with a mocked JWT.

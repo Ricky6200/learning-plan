@@ -90,4 +90,12 @@
   Still to do: validate all 5 tracks → regenerate → cross-track rescan → doc pass (track READMEs/RESOURCES/banks/PROJECTS/spec/
   cert guide/cost doc/cheat sheet/frameworks, START_HERE, GAP_ANALYSIS, dashboard, scoreboard, Career README, local setup guide)
   → PDFs → privacy check → commit → answer the user (rating, 5 good/5 bad, salary range).
-- NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.
+- 25 Oct 08:00–09:30 IST: **30-WEEK RESTRUCTURE DONE.** All 5 tracks rewritten and validated (Java 180 / AI 150 / SD 120 / Azure 120
+  sessions; DSA 294 core + 202 bonus). Fixes on top: re-solves planned least-re-solved first (Saturday 1–2 Easy/Medium); contest
+  Sundays W10–W18 + W22–W28 (never boss weeks); mocks from W15; W28 Saturday order Azure → Java → AI (teardown via
+  `az stack group delete`) → SD; Republic Day note; Java W11 Docker builds on AI W8. Cross-track scan clean (only deliberate primers).
+  Docs updated in every folder by the track agents; generated files + `ROADMAP.md` regenerated; old `ROADMAP_26_WEEKS.md` removed;
+  links: 1,605 external OK (Glassdoor blocks scripts — fine in a browser), 1,287 internal OK; 8 PDFs rebuilt. Privacy: employer
+  words moved from `validate_track.py` into git-ignored `forbidden_words.local.md`; an unpushed auto-commit containing them was
+  folded into a clean commit. **Note: GitHub repo `learning-plan` is PUBLIC** (user told; their call whether to make it private).
+- NEXT STEP: **Mon 26 Oct, Week 1 Day 1** — start with the magic prompt; remind N3/N13/N12/N6/N14 (AI_MEMORY Section 11).

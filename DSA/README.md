@@ -8,7 +8,7 @@
 - Have re-solved **176 of them** on a fixed spaced schedule (built into every week file), plus 36 timed re-solves in the two re-solve weeks.
 - Recognise **25+ patterns** within ~2 minutes of reading a problem (see [PATTERNS_CHEATSHEET.md](PATTERNS_CHEATSHEET.md)).
 - Solve most Mediums in **20–25 min** and common Hards in **~40 min**, talking aloud like in a real interview.
-- Have ~11 LeetCode contests, 4 online-assessment simulations and 12+ mock interviews behind you.
+- Have 9 LeetCode contests, 4 online-assessment simulations and 10 talk-aloud mocks behind you (from W20 you talk through a problem every week).
 
 > **Honest note on "95% of interview questions":** no list can guarantee every question. What *does* work is covering every
 > major pattern with enough reps, re-solving on a schedule, then practising unseen problems (contests, mocks, company lists).
@@ -20,7 +20,7 @@
 | Mon–Fri | 60 min (first block of the day) | 1 re-solve (10–12 min, from memory) + up to 2 new problems |
 | Saturday | 60 min | 1–2 quick re-solves + up to 2 new problems (🔥 a Hard is the weekend challenge — may spill into Sunday's preview slot) |
 | Sunday | 45 min test + preview slot | Weekly test (see below) · re-solve everything you marked 🔴 this week |
-| Contests | Sunday 8:00 AM IST | [LeetCode Weekly Contest](https://leetcode.com/contest/) — replaces the DSA test part on even Sundays from W10 (W10, W12 … W30); optional before that |
+| Contests | Sunday 8:00 AM IST | [LeetCode Weekly Contest](https://leetcode.com/contest/) — replaces the DSA test part on 9 Sundays: W10, W12, W14, W16, W18, W22, W24, W26, W28 (never in boss weeks); optional before that |
 
 ## 🔁 How to run one 60-minute session
 1. **10–20 min — Re-solve** the problem(s) in today's "Daily re-solve" row from memory, timed (targets: Easy 10 · Medium 20 · Hard 35 min). Can't finish? Mark it 🔴.
@@ -67,23 +67,23 @@
 | W11 | 04–10 Jan | Stack, queue, monotonic stack & deque | 11 (3/7/1) | |
 | W12 | 11–17 Jan | Binary trees I: traversals & depth | 12 (9/2/1) | Full-program practice starts · 🏆 |
 | W13 | 18–24 Jan | Binary trees II + BST | 11 (1/9/1) | |
-| W14 | 25–31 Jan | Heaps / priority queue | 11 (2/8/1) | 🏆 · mocks every 2 weeks from here |
-| W15 | 01–07 Feb | Greedy + Season 3 review | 11 (1/9/1) | ⚔️ Boss |
+| W14 | 25–31 Jan | Heaps / priority queue | 11 (2/8/1) | 🏆 · think aloud daily; first mock next Sunday |
+| W15 | 01–07 Feb | Greedy + Season 3 review | 11 (1/9/1) | ⚔️ Boss · first talk-aloud mock |
 | W16 | 08–14 Feb | Graphs I: BFS/DFS, grids, components (+ Trie) | 10 (1/9/0) | AZ-104 week: light Fri/Sat · 🏆 |
 | W17 | 15–21 Feb | Graphs II: topological sort, shortest paths, 0-1 BFS | 10 (0/9/1) | |
 | W18 | 22–28 Feb | Graphs III: Union-Find, MST, bridges (+ autocomplete) | 10 (0/9/1) | 🏆 |
 | W19 | 01–07 Mar | DP I: 1D | 11 (2/8/1) | OA simulation #1 |
-| W20 | 08–14 Mar | DP II: grids & knapsack + mixed review | 11 (0/10/1) | ⚔️ Boss · OA #2 · weekly mocks · 💼 · 🏆 |
+| W20 | 08–14 Mar | DP II: grids & knapsack + mixed review | 11 (0/10/1) | ⚔️ Boss · OA #2 · talk aloud every week from here · 💼 |
 | W21 | 15–21 Mar | DP III: strings & subsequences | 10 (1/8/1) | |
 | W22 | 22–28 Mar | DP IV: stocks, intervals, trees, bitmask | 9 (0/8/1) | Holi Monday: 1 problem · 🏆 |
 | W23 | 29 Mar–04 Apr | Tries, KMP & rolling hash, Fenwick tree, TreeMap | 10 (2/7/1) | |
 | W24 | 05–11 Apr | Design data structures + math | 10 (0/9/1) | 🏆 |
 | W25 | 12–18 Apr | Company-style mix + virtual contest | 9 (0/6/3) | ⚔️ Boss (virtual contest) |
 | W26 | 19–25 Apr | Light re-solve week | re-solve 12 | AI-200 exam week · 🏆 |
-| W27 | 26 Apr–02 May | Hard bank: the deferred Hards | 7 (0/0/7) | 2 virtual contests |
-| W28 | 03–09 May | Company-frequency sets | 11 (0/10/1) | 3 mocks · 🏆 |
-| W29 | 10–16 May | Advanced topics + online assessments | 8 (0/4/4) | 2 OA simulations + 2 contests |
-| W30 | 17–23 May | Final revision speed-run | re-solve 24 | 👑 Final Boss · 🏆 |
+| W27 | 26 Apr–02 May | Hard bank: the deferred Hards | 7 (0/0/7) | Optional virtual contests |
+| W28 | 03–09 May | Company-frequency sets | 11 (0/10/1) | 🏆 · up-solve aloud |
+| W29 | 10–16 May | Advanced topics + online assessments | 8 (0/4/4) | 2 OA simulations |
+| W30 | 17–23 May | Final revision speed-run | re-solve 24 | 👑 Final Boss (full mock loop) |
 
 ## 🧭 Navigation
 - [ROADMAP.md](ROADMAP.md) — the whole 30-week journey in one table
@@ -103,8 +103,8 @@
 ## 📝 How you're tested on Sundays (45 min)
 - **2 timed problems in Java that are not in the plan** — Q1 on this week's pattern; **from W6, Q2 is an unseen problem from an earlier pattern** (no hint which). Write the approach in 2–3 lines first (5 marks per problem), then code; paste your code to the AI mentor.
 - **5 pattern-recognition one-liners** ("which pattern and why?").
-- **Contest Sundays (even weeks from W10: W10, W12 … W30):** the LeetCode Weekly Contest (8:00 AM IST, 90 min) replaces this section; up-solve one missed problem during the week and log it.
-- **Mocks:** from W14 the first problem on non-contest Sundays is a talk-aloud mock (every 2 weeks); from W20 do one mock every week (in contest weeks with a friend or a free peer-mock site).
+- **Contest Sundays (W10, W12, W14, W16, W18, W22, W24, W26, W28 — the boss weeks W20 and W30 run the boss test instead):** the LeetCode Weekly Contest (8:00 AM IST, 90 min) replaces this section; up-solve one missed problem during the week and log it.
+- **Mocks:** start in W15 — on non-contest Sundays the first problem is a talk-aloud mock (the mentor plays the interviewer), so mocks alternate with contest Sundays; from W20 you also explain your contest up-solve aloud, so you talk through a problem every week.
 - **Online assessments:** from W12 re-solve one problem every 2 weeks as a full stdin/stdout program (fast-I/O template #36); timed OA simulations in W19–W20 and W29.
 - **Boss weeks (W4, W9, W15, W20, W25, W30):** Saturday's 2 problems are a timed Boss Battle (W25 = virtual contest) and Sunday's test is a little harder; W30 = full mock interview loop.
 - Graded on correctness, complexity, edge cases, and code clarity. **≥ 80 🟢 · 60–79 🟡 · < 60 🔴** → 🔴 topics get remediation problems next week.

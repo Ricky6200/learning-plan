@@ -1,49 +1,49 @@
-# ☕ Java Backend · Week 21 — Kubernetes II: Gateway API, autoscaling, state, Helm
+# ☕ Java Backend · Week 21 — Spring Kafka, outbox and the booking saga
 
 > 📅 **Mon 15 Mar 2027 → Sun 21 Mar 2027** · Season 5 — Cloud Ascension  
 > ⏱️ Slots: Mon–Fri · 60 min (Block B) + Sat 60 min BUILD · Sunday test: 30 min
 
-[← Week 20](Week-20.md) · [Roadmap](../ROADMAP_26_WEEKS.md) · [Today's planner](../../01_Daily_Planner/Week-21.md) · [Week 22 →](Week-22.md)
+[← Week 20](Week-20.md) · [Roadmap](../ROADMAP.md) · [Today's planner](../../01_Daily_Planner/Week-21.md) · [Week 22 →](Week-22.md)
 
-**Why this week:** Real clusters need traffic entry, autoscaling, stateful workloads, access control and packaging; Gateway API replaced ingress-nginx (retired March 2026), so modern answers use it.
+**Why this week:** Reliable event-driven flows (retries, DLTs, idempotent consumers, outbox, sagas) are what senior interviewers dig into after 'have you used Kafka?'.
 
 ## 🗓️ Sessions
 
-### Monday 15 Mar · 60 min — Gateway API: GatewayClass, Gateway, HTTPRoute with Envoy Gateway
-- 📚 **Learn:** Why Ingress gave way to Gateway API (role-oriented, portable, richer routing) and the ingress-nginx retirement; GatewayClass (infra provider), Gateway (listeners), HTTPRoute (path/header matching, weights, filters); implementations like Envoy Gateway or NGINX Gateway Fabric. [Kubernetes: Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/), [Kubernetes blog: Ingress NGINX retirement](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/), [Envoy Gateway: Quickstart](https://gateway.envoyproxy.io/docs/tasks/quickstart/).
-- 🛠️ **Do:** Install Envoy Gateway on kind with Helm; create a Gateway and HTTPRoutes sending `/api/events` to catalog-service and `/api/bookings` to booking-service; add a header-based route to a `v2` deployment and a 90/10 weighted split. Done when: curl through the Gateway reaches both services and the weighted split shows roughly 10% v2 responses over 100 calls.
+### Monday 15 Mar · 60 min — Spring for Apache Kafka: KafkaTemplate, @KafkaListener, JSON serialization
+- 📚 **Learn:** Boot auto-configuration (`spring.kafka.*`); `KafkaTemplate.send` returning a `CompletableFuture`; `@KafkaListener` with group ids and concurrency; JSON (de)serializers and trusted packages; message keys and headers; listener container basics. Read: [Spring Kafka: Quick tour](https://docs.spring.io/spring-kafka/reference/quick-tour.html). Optional: [Concept && Coding: Event-driven architecture with Kafka (Hindi playlist)](https://www.youtube.com/playlist?list=PL6W8uoQQ2c62YCR2kkE-0tg3-y1QwaIWk).
+- 🛠️ **Do:** booking-service publishes `BookingRequested` (key = bookingId) to `booking.events.v1` after a booking is created; notification-service (your W18 skeleton) consumes it with `@KafkaListener` (concurrency 3) and logs a fake email; add a Testcontainers Kafka test asserting the event arrives with the right key and headers. Done when: the test passes and the compose stack shows the message flowing.
 
-### Tuesday 16 Mar · 60 min — Horizontal Pod Autoscaler with metrics-server and load
-- 📚 **Learn:** metrics-server; HPA on CPU utilization (needs requests), min/max replicas, stabilization windows and scale-down behaviour; why JVM warm-up and memory-based scaling are tricky; VPA and KEDA awareness for event-driven scaling (Kafka lag). [Kubernetes: Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/), [Kubernetes: HPA walkthrough](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/).
-- 🛠️ **Do:** Install metrics-server on kind (with `--kubelet-insecure-tls`), create an HPA for catalog-service (min 1, max 5, 60% CPU), generate load with a busy loop pod, and record replicas over time with `kubectl get hpa -w`; then stop load and watch scale-down. Done when: a timeline of scale-out and scale-in is saved in `docs/k8s-hpa.md`.
+### Tuesday 16 Mar · 60 min — Error handling: DefaultErrorHandler, backoff, DLT, @RetryableTopic
+- 📚 **Learn:** Blocking retries with `DefaultErrorHandler` + backoff; `DeadLetterPublishingRecoverer`; non-retryable exceptions; non-blocking retries with `@RetryableTopic` (retry topics + DLT) and their ordering trade-off; poison pills and `ErrorHandlingDeserializer`. Read: [Spring Kafka: Non-blocking retries](https://docs.spring.io/spring-kafka/reference/retrytopic.html). Optional: [Baeldung: Dead letter queue with Spring Kafka](https://www.baeldung.com/kafka-spring-dead-letter-queue).
+- 🛠️ **Do:** In notification-service, fail on events whose email contains `fail`; configure 3 non-blocking retries with exponential delays and a DLT; send a malformed JSON message and route it to the DLT via `ErrorHandlingDeserializer`; add a DLT listener that logs the original topic and exception header. Done when: tests show retry topics used, the DLT receiving both bad messages, and healthy messages unaffected.
 
-### Wednesday 17 Mar · 60 min — StatefulSets, PV/PVC, Jobs and CronJobs
-- 📚 **Learn:** StatefulSets (stable names, ordered rollout, per-pod PVCs via volumeClaimTemplates); PersistentVolumes, claims and StorageClasses; why managed databases beat self-run ones in cloud; Jobs for one-off work (migrations) and CronJobs for schedules (expired-hold cleanup). [Kubernetes: StatefulSets](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/), [Kubernetes: Persistent volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/), [Kubernetes: CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/).
-- 🛠️ **Do:** Convert Postgres to a StatefulSet with a volumeClaimTemplate; insert data, delete the pod and prove data survives; add a Job that runs Flyway migrations before deploy and a CronJob that calls booking-service's cleanup endpoint every 5 minutes. Done when: data persists across pod deletion and the CronJob history shows successful runs.
+### Wednesday 17 Mar · 60 min — Idempotent consumers and the transactional outbox pattern
+- 📚 **Learn:** The dual-write problem (DB commit + Kafka send can diverge); outbox: write the event into an `outbox` table in the same DB transaction and let a relay publish it (polling with `FOR UPDATE SKIP LOCKED` from a `@Scheduled` job as in W12, or CDC with Debezium); consumers dedupe by eventId. Read: [microservices.io: Transactional outbox](https://microservices.io/patterns/data/transactional-outbox.html). Optional: [Confluent: Transactional outbox course](https://developer.confluent.io/courses/microservices/the-transactional-outbox-pattern/).
+- 🛠️ **Do:** Add `outbox_event` (id, aggregateId, type, payload jsonb, createdAt, publishedAt) via Flyway; `BookingService` writes booking + outbox row in one transaction; a `@Scheduled` relay publishes batches with SKIP LOCKED and marks them published; consumers record processed eventIds in a `processed_event` table. Done when: killing Kafka during booking loses no event (published after restart) and duplicates are ignored.
 
-### Thursday 18 Mar · 60 min — RBAC, Kustomize awareness, troubleshooting broken workloads
-- 📚 **Learn:** ServiceAccounts, Roles/ClusterRoles, RoleBindings, least privilege, `kubectl auth can-i`; Kustomize overlays (dev/prod) vs Helm values; reading Events and statuses: CrashLoopBackOff, ImagePullBackOff, OOMKilled, Pending, failing readiness. [Kubernetes: RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/), [Kubernetes: Debug running pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/), [Kubernetes: Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/).
-- 🛠️ **Do:** Create a read-only ServiceAccount for a 'support' role and verify with `kubectl auth can-i`. Inject 5 failures (bad image tag, crashing command, tiny memory limit, impossible CPU request, wrong readiness path) and fix each using only `get`, `describe`, `logs`, `events`. Done when: `docs/RUNBOOK.md` gains 5 Kubernetes entries with the decisive command for each.
+### Thursday 18 Mar · 60 min — Sagas: choreography vs orchestration, compensation, CQRS intro
+- 📚 **Learn:** Sagas replace distributed transactions with local transactions + events; choreography (services react to events) vs orchestration (a central coordinator); compensating actions (release seats, refund); the booking state machine; CQRS and event sourcing as related ideas, and when they are overkill. Read: [microservices.io: Saga](https://microservices.io/patterns/data/saga.html). Optional: [microservices.io: CQRS](https://microservices.io/patterns/data/cqrs.html).
+- 🛠️ **Do:** Replace W18's synchronous payment call with the choreographed saga: `BookingRequested` -> payment-service emits `PaymentSucceeded` or `PaymentFailed` on `payment.events.v1` -> booking-service confirms or cancels (compensation: release seats and holds) -> notification-service informs the user. Model `BookingStatus` transitions as an enum state machine with unit tests for illegal transitions. Done when: both paths work in compose and the state-machine tests pass.
 
-### Friday 19 Mar · 60 min — Helm charts: templates, values, install, upgrade, rollback
-- 📚 **Learn:** Chart layout (Chart.yaml, values.yaml, templates/, `_helpers.tpl`); Go templating, `include`, `toYaml`, conditionals; per-environment values files; `helm lint`, `helm template`, `install`, `upgrade --install`, `rollback`, `history`; Helm 4 is current and keeps chart compatibility. [Helm: Quickstart](https://helm.sh/docs/intro/quickstart/), [Helm: Chart template guide](https://helm.sh/docs/chart_template_guide/getting_started/), [Abhishek Veeramalla: Helm (video)](https://www.youtube.com/watch?v=7A5cH8iqgHU).
-- 🛠️ **Do:** `helm create` a chart for catalog-service and adapt it: image repo/tag, replicas, resources, probes, env from ConfigMap/Secret, HTTPRoute template toggled by a value; lint and template it; install, upgrade with a new tag, then roll back. Done when: `helm history` shows 3 revisions and `helm template` output matches your hand-written manifests.
+### Friday 19 Mar · 60 min — Testing event-driven flows; tracing through Kafka
+- 📚 **Learn:** Testcontainers Kafka with `@ServiceConnection`; Awaitility for eventual consistency; testing listeners and the outbox relay; contract tests for event payloads; enabling observation on KafkaTemplate and listeners so traces continue across Kafka headers. Read: [Testcontainers: Testing a Spring Kafka listener](https://testcontainers.com/guides/testing-spring-boot-kafka-listener-using-testcontainers/). Optional: [Spring Kafka: Testing](https://docs.spring.io/spring-kafka/reference/testing.html).
+- 🛠️ **Do:** Write an end-to-end test with Testcontainers (Postgres + Kafka): POST a booking -> eventually CONFIRMED; with payment forced to fail -> eventually CANCELLED and seats free again (Awaitility, max 10 s). Enable Kafka observation and check Jaeger shows one trace spanning HTTP and Kafka hops. Done when: both saga tests pass 3 runs in a row and the trace screenshot is saved.
 
-### Saturday 20 Mar · 60 min — BUILD: TicketVerse Helm chart on local Kubernetes
-- 📚 **Learn:** Umbrella chart with one subchart per service (or one generic service chart reused with values), shared labels and helpers, values-dev.yaml, infra (Postgres StatefulSet, Redis, Kafka in KRaft mode, Keycloak) kept simple for local use. [Helm: Chart best practices](https://helm.sh/docs/chart_best_practices/), [Gateway API: HTTP routing guide](https://gateway-api.sigs.k8s.io/guides/user-guides/http-routing/).
-- 🛠️ **Do:** Create `charts/ticketverse` deploying gateway, catalog, booking, payment-mock, notification and infra plus HTTPRoutes; `helm upgrade --install tv charts/ticketverse -f values-dev.yaml -n ticketverse`; run the saga smoke test through the Gateway API entry point. Done when: one Helm command brings up the system on a fresh kind cluster and both saga paths pass.
+### Saturday 20 Mar · 60 min — BUILD: TicketVerse booking saga with outbox, end to end
+- 📚 **Learn:** Definition of done for an event-driven feature: outbox-backed publishing, idempotent consumers, retries + DLT, compensations, observability, documented event contracts and a sequence diagram. Read: [Spring Kafka: Transactions](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html). Optional: [microservices.io: Idempotent consumer](https://microservices.io/patterns/communication-style/idempotent-consumer.html).
+- 🛠️ **Do:** Polish and demo: run the smoke script for happy and failure paths through the gateway; replay a duplicate `PaymentSucceeded` (no double confirmation); push a poison message (it lands in the DLT); add Mermaid sequence diagrams for both saga paths to the README; tag `v1.3.0`. Done when: all four demos pass from a clean compose start.
 
 ## 📦 Deliverable (by Saturday night)
-Gateway API routing (incl. weighted split), HPA timeline, Postgres StatefulSet, migration Job + cleanup CronJob, RBAC + troubleshooting runbook, `charts/ticketverse` umbrella chart running the full saga on kind.
+TicketVerse v1.3.0: Spring Kafka events with retries/DLT, transactional outbox + relay, idempotent consumers, choreographed booking saga with compensation, Testcontainers e2e tests, traces across Kafka.
 
 ## ✅ Self-check (Sunday test preview)
-- Why did the ecosystem move from Ingress to Gateway API? Name its three core resources.
-- How does HPA decide the replica count, and why must requests be set?
-- StatefulSet vs Deployment: when do you need each?
-- Job vs CronJob: one TicketVerse use case each.
-- What do CrashLoopBackOff and ImagePullBackOff mean, and what is your first command for each?
-- Helm vs Kustomize: how do they differ?
-- How would you do a canary release with Gateway API?
+- What is the dual-write problem and how does the transactional outbox solve it?
+- Blocking retries vs @RetryableTopic: what happens to ordering in each?
+- How do you make a Kafka consumer idempotent?
+- Choreography vs orchestration sagas: pros, cons and when you would switch.
+- What compensations run in TicketVerse when payment fails?
+- How do you test eventually consistent flows without sleeps?
+- What is CQRS, and why did TicketVerse not need full event sourcing?
 
 ## 🚀 Stretch (optional)
-Install Argo CD on kind and let it sync `charts/ticketverse` from Git (GitOps preview for W22).
+Prototype an orchestrated version with a `BookingSagaOrchestrator` and compare code size and failure handling with choreography.
