@@ -81,4 +81,13 @@
   Codespace, AI W6 Mon Docker inside the Codespace. Created **AI_MEMORY Section 11 (install & reminder schedule)** + session-start
   check; planner lead-time reminders (W1, W3, W7, W9, W14, W18, W20); chat commands (AI_MEMORY Section 9 + START_HERE).
   **Next session = Mon 26 Oct, Week 1 Day 1**: start with the magic prompt; remind N3/N13/N12/N6/N14 (Section 11).
+- 25 Oct 01:50–08:00 IST: **30-WEEK RESTRUCTURE IN PROGRESS** (user asked for a full cross-check; accepts ~7 months). Five track
+  audits (Java 7.5, others 7/10) → authoritative spec `files/RESTRUCTURE_SPEC_30W.md` in the AI session folder (+ `AUDIT_*.md`
+  per track, 26-week originals in `files/backup_26w/`). Done: new `validate_track.py` (30 weeks, boss Saturdays {4,9,15,20,25,30},
+  "Done when", privacy, DSA ids/limits), `gen.py` (30 weeks, seasons, milestones, career, ENV_NOTES re-keyed, `ROADMAP.md`, DSA
+  daily re-solves D+7/D+21, contest Sundays from W10), `build_pdfs.py`, test protocol, AI_MEMORY D1/D7/D10/D13/D14/D16/D20/D21/D26
+  + Section 11 dates. In progress: track data rewrites by agents (laptop sleep killed the first run at ~02:00; restarted 07:45).
+  Still to do: validate all 5 tracks → regenerate → cross-track rescan → doc pass (track READMEs/RESOURCES/banks/PROJECTS/spec/
+  cert guide/cost doc/cheat sheet/frameworks, START_HERE, GAP_ANALYSIS, dashboard, scoreboard, Career README, local setup guide)
+  → PDFs → privacy check → commit → answer the user (rating, 5 good/5 bad, salary range).
 - NEXT STEP: ask whether N4 printed `[OK] pip works through JFrog` and whether `learning-plan` was pushed; then start Week 1 Monday.

@@ -1,4 +1,4 @@
-# 🚀 START HERE — Your 26-Week Career Upgrade (26 Oct 2026 → 25 Apr 2027)
+# 🚀 START HERE — Your 30-Week Career Upgrade (26 Oct 2026 → 23 May 2027)
 
 > **Who this is for:** a Java developer (3 yrs, Spring Boot + SQL at work) rebuilding Core Java and DSA, and adding
 > System Design, Azure and AI Engineering — to switch to a strong **Java Backend + Cloud + AI Engineer** role.
@@ -6,11 +6,11 @@
 
 ---
 
-## 🏁 Where you'll be in Week 26
+## 🏁 Where you'll be in Week 30
 | Track | Definition of done |
 |---|---|
 | ☕ **Java Backend** | Core Java (OOP → collections internals → streams → concurrency → JVM/GC) + Spring Boot internals, JPA, transactions, security, testing, microservices, Kafka, Docker, Kubernetes, CI/CD — proven by **TicketVerse**, a deployed microservices platform with an AI assistant |
-| 🧩 **DSA** | 325 core (+118 bonus) LeetCode problems across 20+ patterns in Java; Mediums in 20–25 min; spaced-revision system |
+| 🧩 **DSA** | 294 core (+202 bonus) LeetCode problems across 25+ patterns in Java, plus built-in daily re-solves (spaced repetition), contests and mocks; Mediums in 20–25 min |
 | 🏗️ **System Design** | SOLID + GoF patterns, ~18 machine-coding problems coded in Java (LLD), ~20 HLD case studies, timed mocks |
 | ☁️ **Azure** | **AZ-900 → AZ-104 → AI-200** certified + migration lab + TicketVerse deployed on Azure |
 | 🤖 **AI Engineering** | Python + LLMs, RAG, evals, agents (LangGraph), MCP, guardrails, LLMOps, fine-tuning, Spring AI, Microsoft Foundry — 6 portfolio projects + AI features in TicketVerse |
@@ -25,15 +25,15 @@
 | Folder | What's inside |
 |---|---|
 | [01_Daily_Planner/](01_Daily_Planner/) | ⭐ **Open this every day.** One file per week with every day's checklist across all tracks |
-| [01_MASTER_CALENDAR.md](01_MASTER_CALENDAR.md) | All 26 weeks × 5 tracks on one page, with dates, bosses, exams |
+| [01_MASTER_CALENDAR.md](01_MASTER_CALENDAR.md) | All 30 weeks × 5 tracks on one page, with dates, bosses, exams |
 | [02_GAP_ANALYSIS_What_You_Were_Missing.md](02_GAP_ANALYSIS_What_You_Were_Missing.md) | Skills you didn't list but the market expects — and where they're covered |
 | [03_SETUP_YOUR_LAPTOP.md](03_SETUP_YOUR_LAPTOP.md) | ⚙️ **Do this first:** company-laptop setup (tested), accounts, tool requests, Artifactory, Azure accounts, message templates · *local only — not in the GitHub backup* |
 | [00_Progress_Tracker/](00_Progress_Tracker/) | 🧠 AI memory, dashboard, daily log, weekly tests, weaknesses — **so no session starts from zero** |
-| [Java + Spring + … + Kubernetes/](Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/) | Java track: README, roadmap, 26 week files, TicketVerse project spec, interview question bank |
-| [DSA/](DSA/) | Pattern roadmap, 26 week files with exact LeetCode links, tested Java templates, revision tracker |
-| [System Design/](System%20Design/) | LLD + HLD roadmap, 26 week files, interview frameworks |
-| [Azure Cloud/](Azure%20Cloud/) | Cert guide (AZ-900, AZ-104, AI-200), 26 week files with labs, cost-safety guide |
-| [AI Engineering/](AI%20Engineering/) | AI roadmap, 26 week files, project specs, AI interview question bank |
+| [Java + Spring + … + Kubernetes/](Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/) | Java track: README, roadmap, 30 week files, TicketVerse project spec, interview question bank |
+| [DSA/](DSA/) | Pattern roadmap, 30 week files with exact LeetCode links and daily re-solves, tested Java templates, revision tracker |
+| [System Design/](System%20Design/) | LLD + HLD roadmap, 30 week files, interview frameworks |
+| [Azure Cloud/](Azure%20Cloud/) | Cert guide (AZ-900, AZ-104, AI-200), 30 week files with labs (incl. migration weeks), cost-safety guide |
+| [AI Engineering/](AI%20Engineering/) | AI roadmap, 30 week files, project specs, AI interview question bank |
 | [Career & Interview Prep/](Career%20%26%20Interview%20Prep/) | Resume, LinkedIn, STAR stories, application tracker, negotiation |
 
 Each folder also has a **PDF** copy for reading/printing. Markdown files are the working copies (checkboxes, progress).
@@ -97,20 +97,20 @@ flowchart LR
 ---
 
 ## 🎮 Make it a game (because consistency beats intensity)
-- **6 Seasons**, each ending with a **⚔️ Boss Battle** (W4, W9, W14, W19, W23, W26): timed integrated challenges; beat the boss (≥ 70 overall, no section < 50) for **+300 XP** and a badge.
-- **XP:** +10 per completed block · LeetCode +5/+10/+20 (E/M/H) · weekly test = your % · cert +500 · project milestone +200 · 7-day streak +50.
+- **6 Seasons**, each ending with a **⚔️ Boss Battle** (W4, W9, W15, W20, W25, W30): timed integrated challenges; beat the boss (≥ 70 overall, no section < 50) for **+300 XP** and a badge.
+- **XP:** +10 per completed block · LeetCode +5/+10/+20 (E/M/H) · re-solve within target +5 · weekly test = your % · cert +500 · project milestone +200 · 7-day streak +50.
 - **Levels:** Trainee → Code Cadet (500) → Junior Dev (1,500) → SDE-1 (3,000) → SDE-2 (5,000) → Senior SDE (7,500) → Staff Engineer (10,000) → **Principal Architect (13,000)**.
 - **Badges:** First Blood, Century, Cloud Cadet, RAG Ranger, Agent Smith, MCP Maker, Kube Commander, Race-Condition Slayer, Boss Slayer ×6 … (full list in the dashboard).
 - **One evolving product:** everything you learn in Java, Azure and AI lands in **TicketVerse** — so every week visibly upgrades your portfolio.
 
 | Season | Weeks | Boss week | Season reward |
 |---|---|---|---|
-| 1 · Foundation Forge | W1–W4 | W4 | Java OOP solid · AZ-900 ready · first AI app (TerminalGPT) |
-| 2 · Concurrency Crucible | W5–W9 | W9 | Concurrency mastered · **AZ-900 passed** · RAG + evals |
-| 3 · Spring Citadel | W10–W14 | W14 | **TicketVerse v1.0** · CareerPilot agent · AZ-104 half done |
-| 4 · Distributed Kingdom | W15–W19 | W19 | Microservices + Kafka saga in Docker · **AZ-104 passed** · MCP + guardrails |
-| 5 · Cloud Ascension | W20–W23 | W23 | Kubernetes + CI/CD + **TicketVerse live on Azure** · Spring AI |
-| 6 · Final Boss: The Offer | W24–W26 | W26 | AI assistant shipped · **AI-200 passed** · interview-ready |
+| 1 · Foundation Forge | W1–W4 | W4 | Java OOP + generics · Python I–III · ML fundamentals · AZ-900 ready |
+| 2 · Concurrency Crucible | W5–W9 | W9 | Collections, streams, modern Java, concurrency · **AZ-900 passed** · first LLM apps + semantic search |
+| 3 · Spring Citadel | W10–W15 | W15 | Core-Java gaps + JVM + Docker · Spring Core/Boot/JPA/transactions · RAG + evals + agents · **TicketVerse v0** |
+| 4 · Distributed Kingdom | W16–W20 | W20 | **AZ-104 passed** · **TicketVerse v1.0** · microservices + Kafka · MCP + guardrails + LLMOps · start applying |
+| 5 · Cloud Ascension | W21–W25 | W25 | Saga + full system in Docker + Kubernetes · Spring AI · Azure data, messaging, containers · TicketVerse v2 |
+| 6 · Final Boss: The Offer | W26–W30 | W30 | **AI-200 passed** · CI/CD · **TicketVerse live on Azure with AI** · migration skills · interview-ready |
 
 ---
 
@@ -126,7 +126,7 @@ flowchart LR
 ## ✅ Setup — follow [03_SETUP_YOUR_LAPTOP.md](03_SETUP_YOUR_LAPTOP.md) (Sat 24 – Sun 25 Oct)
 Decided on 24 Oct 2026, based on tests run on your laptop:
 - **Company laptop = main machine** for DSA, Java, System Design, Azure, Python basics and mentor chats.
-- **Personal laptop (browser → GitHub Codespaces/Colab)** for AI coding from Week 4 — the free AI APIs are blocked on the company
+- **Personal laptop (browser → GitHub Codespaces/Colab)** for AI coding that calls LLMs from Week 6 (Mon 30 Nov) — the free AI APIs are blocked on the company
   network — and for everything job-search related.
 - Code lives in your **personal GitHub** (personal email), never the company GitLab. Certifications go on a **personal Microsoft account**.
 - Installs only via the Company Portal / JFrog Artifactory; never bypass a block. Java: **Amazon Corretto 25** for learning projects

@@ -1,36 +1,47 @@
-# ?? DSA Patterns Cheat-Sheet (Java)
+# 🧩 DSA Patterns Cheat-Sheet (Java)
 
-> Every template below is **compiled and unit-tested** (JDK 11+). Re-type them from memory once a week ? speed comes from muscle memory.
+> Every template below is **compiled and unit-tested** (JDK 11+). Re-type them from memory once a week — speed comes from muscle memory.
 > Use with the weekly files in [Weeks/](Weeks/). Languages: Java (interview default for backend roles).
 
-## ?? Pattern recognition ? read the clue, pick the pattern
+## 🔎 Pattern recognition — read the clue, pick the pattern
 
 | Clue in the problem | Pattern to try first | Week |
 |---|---|---|
+| values in 1..n: missing / duplicate numbers in O(1) extra space | Cyclic sort / index-as-hash (#34) | W1, W9 |
 | "pair/triplet with sum", sorted input | Two pointers | W3 |
+| "sort it yourself", count inversions / reverse pairs | Merge sort, count while merging (#30) | W3, W27 |
 | "longest/shortest substring/subarray", "at most K" | Sliding window | W4 |
 | "count subarrays with sum = K" (negatives allowed) | Prefix sum + HashMap | W2, W5 |
 | "maximum subarray" | Kadane | W5 |
-| sorted / rotated array, "minimum X such that?" | Binary search (array or answer space) | W6 |
-| "all subsets / permutations / combinations" | Backtracking | W8?W9 |
+| overlapping intervals: merge / insert | Sort by start + merge (#31) | W5 |
+| many range updates, "max overlap", "minimum rooms/groups" | Difference array / sweep line with +1/−1 events (#32) | W5, W23 |
+| sorted / rotated array, "minimum X such that …" | Binary search (array or answer space) | W6, W24 |
+| "single number", power of two, count bits, add without + | Bit manipulation: XOR, n & (n − 1) (#33) | W7 |
+| "all subsets / permutations / combinations" | Backtracking | W8–W9 |
 | linked list cycle / middle / reorder | Fast & slow pointers | W10 |
-| "next greater/smaller", histogram | Monotonic stack | W11 |
-| window max/min | Monotonic deque | W11 |
-| tree path / depth / diameter | DFS returning a value to the parent | W12?W13 |
+| duplicate in 1..n without modifying the array | Floyd's cycle on index → value (#35) | W10 |
+| "next greater/smaller", histogram | Monotonic stack | W11, W27 |
+| window max/min, shortest subarray with sum ≥ K | Monotonic deque | W11, W27 |
+| online assessment asks for a full program (stdin/stdout) | Fast I/O template (#36) | W12, W29 |
+| tree path / depth / diameter | DFS returning a value to the parent | W12–W13 |
 | "level by level", shortest steps unweighted | BFS | W12, W16 |
 | "top K", "K closest", streaming median | Heap (PriorityQueue) | W14 |
+| "Kth largest/smallest" in O(n) average | Quickselect, 3-way partition (#37) | W14 |
 | "minimum number of X", intervals by end time | Greedy (+ sort) | W15 |
 | grid islands / regions / rotting | DFS/BFS on grid (multi-source BFS) | W16 |
+| prefix search, autocomplete, word dictionary | Trie | W16, W18, W23 |
 | dependencies / prerequisites / ordering | Topological sort | W17 |
 | weighted shortest path, non-negative weights | Dijkstra | W17 |
+| edge weights only 0 or 1 (free moves vs costly moves) | 0-1 BFS with ArrayDeque (#38) | W17 |
 | "are they connected", merge groups, redundant edge | Union-Find (DSU) | W18 |
-| "number of ways", "min/max cost", overlapping subproblems | Dynamic programming | W19?W22 |
+| directed graph: groups where everyone reaches everyone | Strongly connected components, Kosaraju (#39, awareness) | W18, W29 |
+| "number of ways", "min/max cost", overlapping subproblems | Dynamic programming | W19–W22 |
 | two strings: match / edit / common subsequence | 2D string DP | W21 |
-| prefix search, autocomplete, word dictionary | Trie | W23 |
+| find a pattern in text, longest prefix that is also a suffix | KMP (LPS array) / rolling hash | W23, W29 |
 | range sum with updates | Fenwick tree / segment tree | W23 |
-| "design a data structure with O(1) ops" | HashMap + linked list / array + index map | W24 |
+| "design a data structure with O(1) ops" | HashMap + linked list / array + index map | W10, W24 |
 
-## ?? Java toolkit you must know cold
+## 🧰 Java toolkit you must know cold
 
 ```java
 int[] a = new int[n]; Arrays.fill(a, -1); Arrays.sort(a);             // primitives: dual-pivot quicksort
@@ -562,7 +573,249 @@ static class LRUCache {
 }
 ```
 
-## ?? How to practise these templates
+## 30. Merge sort (LC 912; count while merging for LC 493)
+
+```java
+void mergeSort(int[] a, int[] tmp, int lo, int hi) {   // sorts a[lo..hi]; call with tmp = new int[a.length]
+    if (lo >= hi) return;                         // base case: 0 or 1 element
+    int mid = lo + (hi - lo) / 2;
+    mergeSort(a, tmp, lo, mid);                   // trust the smaller calls
+    mergeSort(a, tmp, mid + 1, hi);
+    int i = lo, j = mid + 1, k = lo;
+    while (i <= mid && j <= hi) tmp[k++] = a[i] <= a[j] ? a[i++] : a[j++];   // <= keeps it stable
+    while (i <= mid) tmp[k++] = a[i++];
+    while (j <= hi) tmp[k++] = a[j++];
+    System.arraycopy(tmp, lo, a, lo, hi - lo + 1);
+}
+// Counting (inversions, reverse pairs): both halves are sorted before the merge, so for each i in the
+// left half move a pointer j through the right half and add (j - (mid + 1)) - O(n log n) in total.
+```
+
+## 31. Merge intervals (LC 56)
+
+```java
+int[][] merge(int[][] intervals) {
+    Arrays.sort(intervals, (x, y) -> Integer.compare(x[0], y[0]));   // sort by start
+    List<int[]> res = new ArrayList<>();
+    for (int[] cur : intervals) {
+        if (res.isEmpty() || res.get(res.size() - 1)[1] < cur[0]) res.add(cur);   // no overlap -> new block
+        else res.get(res.size() - 1)[1] = Math.max(res.get(res.size() - 1)[1], cur[1]);   // overlap -> extend
+    }
+    return res.toArray(new int[0][]);             // List<int[]> -> int[][]
+}
+```
+
+## 32. Difference array + sweep line (LC 1094, LC 2406)
+
+```java
+boolean carPooling(int[][] trips, int capacity) {  // trip = {passengers, from, to}; stops are 0..1000
+    int[] diff = new int[1001];
+    for (int[] t : trips) { diff[t[1]] += t[0]; diff[t[2]] -= t[0]; }   // +v where it starts, -v where it ends
+    int load = 0;
+    for (int d : diff) { load += d; if (load > capacity) return false; }   // prefix sum = load at this stop
+    return true;
+}
+
+int minGroups(int[][] intervals) {                 // LC 2406: answer = maximum overlap of closed [l, r]
+    TreeMap<Integer, Integer> events = new TreeMap<>();
+    for (int[] iv : intervals) { events.merge(iv[0], 1, Integer::sum); events.merge(iv[1] + 1, -1, Integer::sum); }
+    int cur = 0, best = 0;
+    for (int delta : events.values()) { cur += delta; best = Math.max(best, cur); }   // sweep left to right
+    return best;
+}
+```
+
+## 33. Bit manipulation basics
+
+```java
+boolean isPowerOfTwo(int n) { return n > 0 && (n & (n - 1)) == 0; }   // exactly one set bit
+
+int countSetBits(int n) { int c = 0; while (n != 0) { n &= n - 1; c++; } return c; }   // clears the lowest set bit
+
+boolean isSet(int n, int i) { return ((n >> i) & 1) == 1; }
+
+int setBit(int n, int i) { return n | (1 << i); }
+
+int clearBit(int n, int i) { return n & ~(1 << i); }
+
+int lowestSetBit(int n) { return n & -n; }
+
+int singleNumber(int[] nums) { int x = 0; for (int v : nums) x ^= v; return x; }   // a ^ a = 0, a ^ 0 = a
+
+int getSum(int a, int b) {                         // LC 371: add without + (XOR = sum, AND << 1 = carry)
+    while (b != 0) { int carry = (a & b) << 1; a ^= b; b = carry; }
+    return a;
+}
+// >> keeps the sign bit, >>> fills with 0; library helpers: Integer.bitCount(n), Integer.toBinaryString(n)
+```
+
+## 34. Cyclic sort / index-as-hash (values in 1..n: LC 41, 442, 448)
+
+```java
+int firstMissingPositive(int[] nums) {             // LC 41: put value v at index v - 1
+    int n = nums.length;
+    for (int i = 0; i < n; i++)
+        while (nums[i] > 0 && nums[i] <= n && nums[nums[i] - 1] != nums[i]) {   // in range and not home yet
+            int j = nums[i] - 1, t = nums[i]; nums[i] = nums[j]; nums[j] = t;
+        }
+    for (int i = 0; i < n; i++) if (nums[i] != i + 1) return i + 1;   // first index without its value
+    return n + 1;
+}
+
+List<Integer> findDuplicates(int[] nums) {         // LC 442: mark index |v| - 1 negative ("seen")
+    List<Integer> res = new ArrayList<>();
+    for (int v : nums) {
+        int idx = Math.abs(v) - 1;
+        if (nums[idx] < 0) res.add(idx + 1);       // already marked -> second occurrence
+        else nums[idx] = -nums[idx];
+    }
+    return res;
+}
+```
+
+## 35. Floyd's cycle on an array (LC 287) and the cycle start (LC 142)
+
+```java
+int findDuplicate(int[] nums) {                    // LC 287: i -> nums[i] is a linked list; the duplicate is the cycle entry
+    int slow = 0, fast = 0;
+    do { slow = nums[slow]; fast = nums[nums[fast]]; } while (slow != fast);   // phase 1: meet inside the cycle
+    slow = 0;
+    while (slow != fast) { slow = nums[slow]; fast = nums[fast]; }             // phase 2: same speed -> entry
+    return slow;
+}
+
+ListNode detectCycle(ListNode head) {              // LC 142: same two phases on a real list
+    ListNode slow = head, fast = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next; fast = fast.next.next;
+        if (slow == fast) {
+            slow = head;
+            while (slow != fast) { slow = slow.next; fast = fast.next; }
+            return slow;
+        }
+    }
+    return null;
+}
+```
+
+## 36. Fast I/O for online assessments (full stdin/stdout program)
+
+```java
+import java.io.*;
+import java.util.*;
+
+public class Main {                                // many OA platforms require the class name Main - read the instructions
+    static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
+
+    static String next() throws IOException {      // next token, even across line breaks
+        while (st == null || !st.hasMoreTokens()) st = new StringTokenizer(br.readLine());
+        return st.nextToken();
+    }
+
+    static int nextInt() throws IOException { return Integer.parseInt(next()); }
+
+    static long nextLong() throws IOException { return Long.parseLong(next()); }
+
+    public static void main(String[] args) throws IOException {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
+        int t = nextInt();                         // example input: t test cases, each = n then n numbers
+        while (t-- > 0) {
+            int n = nextInt();
+            long sum = 0;
+            for (int i = 0; i < n; i++) sum += nextLong();
+            out.println(sum);                      // buffered - fast even for 10^5 lines
+        }
+        out.flush();                               // without flush nothing is printed
+    }
+}
+```
+
+## 37. Quickselect (LC 215, average O(n))
+
+```java
+int kthLargest(int[] nums, int k) {                // random pivot + 3-way partition (safe with many duplicates)
+    int target = nums.length - k;                  // the answer's index in ascending order
+    int lo = 0, hi = nums.length - 1;
+    Random rnd = new Random();
+    while (true) {
+        int pivot = nums[lo + rnd.nextInt(hi - lo + 1)];
+        int lt = lo, i = lo, gt = hi;              // [lo, lt) < pivot, [lt, i) == pivot, (gt, hi] > pivot
+        while (i <= gt) {
+            if (nums[i] < pivot) swap(nums, lt++, i++);
+            else if (nums[i] > pivot) swap(nums, i, gt--);
+            else i++;
+        }
+        if (target < lt) hi = lt - 1;
+        else if (target > gt) lo = gt + 1;
+        else return pivot;                         // target index is inside the == block
+    }
+}
+
+void swap(int[] a, int i, int j) { int t = a[i]; a[i] = a[j]; a[j] = t; }
+```
+
+## 38. 0-1 BFS with ArrayDeque (LC 2290; LC 3286 is the same idea)
+
+```java
+int minimumObstacles(int[][] grid) {               // entering a 1-cell costs 1, a 0-cell costs 0
+    int m = grid.length, n = grid[0].length;
+    int[][] dist = new int[m][n];
+    for (int[] row : dist) Arrays.fill(row, Integer.MAX_VALUE);
+    int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    Deque<int[]> dq = new ArrayDeque<>();
+    dist[0][0] = 0;
+    dq.offerFirst(new int[]{0, 0});
+    while (!dq.isEmpty()) {
+        int[] cur = dq.pollFirst();
+        for (int[] d : dirs) {
+            int r = cur[0] + d[0], c = cur[1] + d[1];
+            if (r < 0 || c < 0 || r >= m || c >= n) continue;
+            int w = grid[r][c];                    // edge weight: 0 or 1
+            if (dist[cur[0]][cur[1]] + w < dist[r][c]) {
+                dist[r][c] = dist[cur[0]][cur[1]] + w;
+                if (w == 0) dq.offerFirst(new int[]{r, c});   // weight 0 -> front (same distance)
+                else dq.offerLast(new int[]{r, c});           // weight 1 -> back
+            }
+        }
+    }
+    return dist[m - 1][n - 1];
+}
+```
+
+## 39. Strongly connected components - Kosaraju (awareness)
+
+```java
+int countSCC(int n, List<List<Integer>> g) {       // g = adjacency list of a directed graph
+    boolean[] seen = new boolean[n];
+    Deque<Integer> order = new ArrayDeque<>();     // finished nodes; the last finished is on top
+    for (int i = 0; i < n; i++) if (!seen[i]) dfs1(i, g, seen, order);
+    List<List<Integer>> rev = new ArrayList<>();
+    for (int i = 0; i < n; i++) rev.add(new ArrayList<>());
+    for (int u = 0; u < n; u++) for (int v : g.get(u)) rev.get(v).add(u);   // reverse every edge
+    Arrays.fill(seen, false);
+    int count = 0;
+    while (!order.isEmpty()) {
+        int u = order.pop();                       // highest finish time first
+        if (!seen[u]) { dfs2(u, rev, seen); count++; }   // one DFS on the reversed graph = one SCC
+    }
+    return count;
+}
+
+void dfs1(int u, List<List<Integer>> g, boolean[] seen, Deque<Integer> order) {
+    seen[u] = true;
+    for (int v : g.get(u)) if (!seen[v]) dfs1(v, g, seen, order);
+    order.push(u);                                 // push after all descendants are finished
+}
+
+void dfs2(int u, List<List<Integer>> rev, boolean[] seen) {
+    seen[u] = true;
+    for (int v : rev.get(u)) if (!seen[v]) dfs2(v, rev, seen);
+}
+// Recursion depth: for n around 10^5 use an iterative DFS (or run the solver in a Thread with a bigger stack).
+```
+
+## 🏋️ How to practise these templates
 1. **Monday of each week:** re-type that week's template from memory (5 min) before solving.
 2. **Every Saturday:** pick 2 random templates from earlier weeks and re-type them.
-3. If a template takes > 5 minutes, mark it ?? in [REVISION_TRACKER.md](REVISION_TRACKER.md).
+3. If a template takes > 5 minutes, mark it 🔴 in [REVISION_TRACKER.md](REVISION_TRACKER.md).

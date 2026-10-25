@@ -1,6 +1,6 @@
 # 🛠️ Plan source (for re-planning only)
 
-This folder holds the **data** the 26-week plan was generated from, plus the tools that generate and check it.
+This folder holds the **data** the 30-week plan was generated from, plus the tools that generate and check it.
 **Day-to-day you never need it.** The Markdown files in the track folders and `01_Daily_Planner/` are the source of truth.
 
 | File | Purpose |
@@ -8,8 +8,8 @@ This folder holds the **data** the 26-week plan was generated from, plus the too
 | `data/track_dsa.py` | DSA plan: patterns, concepts, daily LeetCode IDs, bonus, self-checks |
 | `data/track_java.py` · `track_ai.py` · `track_sd.py` · `track_azure.py` | Session-by-session plans (learn / do / deliverable / self-check / stretch) |
 | `lc_index.json` | LeetCode catalog snapshot (24 Oct 2026): id → title, slug, difficulty, premium flag |
-| `gen.py` | Regenerates `Weeks/*.md`, `ROADMAP_26_WEEKS.md`, `01_Daily_Planner/*.md`, `01_MASTER_CALENDAR.md` |
-| `validate_track.py` | Schema/length checks for a track data file |
+| `gen.py` | Regenerates `Weeks/*.md`, `ROADMAP.md`, `01_Daily_Planner/*.md`, `01_MASTER_CALENDAR.md` |
+| `validate_track.py` | Checks a track data file: 30 weeks, schema, word limits, "Done when", boss Saturdays, company-neutral wording (employer-specific words come from the git-ignored `forbidden_words.local.md`), DSA problem ids/limits |
 | `check_urls.py` · `check_all.py` | Link checker (YouTube titles via oEmbed) for a file or for every Markdown file |
 
 ## ⚠️ Rules

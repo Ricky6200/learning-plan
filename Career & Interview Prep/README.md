@@ -13,15 +13,17 @@
 | W8 | LinkedIn complete (skills, featured repos); follow 30 target companies |
 | W10 | Target-company list (3 tiers, 30+ companies) — table below |
 | W12 | 4 more STAR stories (conflict, failure, ownership, deadline) |
-| W14 | **Resume v1** (1 page) with TicketVerse v1.0; LinkedIn post about the release |
-| W16 | Add AZ-104 to LinkedIn/resume; line up 3–5 people for referrals |
+| W14 | Draft resume bullets for your projects so far (impact + numbers) |
+| W16 | **Resume v1** (1 page) with TicketVerse v1.0 + AZ-104; LinkedIn post about the release; line up 3–5 people for referrals |
 | W18 | **Resume v2**; update Naukri; LinkedIn "Open to work" (recruiters only) |
 | W20 | **Start applying:** 8–10 targeted applications/week + referrals |
 | W22 | Mock HR/behavioural round with your AI mentor |
 | W24 | Salary research + negotiation script |
-| W26 | Pipeline review, plan the next 4 weeks of interviews |
+| W26 | Add AI-200 to LinkedIn/resume; refresh the pipeline (follow-ups, referrals, next interviews) |
+| W28 | **Resume v3**: TicketVerse live on Azure with AI; 2-minute demo video on LinkedIn |
+| W30 | Pipeline review: interviews, offers, negotiation, next 4-week plan |
 
-> 🇮🇳 **Notice periods** in India are often 60–90 days. Applying from W20 means offers around W24–W28 and joining ~month 8–9.
+> 🇮🇳 **Notice periods** in India are often 60–90 days. Applying from W20 (8 Mar 2027) means offers around W24–W30 and joining ~month 9–10.
 > Ask early about notice buy-out; keep studying during the notice period.
 
 ## 📄 Resume rules (1 page, ATS-friendly)

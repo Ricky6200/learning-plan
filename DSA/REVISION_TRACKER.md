@@ -1,17 +1,60 @@
 # 🔁 DSA Revision Tracker (spaced repetition)
 
-> Log every problem right after solving. Re-solve 🔴/🟡 items on **D+1, D+7, D+21** (Saturday revision slot + Sunday buffer).
-> Your AI mentor reads this file to pick Sunday test problems and remediation work.
+> Log every problem right after solving. Your AI mentor reads this file to pick Sunday test problems, remediation work and fix-it items.
 
 **Legend:** 🟢 solved alone within time · 🟡 needed a hint or over time · 🔴 needed the full solution
-**Re-solve rule:** 🔴 → re-solve D+1, D+7, D+21 · 🟡 → D+7, D+21 · 🟢 → D+21 (only if it is a "classic")
+
+## 🔄 How re-solving works (30-week plan)
+- **Scheduled re-solves are already in every week file** (the "Daily re-solve" table) — you don't plan them yourself:
+  - **Mon–Fri:** 1 problem from the same weekday of the previous problem week (D+7; in Week 1 it is yesterday's problem).
+  - **Saturday:** 1–2 quick Easy/Medium problems from 3 weeks earlier (D+21) — only 1 when Saturday's new problems need more than 50 min.
+  - **Least-re-solved first:** no problem comes back more than twice while others wait (176 different problems over the plan).
+- **Targets:** Easy 10 · Medium 20 · Hard 35 min, from memory, no notes. Missed the target → mark that re-solve 🔴.
+- **Your own 🔴 rule:** re-solve every 🔴 of the week in the Sunday preview slot; if it is still 🔴, the mentor puts it on next week's fix-it list.
+- **Re-solve weeks (no new problems):** W26 — light, 2 a day (AI-200 exam week) · W30 — final speed-run, 4 a day.
+- **Contests:** on contest Sundays (even weeks from W10: W10, W12 … W30) log the result below and the one problem you up-solved during the week.
 
 ## 📊 Running totals (update every Sunday)
-| Week | Core done | Bonus done | 🟢 | 🟡 | 🔴 | Contest rating |
-|---|---|---|---|---|---|---|
-| W01 | /13 | | | | | — |
+| Week | Core done | Re-solves done | Bonus done | 🟢 | 🟡 | 🔴 | Contest / mock |
+|---|---|---|---|---|---|---|---|
+| W01 | /12 | /6 | | | | | — |
+| W02 | /12 | /7 | | | | | — |
+| W03 | /11 | /6 | | | | | — |
+| W04 ⚔️ | /11 | /6 | | | | | — |
+| W05 | /11 | /7 | | | | | — |
+| W06 | /11 | /6 | | | | | — |
+| W07 | /12 | /7 | | | | | — |
+| W08 | /11 | /6 | | | | | — |
+| W09 ⚔️ | /10 | /6 | | | | | — |
+| W10 | /11 | /7 | | | | | 🏆 |
+| W11 | /11 | /6 | | | | | |
+| W12 | /12 | /6 | | | | | 🏆 |
+| W13 | /11 | /7 | | | | | |
+| W14 | /11 | /6 | | | | | 🏆 |
+| W15 ⚔️ | /11 | /6 | | | | | mock |
+| W16 | /10 | /7 | | | | | 🏆 |
+| W17 | /10 | /6 | | | | | mock |
+| W18 | /10 | /6 | | | | | 🏆 |
+| W19 | /11 | /6 | | | | | mock · OA sim |
+| W20 ⚔️ | /11 | /6 | | | | | 🏆 · mock · OA sim |
+| W21 | /10 | /7 | | | | | mock |
+| W22 | /9 | /6 | | | | | 🏆 · mock |
+| W23 | /10 | /7 | | | | | mock |
+| W24 | /10 | /7 | | | | | 🏆 · mock |
+| W25 ⚔️ | /9 | /6 | | | | | virtual contest · mock |
+| W26 | — | /12 | | | | | 🏆 |
+| W27 | /7 | /6 | | | | | 2 virtual contests · mock |
+| W28 | /11 | /6 | | | | | 🏆 · 3 mocks |
+| W29 | /8 | /7 | | | | | 2 OA sims · 2 contests · mock |
+| W30 👑 | — | /24 | | | | | 🏆 · final mock loop |
+| **Total** | **/294** | **/214** | **/202** | | | | |
+
+## 🏆 Contests, OA simulations & mocks
+| Date | Type (contest / virtual / OA sim / mock) | Solved | Score or rank | Up-solved (LC #) | What to fix |
+|---|---|---|---|---|---|
+| | | | | | |
 
 ## 📝 Log
-| Date | LC # | Problem | Pattern | Key insight (1 line) | Time | Result | Re-solve dates |
+| Date | LC # | Problem | Pattern | Key insight (1 line) | Time | Result | Re-solves (date · time · 🟢/🟡/🔴) |
 |---|---|---|---|---|---|---|---|
-| _(example — delete this row)_ | 1480 | Running Sum of 1d Array | Prefix sum | running total in place | 6m | 🟢 | — |
+| _(example — delete this row)_ | 1480 | Running Sum of 1d Array | Prefix sum | running total in place | 6m | 🟢 | 27 Oct · 4m · 🟢 |

@@ -23,16 +23,22 @@
 
 | # | Section | Time | Composition | Scoring |
 |---|---|---|---|---|
-| 1 | 🧩 DSA | 45 min | 2 coding problems in Java on the week's pattern (1 Easy/Medium + 1 Medium; from W9 the 2nd may be a Hard-lite) — **not** from the week's list (use similar LeetCode problems the learner hasn't solved; check the plan's lists to avoid repeats) + 5 "which pattern & why" one-liners | 2 × 40 (correctness 20 · optimal complexity 8 · edge cases 6 · code clarity 6) + 5 × 4 |
+| 1 | 🧩 DSA | 45 min | 2 coding problems in Java (1 Easy/Medium + 1 Medium; from W9 the 2nd may be a Hard-lite) — **not** from the plan's lists (use similar LeetCode problems the learner hasn't solved; check the plan's lists to avoid repeats). Q1 = this week's pattern; **from W6, Q2 = an unseen problem from an EARLIER pattern** (no hint which). The learner first writes the approach in 2–3 lines, then codes. + 5 "which pattern & why" one-liners | 2 × 40 (approach written first 5 · correctness 17 · optimal complexity 7 · edge cases 6 · code clarity 5) + 5 × 4 |
 | 2 | ☕ Java | 30 min | 8 questions: mix of MCQ, short answer, **output prediction** (give a code snippet), **spot-the-bug**, "explain like an interviewer" + 1 small coding task (≤ 15 min) | 8 × 8 + task 36 (correct 20 · idiomatic/modern Java 8 · edge cases/tests 8) |
 | 3 | 🏗️ System Design | 30 min | 5 concept questions + 1 mini design: LLD (classes, relationships, key methods, pattern used — in text) **or** HLD (requirements, components, data flow, 2 trade-offs — in text) | 5 × 10 + design 50 (requirements 10 · structure/components 15 · trade-offs/patterns 15 · clarity 10) |
 | 4 | 🤖 AI | 25 min | 6 questions (concepts + 1 Python code-reading/debug) + 1 scenario ("design/choose/fix") | 6 × 10 + scenario 40 |
-| 5 | ☁️ Azure | 20 min | 12 exam-style questions for the **current cert** (AZ-900 W1–W5, AZ-104 W5–W16, AI-200 W16–W26): single-choice, multi-select, scenario, "which service" | % correct (each ≈ 8.33) |
+| 5 | ☁️ Azure | 20 min | 12 exam-style questions for the **current cert** (AZ-900 W1–W5, AZ-104 W5–W16, AI-200 W16–W26) — from W27: migration/architecture scenarios (Azure SQL vs MI, Azure Migrate, landing zones, IaC, DevOps): single-choice, multi-select, scenario, "which service" | % correct (each ≈ 8.33) |
 
 **Difficulty mix per section:** ~40% recall · ~40% application · ~20% interview-tricky (edge cases, trade-offs).
 **Spaced repetition (from Week 3):** each section includes 1–2 questions from earlier weeks — prioritise WEAKNESS_TRACKER items due now.
 **Question quality rules:** don't reuse self-check questions verbatim (use them as seeds); vary formats; Azure questions must map to the
 official "skills measured" in `Azure Cloud/CERTIFICATION_GUIDE.md`; never test content from future weeks.
+
+**DSA contest Sundays (even weeks from W10: W10, W12, … W30):** the learner takes the LeetCode Weekly Contest (8:00 AM IST, 90 min)
+instead of Section 1. Score = Q1 25 · Q2 30 · Q3 30 · Q4 15 (accepted only) and the learner up-solves one missed problem during the week
+(log it in `DSA/REVISION_TRACKER.md`). If the contest is missed, run Section 1 as usual.
+**DSA mocks:** from W14, on non-contest Sundays Q1 is a talk-aloud mock (the mentor plays the interviewer: clarifying questions first,
+2 follow-ups after the solution); from W20 every non-contest Sunday is run this way.
 
 ## 4) Grading behaviour
 - Strict but fair, partial credit allowed. For every deduction write **one line why**.
@@ -40,10 +46,11 @@ official "skills measured" in `Azure Cloud/CERTIFICATION_GUIDE.md`; never test c
 - Status per section: 🟢 ≥ 80 · 🟡 60–79 · 🔴 < 60. Overall = DSA 25% · Java 25% · SD 20% · AI 15% · Azure 15%.
 - A **topic** (not just a section) is "weak" if the learner lost ≥ 50% of the marks of the questions on that topic.
 
-## 5) Boss weeks (W4, W9, W14, W19, W23, W26)
-- Same 5 sections, slightly harder, plus **one integrated Boss question** inside the most relevant section (e.g., W14: "design + code the seat-hold logic and explain its transaction isolation").
+## 5) Boss weeks (W4, W9, W15, W20, W25, W30)
+- Same 5 sections, slightly harder, plus **one integrated Boss question** inside the most relevant section (e.g., W15: "design + code the seat-hold logic and explain its transaction isolation").
 - **Boss defeated** if overall ≥ 70 and no section < 50 → +300 XP and the Season badge. Otherwise schedule a **30-min Rematch** (only failed sections) next Sunday.
-- W26 Final Boss = full mock interview loop: DSA (2 problems) · Java/Spring deep-dive · LLD · HLD · AI · behavioural (STAR).
+- W30 Final Boss = full mock interview loop: DSA (2 problems, talk-aloud) · Java/Spring deep-dive · LLD · HLD · AI · behavioural (STAR).
+- Exam weeks (W5 AZ-900, W16 AZ-104, W26 AI-200) are never boss weeks; a Mini Test is fine on those Sundays.
 
 ## 6) After grading — write & update (all mandatory)
 1. Create `Weekly_Tests/Week-NN-Test.md` using the template in Section 8 (questions, learner answers — keep code verbatim, model answers, marks, feedback).

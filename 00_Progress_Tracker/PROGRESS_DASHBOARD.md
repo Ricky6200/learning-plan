@@ -6,6 +6,7 @@
 | Field | Value |
 |---|---|
 | Plan start | Mon 26 Oct 2026 |
+| Plan end | Sun 23 May 2027 (Week 30) |
 | Calendar position (today) | Pre-start (Week 0) |
 | **Actual position** | Week 1 · Day 1 (Mon 26 Oct) — not started |
 | Season | Season 1 — Foundation Forge |
@@ -17,13 +18,13 @@
 ## 📈 Track progress
 | Track | Current week | Sessions done | % of plan | Last test score | Trend |
 |---|---|---|---|---|---|
-| 🧩 DSA | W1 | 0 / 156 | 0% | — | — |
-| ☕ Java Backend | W1 | 0 / 156 | 0% | — | — |
-| 🤖 AI Engineering | W1 | 0 / 130 | 0% | — | — |
-| 🏗️ System Design | W1 | 0 / 104 | 0% | — | — |
-| ☁️ Azure | W1 | 0 / 104 | 0% | — | — |
+| 🧩 DSA | W1 | 0 / 180 | 0% | — | — |
+| ☕ Java Backend | W1 | 0 / 180 | 0% | — | — |
+| 🤖 AI Engineering | W1 | 0 / 150 | 0% | — | — |
+| 🏗️ System Design | W1 | 0 / 120 | 0% | — | — |
+| ☁️ Azure | W1 | 0 / 120 | 0% | — | — |
 
-DSA problems: **0 / 325 core** · 0 / 118 bonus · 🟢 0 · 🟡 0 · 🔴 0
+DSA problems: **0 / 294 core** · 0 / 202 bonus · 🟢 0 · 🟡 0 · 🔴 0 · re-solves done: 0
 
 ## 🎓 Certifications
 | Exam | Target | Booked? | Practice score | Result |
@@ -36,29 +37,32 @@ DSA problems: **0 / 325 core** · 0 / 118 bonus · 🟢 0 · 🟡 0 · 🔴 0
 | Milestone | Target week | Status |
 |---|---|---|
 | `java-mastery` repo created | W1 | ☐ |
-| TerminalGPT (AI) | W4 | ☐ |
-| SemanticSearch API (AI) | W6 | ☐ |
-| DocuMind RAG v2 (AI) | W10 | ☐ |
-| TicketVerse v0 (catalog APIs) | W11 | ☐ |
-| **TicketVerse v1.0** (secure monolith, tests) | W14 | ☐ |
-| CareerPilot multi-agent + MCP (AI) | W14–W16 | ☐ |
-| TicketVerse microservices + Kafka saga | W18 | ☐ |
-| TicketVerse full system in Docker | W19 | ☐ |
-| TicketVerse on Kubernetes (Helm) | W21 | ☐ |
-| CI/CD pipeline green | W22 | ☐ |
-| **TicketVerse live on Azure** | W23 | ☐ |
-| "Ask TicketVerse" AI assistant | W24 | ☐ |
-| Demo video + docs | W25 | ☐ |
+| TerminalGPT (AI) | W6 | ☐ |
+| SemanticSearch API (AI, boss) | W9 | ☐ |
+| DocuMind RAG v2 (AI) | W13 | ☐ |
+| TicketVerse v0 (catalog APIs) | W13 | ☐ |
+| CareerPilot agents + MCP server (AI) | W15–W17 | ☐ |
+| **TicketVerse v1.0** (secure monolith, tests) | W16 | ☐ |
+| TicketVerse split into microservices | W18 | ☐ |
+| Public AI demo (Hugging Face Space) + CI eval gate | W19 | ☐ |
+| Kafka saga — zero double bookings | W21 | ☐ |
+| FineTune Lab (LoRA) | W21 | ☐ |
+| TicketVerse full system in Docker | W22 | ☐ |
+| TicketVerse on Kubernetes (Helm) | W24 | ☐ |
+| CI/CD pipeline green | W26 | ☐ |
+| `ticketverse-ai`: search, booking agent, summaries | W27 | ☐ |
+| **TicketVerse live on Azure (with AI)** | W28 | ☐ |
+| Demo video + docs | W29 | ☐ |
 
 ## ⚔️ Boss battles
 | Boss | Week | Result |
 |---|---|---|
 | S1 Foundation Forge | W4 | — |
 | S2 Concurrency Crucible | W9 | — |
-| S3 Spring Citadel | W14 | — |
-| S4 Distributed Kingdom | W19 | — |
-| S5 Cloud Ascension | W23 | — |
-| 👑 Final Boss: The Offer | W26 | — |
+| S3 Spring Citadel | W15 | — |
+| S4 Distributed Kingdom | W20 | — |
+| S5 Cloud Ascension | W25 | — |
+| 👑 Final Boss: The Offer | W30 | — |
 
 ## 🏅 Badges earned
 _None yet._ Available badges:

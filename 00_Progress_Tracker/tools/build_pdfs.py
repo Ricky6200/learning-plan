@@ -13,17 +13,17 @@ EDGE_CANDIDATES = [r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.ex
 
 BUNDLES = [
     ("00_Master_Plan.pdf", "Master Plan", "", ["00_START_HERE.md", "03_SETUP_YOUR_LAPTOP.md", "01_MASTER_CALENDAR.md", "02_GAP_ANALYSIS_What_You_Were_Missing.md"], []),
-    ("01_Daily_Planner/Daily_Planner_All_26_Weeks.pdf", "Daily Planner — all 26 weeks", "01_Daily_Planner", [], ["Week-*.md"]),
+    ("01_Daily_Planner/Daily_Planner_All_30_Weeks.pdf", "Daily Planner — all 30 weeks", "01_Daily_Planner", [], ["Week-*.md"]),
     (f"{JAVA}/Java_Track_Complete_Plan.pdf", "Java Backend Track", JAVA,
-     ["README.md", "ROADMAP_26_WEEKS.md", "Project_TicketVerse/PROJECT_SPEC.md"], ["Weeks/Week-*.md", "INTERVIEW_QUESTION_BANK.md", "*.md", "RESOURCES.md"]),
+     ["README.md", "ROADMAP.md", "Project_TicketVerse/PROJECT_SPEC.md"], ["Weeks/Week-*.md", "INTERVIEW_QUESTION_BANK.md", "*.md", "RESOURCES.md"]),
     ("DSA/DSA_Track_Complete_Plan.pdf", "DSA Track", "DSA",
-     ["README.md", "ROADMAP_26_WEEKS.md", "PATTERNS_CHEATSHEET.md"], ["Weeks/Week-*.md", "*.md", "RESOURCES.md"]),
+     ["README.md", "ROADMAP.md", "PATTERNS_CHEATSHEET.md"], ["Weeks/Week-*.md", "*.md", "RESOURCES.md"]),
     ("System Design/System_Design_Track_Complete_Plan.pdf", "System Design Track", "System Design",
-     ["README.md", "ROADMAP_26_WEEKS.md", "HLD_INTERVIEW_FRAMEWORK.md", "LLD_MACHINE_CODING_FRAMEWORK.md"], ["Weeks/Week-*.md", "*.md", "RESOURCES.md"]),
+     ["README.md", "ROADMAP.md", "HLD_INTERVIEW_FRAMEWORK.md", "LLD_MACHINE_CODING_FRAMEWORK.md"], ["Weeks/Week-*.md", "*.md", "RESOURCES.md"]),
     ("Azure Cloud/Azure_Track_Complete_Plan.pdf", "Azure Cloud Track", "Azure Cloud",
-     ["README.md", "ROADMAP_26_WEEKS.md", "CERTIFICATION_GUIDE.md", "COST_SAFETY_AND_ACCOUNT_SETUP.md"], ["Weeks/Week-*.md", "*.md", "RESOURCES.md"]),
+     ["README.md", "ROADMAP.md", "CERTIFICATION_GUIDE.md", "COST_SAFETY_AND_ACCOUNT_SETUP.md"], ["Weeks/Week-*.md", "*.md", "RESOURCES.md"]),
     ("AI Engineering/AI_Engineering_Track_Complete_Plan.pdf", "AI Engineering Track", "AI Engineering",
-     ["README.md", "ROADMAP_26_WEEKS.md", "PROJECTS.md"], ["Weeks/Week-*.md", "AI_INTERVIEW_QUESTION_BANK.md", "*.md", "RESOURCES.md"]),
+     ["README.md", "ROADMAP.md", "PROJECTS.md"], ["Weeks/Week-*.md", "AI_INTERVIEW_QUESTION_BANK.md", "*.md", "RESOURCES.md"]),
     ("Career & Interview Prep/Career_and_Interview_Prep.pdf", "Career & Interview Prep", "Career & Interview Prep", ["README.md", "STAR_STORY_BANK.md"], []),
 ]
 EXCLUDE = {"REVISION_TRACKER.md"}  # living logs are not printed
@@ -219,7 +219,7 @@ def build(edge, out_rel, title, folder, first, patterns):
     if not files:
         print(f"skip (no files): {out_rel}"); return False
     toc = "".join(f"<li>{html.escape(os.path.relpath(f, os.path.join(ROOT, folder)).replace(os.sep, ' / '))}</li>" for f in files)
-    body = (f'<div class="cover"><h1>{html.escape(title)}</h1><p>26-Week Career Plan · 26 Oct 2026 → 25 Apr 2027</p>'
+    body = (f'<div class="cover"><h1>{html.escape(title)}</h1><p>30-Week Career Plan · 26 Oct 2026 → 23 May 2027</p>'
             f'<p>Read-only copy — the Markdown files are the source of truth.</p><ol class="toc">{toc}</ol></div>')
     for f in files:
         with open(f, encoding="utf-8") as fh:
