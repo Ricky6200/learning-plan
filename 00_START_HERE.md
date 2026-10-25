@@ -52,7 +52,7 @@ Each folder also has a **PDF** copy for reading/printing. Markdown files are the
 | **Sun** | 📝 **Weekly test (150m)** | 🔍 Retro (30m) | 👀 Preview & revise (30m) | | |
 
 - Take a 5-minute break between blocks. Do DSA **first** (fresh brain). Blocks C/D may be swapped or merged into one 90-min block for labs.
-- Saturday's 3rd DSA problem is a 🔥 **weekend challenge** (often a Hard) — finish it in Sunday's preview slot if Saturday runs out.
+- Saturday's Hard DSA problem is a 🔥 **weekend challenge** — finish it in Sunday's preview slot if Saturday runs out.
 - **Minimum viable day** (sick/tired/office crunch): 1 DSA problem + 30 min Java → streak survives. **Never miss two days in a row.**
 
 ---
