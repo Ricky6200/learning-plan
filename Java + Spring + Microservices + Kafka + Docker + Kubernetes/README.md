@@ -127,9 +127,9 @@ TicketVerse versions: `v0.1.0` (W13) → `v1.0.0` (W16) → `v1.1.0` five servic
 ### Environment notes (company laptop)
 
 - **W1+:** Corretto 25 for learning (work stays on JDK 11); Maven through the company JFrog. A `PKIX path building failed` error when your code calls an internet API means Java does not trust the corporate proxy's certificate: add the VM option `-Djavax.net.ssl.trustStoreType=Windows-ROOT` (Section 5 of `03_SETUP_YOUR_LAPTOP.md`).
-- **W11+:** Docker is installed by IT and images come through the company's Docker mirror in JFrog. Keep the mirror prefix out of every repo: images as `${MIRROR:-}postgres:18` with `MIRROR` in a git-ignored `.env`, and `hub.image.name.prefix` in `~/.testcontainers.properties`. No Docker yet? Use a GitHub Codespace on your personal laptop.
+- **W11+:** on the company laptop the container engine is **Podman** inside the company's WSL Ubuntu image (Docker isn't allowed there): `alias docker=podman`, Compose via `podman-compose`, and Testcontainers runs inside WSL with `DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock` and `TESTCONTAINERS_RYUK_DISABLED=true`. Images come through the company's mirror in JFrog. Keep the mirror prefix out of every repo: images as `${MIRROR:-}postgres:18` with `MIRROR` in a git-ignored `.env`, and `hub.image.name.prefix` in `~/.testcontainers.properties`. Not set up yet? Use a GitHub Codespace on your personal laptop.
 - **W22:** `ticketverse` goes public only after a secret scan (gitleaks) and a check that no company name or hostname was ever committed.
-- **W23–W24:** kubectl + kind (+ Helm) from IT; fallback: a 4-core Codespace pulling your images from GHCR, or Killercoda for plain manifests.
+- **W23–W24:** kubectl, kind and Helm ship with the company's WSL Ubuntu image (kind on Podman: `KIND_EXPERIMENTAL_PROVIDER=podman`); fallback: a 4-core Codespace pulling your images from GHCR, or Killercoda for plain manifests.
 - **W27:** LLM calls run only in a 4-core Codespace (free LLM APIs are blocked on the company network).
 - **W28:** personal Azure account work happens on the personal laptop or in a Codespace.
 

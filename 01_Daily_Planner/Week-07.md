@@ -1,6 +1,6 @@
 # 🗓️ Week 07 · 07 Dec → 13 Dec 2026 · Season 2 — Concurrency Crucible
 
-> 🐳 **Docker approved yet?** Java needs it from Mon 4 Jan (Week 11); next week's AI Docker lessons run inside your Codespace. Not approved? Chase IT this week — the Codespace fallback works for Java too.  
+> 🐳 **Podman ready?** In the WSL Ubuntu terminal: `podman --version`, `podman login` to the company JFrog, then run `hello-world` through the mirror (Section 3 of [03_SETUP_YOUR_LAPTOP.md](../03_SETUP_YOUR_LAPTOP.md)). Java needs it from Mon 4 Jan (Week 11); next week's AI Docker lessons run inside your Codespace — the same commands work with `podman`.  
 > ⭐ XP available: ~475 (blocks 250 · DSA 125 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-07.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-07.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-07.md) · [🏗️ System Design](../System%20Design/Weeks/Week-07.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-07.md)  

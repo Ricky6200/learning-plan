@@ -1,6 +1,6 @@
 # 🗓️ Week 21 · 15 Mar → 21 Mar 2027 · Season 5 — Cloud Ascension
 
-> ☸️ **kubectl + kind needed from Mon 29 Mar** (Java Week 23). Not approved? Use a Codespace / Azure Cloud Shell / Killercoda.  
+> ☸️ **kubectl + kind needed from Mon 29 Mar** (Java Week 23) — from the company's WSL Ubuntu image; with Podman create clusters with `KIND_EXPERIMENTAL_PROVIDER=podman`. Not working? Use a Codespace / Azure Cloud Shell / Killercoda.  
 > ⭐ XP available: ~490 (blocks 250 · DSA 140 · test 100)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-21.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-21.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-21.md) · [🏗️ System Design](../System%20Design/Weeks/Week-21.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-21.md)  

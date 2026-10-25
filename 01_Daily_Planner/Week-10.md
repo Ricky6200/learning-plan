@@ -1,6 +1,6 @@
 # 🗓️ Week 10 · 28 Dec → 03 Jan 2027 · Season 3 — Spring Citadel
 
-> 🐳 **Next Monday (4 Jan) Java starts Docker essentials.** Docker on the company laptop, or a Codespace on your personal laptop. VisualVM/JMC aren't installed — the JDK's own `jcmd` and `jfr` tools cover the JVM lab.  
+> 🐳 **Next Monday (4 Jan) Java starts containers** — Podman in the company's WSL Ubuntu image (`alias docker=podman`; Compose via `podman-compose`), or a Codespace on your personal laptop. VisualVM/JMC aren't installed — the JDK's own `jcmd` and `jfr` tools cover the JVM lab.  
 > 🎉 Fri 01 Jan: 🎆 **New Year** — Lite day allowed; catch up on Saturday/Sunday  
 > ⭐ XP available: ~475 (blocks 250 · DSA 125 · test 100)  
 

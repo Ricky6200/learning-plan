@@ -92,7 +92,7 @@ Week numbers refer to the **30-week plan** (W1 = 26 Oct 2026, W30 = 17 May 2027)
 | [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) | Latest | Free (Community-level) features are enough for this track |
 | Git + GitHub | Latest | Repo `system-design-lab`, commit every session |
 | GitHub Actions | — | `mvn -B test` workflow + status badge in W27 ([Java with Maven](https://docs.github.com/en/actions/tutorials/build-and-test-code/java-with-maven), [status badge](https://docs.github.com/en/actions/how-tos/monitor-workflows/add-a-status-badge)); Java writes its first `ci.yml` in W14 |
-| [Docker Desktop](https://docs.docker.com/desktop/) + [`redis` image](https://hub.docker.com/_/redis) | `redis:8` | Only for stretches: NGINX (W3) and Postgres `EXPLAIN` (W6) run in GitHub Codespaces; Redis (W11, W18) runs on Docker from Java W11 (~4 Jan) or in Codespaces. Pull images through the company's Docker mirror in JFrog |
+| [Docker Desktop](https://docs.docker.com/desktop/) + [`redis` image](https://hub.docker.com/_/redis) | `redis:8` | Only for stretches: NGINX (W3) and Postgres `EXPLAIN` (W6) run in GitHub Codespaces; Redis (W11, W18) runs from Java W11 (~4 Jan) on Podman in the company's WSL Ubuntu image (same commands as Docker) or in Codespaces. Pull images through the company's mirror in JFrog |
 | [Testcontainers](https://testcontainers.com/) | 2.0.x | Optional after Java W12 Sat: real Redis in JUnit tests (W18 stretch); set the [image name prefix](https://java.testcontainers.org/features/image_name_substitution/) to the company's Docker mirror |
 | [Excalidraw](https://excalidraw.com/) | Web | Primary diagram tool |
 | [Mermaid Live Editor](https://mermaid.live/) | Web | Draft UML before pasting into Markdown |

@@ -130,7 +130,8 @@ Decided on 24 Oct 2026, based on tests run on your laptop:
   network — and for everything job-search related.
 - Code lives in your **personal GitHub** (personal email), never the company GitLab. Certifications go on a **personal Microsoft account**.
 - Installs only via the Company Portal / JFrog Artifactory; never bypass a block. Java: **Amazon Corretto 25** for learning projects
-  (work stays on JDK 11); Python: **3.12 + pip + uv through JFrog**; still to do: ask IT for **Docker/Rancher + WSL2**.
+  (work stays on JDK 11); Python: **3.12 + pip + uv through JFrog**; VS Code Python + Jupyter extensions ✅; still to do: install the
+  company's **WSL Ubuntu image (Podman, kubectl, kind, Helm inside)** from Company Portal — self-service.
 - Done 24 Oct: accounts, tools, Git identity + push test, pip/uv through JFrog, Corretto 25, private plan backup (`learning-plan`).
 
 The guide has the step-by-step checklist, Artifactory pip setup, "No uv?" command equivalents, the Azure account decision,

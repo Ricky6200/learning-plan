@@ -2,7 +2,7 @@
 
 > ⚔️ **BOSS WEEK** — Saturday blocks are timed Boss Battles; beat the boss on Sunday for +300 XP  
 > 🏁 Milestone: ⚔️ Boss S2  
-> ☁️ **Upgrade your personal Azure account to pay-as-you-go this week** (Azure Tuesday) — the $200 credit ends about 30 days after sign-up; keep the budget alerts on. 🐳 Docker needed from Mon 4 Jan (Java Week 11).  
+> ☁️ **Upgrade your personal Azure account to pay-as-you-go this week** (Azure Tuesday) — the $200 credit ends about 30 days after sign-up; keep the budget alerts on. 🐳 Mon 28 Dec: Podman + Testcontainers check before Java Week 11.  
 > 🎉 Fri 25 Dec: 🎄 **Christmas** — Lite day allowed (1 DSA problem + 30 min Java); catch up in Sunday's preview slot  
 > ⭐ XP available: ~790 (blocks 250 · DSA 140 · test 100 · boss 300)  
 

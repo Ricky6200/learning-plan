@@ -1,6 +1,6 @@
 # 🗓️ Week 14 · 25 Jan → 31 Jan 2027 · Season 3 — Spring Citadel
 
-> ☸️ **Ask IT for kubectl + kind now** — needed from Mon 29 Mar (Java Week 23). Fallback: Azure Cloud Shell / Killercoda / a Codespace.  
+> ☸️ **Check your Kubernetes tools now** — kubectl, kind and Helm ship with the company's WSL Ubuntu image (`kubectl version --client`, `kind version`, `helm version`); needed from Mon 29 Mar (Java Week 23). Fallback: Azure Cloud Shell / Killercoda / a Codespace.  
 > 🎉 Tue 26 Jan: 🇮🇳 **Republic Day** — if you're off work, use the extra time to clear your 🔴 re-solves and catch up — next week (Week 15) is a Boss week  
 > ⭐ XP available: ~490 (blocks 250 · DSA 140 · test 100)  
 
