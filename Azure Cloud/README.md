@@ -45,8 +45,8 @@
 
 That's 3 h 15 min of Azure per week. Exam days (Fridays of W5, W16, W26) borrow extra time from another block once — that's expected.
 
-**Where you work:** W1–W5 on the company laptop (Azure CLI + `az bicep build` only — personal sign-in and the Azure/Bicep
-VS Code extensions are blocked there). W5 Sat sets up your **personal laptop**; from W6 (personal free account activated
+**Where you work:** W1–W5 on the company laptop (Azure CLI, `az bicep build`, and the Bicep, Azure Resources, Azure Functions and
+Azurite VS Code extensions; personal Microsoft sign-in is blocked there). W5 Sat sets up your **personal laptop**; from W6 (personal free account activated
 **Tue 1 Dec 2026**) every live lab runs there or in a GitHub Codespace, and cross-track code arrives through GitHub.
 
 ## 3. How to run one session — Predict → Type → Verify → Explain
@@ -85,7 +85,7 @@ Writing-confidence tips: start from a 5-line script and grow it; lean on `--help
 |---|---|---|---|---|
 | W1 | 26 Oct–1 Nov | Cloud concepts and a safe Azure setup | LAB: CLI, Cloud Shell, guardrail kit | Fri: request exam vouchers |
 | W2 | 2–8 Nov | Architecture, compute and networking services | LAB: VM + App Service via CLI | Sat: book AZ-900 |
-| W3 | 9–15 Nov | Storage, identity and security fundamentals | LAB: storage tiers, SAS, RBAC (Path B: Azurite in a Codespace) | |
+| W3 | 9–15 Nov | Storage, identity and security fundamentals | LAB: storage tiers, SAS, RBAC (Path B: Azurite via the VS Code extension, or in a Codespace) | |
 | W4 | 16–22 Nov | Governance, cost, monitoring tools | ⚔️ BOSS: AZ-900 practice run + speed round | |
 | W5 | 23–29 Nov | AZ-900 exam week + AZ-104 kickoff | LAB: personal-laptop workstation + AZ-104 skills map | 🎓 Fri 27 Nov: AZ-900 |
 | W6 | 30 Nov–6 Dec | Entra ID users, groups, licenses, SSPR | LAB: AZ-104 Lab 01 | Tue 1 Dec: free account + P2 trial via `labadmin` |
@@ -149,7 +149,7 @@ Suggested repo layout: `azure-labs/` → `scripts/`, `w01/` … `w30/`, `py/`, `
 | Pitfall | Bites in | What to do |
 |---|---|---|
 | Microsoft Learn sandboxes no longer exist — exercises need your own subscription | W1–W5 | Choose Path A/B in [COST_SAFETY_AND_ACCOUNT_SETUP.md](COST_SAFETY_AND_ACCOUNT_SETUP.md) |
-| Personal sign-in and the Azure/Bicep VS Code extensions are blocked on the company laptop | W1–W5, then always | Company laptop: `az` CLI + `az bicep build` only; live labs on the personal laptop (set up W5 Sat) or a Codespace |
+| Personal Microsoft sign-in is blocked on the company laptop | W1–W5, then always | Company laptop: `az` CLI, `az bicep build` and the Bicep/Azurite VS Code extensions; live labs on the personal laptop (set up W5 Sat) or a Codespace |
 | New VNets default to private subnets, so a VM may have no internet | W2, W10, W12 | Give it an explicit outbound path (public IP, NAT gateway or load balancer) |
 | Dynamic groups and SSPR need Entra ID P1+; the P2 trial is often unavailable to the personal account that created the tenant | W6 | Create cloud-only `labadmin` and start the trial as that user; fallback: the Applied Skills lab |
 | The $200 credit ends 30 days after activation and the subscription is disabled | W9 | Upgrade to pay-as-you-go on W9 Tue (22 Dec), recheck budgets + anomaly alert |

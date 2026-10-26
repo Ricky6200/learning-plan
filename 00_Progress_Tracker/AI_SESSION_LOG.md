@@ -98,4 +98,16 @@
   links: 1,605 external OK (Glassdoor blocks scripts — fine in a browser), 1,287 internal OK; 8 PDFs rebuilt. Privacy: employer
   words moved from `validate_track.py` into git-ignored `forbidden_words.local.md`; an unpushed auto-commit containing them was
   folded into a clean commit. **Note: GitHub repo `learning-plan` is PUBLIC** (user told; their call whether to make it private).
-- NEXT STEP: **Mon 26 Oct, Week 1 Day 1** — start with the magic prompt; remind N3/N13/N12/N6/N14 (AI_MEMORY Section 11).
+- 26 Oct 14:00–14:40 IST: **N3 done — Podman.** Company WSL Ubuntu image installed (WSL 2, Podman 5.4.1; kubectl v1.32, kind v0.27,
+  Helm v3.18 and podman-compose included). JFrog login saved permanently with `podman login --compat-auth-file ~/.docker/config.json`
+  (the default login sits in a tmpfs that WSL wipes; this file is also what Testcontainers reads); verified after reopening WSL;
+  `hello-world` pulled through the company mirror. Gotcha: the registry username is case-sensitive (copy it from the Artifactory
+  profile). The rootless "`/` is not a shared mount" warning is harmless for now (re-check with kind on 25 Jan).
+  Still open this week: N12 (L&D message), N13 (VS Code extension allow-list — optional), N6 (policy check), N14 (`ipykernel` in the
+  AI venv, during AI W1 Mon). Uncommitted changes: AI_MEMORY, START_HERE, dashboard, session log, gen.py + Week-07 (user commits).
+- 26 Oct 14:45–15:00 IST: **N13 closed without IT.** The user installed the Bicep, Azure Resources, Azure Functions, Azurite, Kubernetes
+  and AKS extensions — the policy allows Microsoft-published extensions (the 24 Oct "blocked" reading was wrong). D25 corrected;
+  Azure W1 Sat now uses the Bicep extension + `az bicep build`, Azure W3 Sat Path B runs Azurite through the extension (Codespace
+  fallback); Azure README/RESOURCES/cost guide and planner notes refreshed. Open this week: N12 (L&D), N6 (policy), N14 (`ipykernel`).
+- NEXT STEP: Week 1 is running (from Mon 26 Oct) — start each session with the magic prompt; remind N12/N13/N6/N14 until done
+  (AI_MEMORY Section 11).

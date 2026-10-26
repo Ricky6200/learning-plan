@@ -2,7 +2,7 @@
 
 > ⚔️ **BOSS WEEK** — Saturday blocks are timed Boss Battles; beat the boss on Sunday for +300 XP  
 > 🏁 Milestone: ⚔️ Boss S4 · 💼 Start applying  
-> ☁️ Next week's Azure Functions labs: run `func` (Functions Core Tools) in a Codespace or on your personal laptop — the Azure VS Code extensions aren't allowed on the company laptop.  
+> ☁️ Next week's Azure Functions labs need Functions Core Tools (`func`), which isn't installed on the company laptop (the Azure Functions VS Code extension can't run functions locally without it) — run them in a Codespace or on your personal laptop.  
 > ⭐ XP available: ~800 (blocks 250 · DSA 150 · test 100 · boss 300)  
 
 **Open the details:** [🧩 DSA](../DSA/Weeks/Week-20.md) · [☕ Java Backend](../Java%20%2B%20Spring%20%2B%20Microservices%20%2B%20Kafka%20%2B%20Docker%20%2B%20Kubernetes/Weeks/Week-20.md) · [🤖 AI Engineering](../AI%20Engineering/Weeks/Week-20.md) · [🏗️ System Design](../System%20Design/Weeks/Week-20.md) · [☁️ Azure Cloud](../Azure%20Cloud/Weeks/Week-20.md)  

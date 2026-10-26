@@ -20,7 +20,7 @@
 | Path | Who | Lab subscription | When | How W1–W5 labs run |
 |---|---|---|---|---|
 | **A — Visual Studio subscription** | Your employer gives you a Visual Studio subscription with monthly Azure credits (and its policy allows personal learning) | Monthly dev/test credit: **$150** (VS Enterprise), **$100** (MSDN Platforms), **$50** (VS Professional / Test Professional); no credit card; spending cap stops services until next month unless you remove it | **W1** | Live in Azure from W1 |
-| **B — Azure free account (default)** | Everyone else | **$200 credit for 30 days** + **12 months** of free amounts of 20+ popular services (new customers) + **65+ always-free** services | **W6 Tue, 1 Dec 2026** (AZ-104 labs start), on your personal laptop | "Script-first" mode: write and dry-run the scripts in W1–W5 (Azurite in a Codespace for the W3 storage lab); run them live from W6 |
+| **B — Azure free account (default)** | Everyone else | **$200 credit for 30 days** + **12 months** of free amounts of 20+ popular services (new customers) + **65+ always-free** services | **W6 Tue, 1 Dec 2026** (AZ-104 labs start), on your personal laptop | "Script-first" mode: write and dry-run the scripts in W1–W5 (Azurite — VS Code extension or a Codespace — for the W3 storage lab); run them live from W6 |
 | **C — early variant of B** | You'd rather have hands-on from week 2 | Same free account, on your personal laptop (browser + Cloud Shell until the W5 Sat setup) | **W2 Sat, 7 Nov 2026** | Live from W2 — but the $200 credit expires around 7 Dec (start of W7), so most AZ-104 labs run on pay-as-you-go (still small with same-day teardown) |
 
 Why B activates in W6: AZ-900 is conceptual, and the 30-day credit is worth more when hands-on AZ-104 labs start.
@@ -81,7 +81,7 @@ blocks personal sign-in and the Azure VS Code extensions, so there you only run 
 | Azure Migrate (W27) | One project: CSV-import assessment + business case | Azure Migrate itself is free; with no appliance and no replication there's nothing to bill. Server Migration and DMS are free for their first 180 days ([pricing](https://azure.microsoft.com/en-us/pricing/details/azure-migrate/)). |
 | API Management (W29) | **Consumption** tier | Pay per call after a monthly free grant; never create Developer or Basic+ tiers for a lab — they bill hourly and take long to deploy ([pricing](https://azure.microsoft.com/en-us/pricing/details/api-management/)). |
 | Defender for Cloud (W29) | Free foundational CSPM (secure score) | Don't switch on paid Defender plans in the lab subscription. |
-| GitHub Codespaces (W3, W25, W26–W30) | 2-core codespace from `azure-labs` (Azurite, pgvector + Redis, SQL Server 2022, SqlPackage, AppCAT) | Personal accounts get a free monthly quota of core-hours and storage; stop the codespace after every session and delete it when the week ends ([billing](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces)). |
+| GitHub Codespaces (W3 fallback, W25, W26–W30) | 2-core codespace from `azure-labs` (Azurite fallback, pgvector + Redis, SQL Server 2022, SqlPackage, AppCAT) | Personal accounts get a free monthly quota of core-hours and storage; stop the codespace after every session and delete it when the week ends ([billing](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces)). |
 
 ### Week-by-week cost notes for the expensive moments
 

@@ -72,14 +72,15 @@ guide or Learn docs, the official page wins.
 | AI-200 module exercises (inside each [AI-200T00](https://learn.microsoft.com/en-us/training/courses/ai-200t00) module) | ~30-minute guided Python exercises in your subscription | Saturdays W17, W18, W21, W24; stretches W18–W24 |
 | [Microsoft Applied Skills](https://learn.microsoft.com/en-us/credentials/applied-skills/) (free) | Hosted, scenario-based lab assessments; 72-hour wait between attempts | Stretch goals (W6, W9, W12–W14, W19, W23) |
 | [Exam Readiness Zone](https://learn.microsoft.com/en-us/shows/exam-readiness-zone/) | Official exam-prep episodes | W15 |
-| [Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Free local Azure Storage emulator | W3 (Path B, in a Codespace) |
+| [Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite) | Free local Azure Storage emulator | W3 (Path B: VS Code extension on the company laptop; fallback `npx azurite` in a Codespace) |
 | [GitHub Codespaces](https://docs.github.com/en/billing/concepts/product-billing/github-codespaces) | Cloud dev container from your `azure-labs` repo (free monthly quota; 2-core by default) | W3 Path B, W25 Boss (pgvector + Redis), W26–W30 (SQL Server 2022 source, SqlPackage, AppCAT) |
 | [Well-Architected Review](https://learn.microsoft.com/en-us/assessments/azure-architecture-review/) | Free self-assessment that exports recommendations | W29 Wed |
 | [Azure Samples on GitHub](https://github.com/Azure-Samples) | Reference code for almost every service | Any time you're stuck |
 
 ## 6. Tools to install (versions current on 24–25 Oct 2026)
 
-Company laptop: Azure CLI + `az bicep build` only (personal sign-in and the Azure/Bicep VS Code extensions are blocked).
+Company laptop: Azure CLI, `az bicep build` and the Bicep, Azure Resources, Azure Functions, Azurite and Kubernetes VS Code
+extensions (installed 26 Oct); personal Microsoft sign-in is blocked there.
 Everything below except the CLI is installed on your **personal laptop** in W5 Sat, or lives in a Codespace.
 
 | Tool | Version | Install / docs | First used |
