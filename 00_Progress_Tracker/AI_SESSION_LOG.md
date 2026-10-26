@@ -123,4 +123,19 @@
   — add `.idea/` and `*.iml` to its `.gitignore`. Then `log today:` → tick planner, DAILY_LOG, XP (+40 blocks, +10 DSA), streak 1.
   Open setup: N12 (L&D message), N6 (policy check). Uncommitted plan updates in `learning-plan` → user says "commit", then pushes.
 - NEXT STEP: new chat → magic prompt → continue **Week 1 Day 1** from the "Still to do today" list above (AI_MEMORY Section 11 for
-  reminders).
+  reminders). **Use an in-place session on `main`, not a worktree session** (AI_MEMORY Section 9; checked 26 Oct 20:15: all 16 public
+  commits clean — the only company-word hits were false positives inside Java's `orElseGet`; the first new chat was a worktree session → user to archive it; its
+  local branch was never pushed). If the new chat fails with "origin could not be verified": fixed 26 Oct 20:05 (plain remote URLs; account choice moved
+  to `~/.gitconfig-personal`, D23) — retry; if it persists, ask the user for the error's "View details" text. First push after the
+  change: confirm it went out as Ricky6200 (no sign-in prompt for the work account).
+
+### Session 2026-10-26 20:15 IST — Week 1 Day 1 (new in-place chat on `main`)
+- Position at start: W1 Mon (calendar = actual) · Day 1 started (repos ready) · 0/4 blocks ticked · streak 0 · 0 XP (L1 Trainee).
+- Session-start checks: `learning-plan` in sync with `origin/main`; every recent commit (incl. the app's two "Save uncommitted
+  changes" commits) uses the personal noreply identity. **N6 ✅** — the user checked the policies: personal GitHub and the company
+  Copilot for this plan are allowed on the company laptop (D16 confirmed, Mode B not needed). **N12 (L&D message) not sent yet** —
+  keep reminding; vouchers are needed before booking AZ-900 (Sat 21 Nov).
+- Files changed: AI_MEMORY (D16, Sections 10 + 11), dashboard, START_HERE, Week-01 planner note + `gen.py` ENV_NOTES, local setup
+  guide + `COMPANY_ENVIRONMENT.local.md`; PDFs rebuilt.
+- NEXT STEP: today's 4 blocks — DSA LC 1480 + 485 (+ `DSA/REVISION_TRACKER.md`) · Java `java-mastery` → Maven (`.gitignore` first)
+  · AI `00-python-katas` + `ipykernel` (= N14) · SD `system-design-lab` → Maven + `notes/01-url-journey.md` → then `log today:`.

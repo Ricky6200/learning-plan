@@ -1,6 +1,6 @@
 # 📊 PROGRESS DASHBOARD
 
-> Updated by the AI mentor after each session and every Sunday test. **Last updated:** 2026-10-26 (setup almost done — Week 1 starts today)
+> Updated by the AI mentor after each session and every Sunday test. **Last updated:** 2026-10-26 (Week 1 Day 1 in progress; policy check ✅)
 
 ## 🧭 Where am I?
 | Field | Value |
@@ -8,10 +8,10 @@
 | Plan start | Mon 26 Oct 2026 |
 | Plan end | Sun 23 May 2027 (Week 30) |
 | Calendar position (today) | Week 1 · Day 1 (Mon 26 Oct) |
-| **Actual position** | Week 1 · Day 1 (Mon 26 Oct) — not started |
+| **Actual position** | Week 1 · Day 1 (Mon 26 Oct) — in progress: repos ready, 0/4 blocks ticked |
 | Season | Season 1 — Foundation Forge |
 | Ahead / behind | On track |
-| Setup | Company laptop ready (Java 25, Python + uv via JFrog, Podman in WSL, Azure/Bicep/Kubernetes VS Code extensions). Open this week: L&D message, policy check; personal-laptop items from 9 Nov — Section 3 of `03_SETUP_YOUR_LAPTOP.md` |
+| Setup | Company laptop ready (Java 25, Python + uv via JFrog, Podman in WSL, Azure/Bicep/Kubernetes VS Code extensions). Policy check ✅ (26 Oct). Open this week: L&D message; personal-laptop items from 9 Nov — Section 3 of `03_SETUP_YOUR_LAPTOP.md` |
 | Current streak | 0 days (best: 0) |
 | XP · Level | 0 XP · L1 Trainee (next: L2 Code Cadet at 500) |
 

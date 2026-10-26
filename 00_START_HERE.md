@@ -133,7 +133,7 @@ Decided on 24 Oct 2026, based on tests run on your laptop:
   (work stays on JDK 11); Python: **3.12 + pip + uv through JFrog**; VS Code Python + Jupyter extensions ✅; **Podman** in the
   company's WSL Ubuntu image ✅ (26 Oct — kubectl, kind and Helm included, JFrog login saved).
 - Done 24 Oct: accounts, tools, Git identity + push test, pip/uv through JFrog, Corretto 25, plan backup (`learning-plan`, public).
-  Done 26 Oct: Podman + JFrog login, and the Azure/Bicep/Azurite/Kubernetes VS Code extensions. Still open (this week): L&D message, policy check.
+  Done 26 Oct: Podman + JFrog login, the Azure/Bicep/Azurite/Kubernetes VS Code extensions, and the policy check (allowed). Still open (this week): L&D message.
 
 The guide has the step-by-step checklist, Artifactory pip setup, "No uv?" command equivalents, the Azure account decision,
 a glossary of every tool, and message templates for your team, manager and L&D.
