@@ -26,8 +26,8 @@ Templates: [PATTERNS_CHEATSHEET.md](../PATTERNS_CHEATSHEET.md)
 
 | Day | Date | Problem | Difficulty | First-attempt time-box | Done (☐→✅) |
 |---|---|---|---|---|---|
-| Mon | 26 Oct | [1480. Running Sum of 1d Array](https://leetcode.com/problems/running-sum-of-1d-array/) | Easy | 15m | ☐ |
-|  |  | [485. Max Consecutive Ones](https://leetcode.com/problems/max-consecutive-ones/) | Easy | 15m | ☐ |
+| Mon | 26 Oct | [1480. Running Sum of 1d Array](https://leetcode.com/problems/running-sum-of-1d-array/) | Easy | 15m | ✅ |
+|  |  | [485. Max Consecutive Ones](https://leetcode.com/problems/max-consecutive-ones/) | Easy | 15m | ✅ |
 | Tue | 27 Oct | [27. Remove Element](https://leetcode.com/problems/remove-element/) | Easy | 15m | ☐ |
 |  |  | [448. Find All Numbers Disappeared in an Array](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/) | Easy | 15m | ☐ |
 | Wed | 28 Oct | [26. Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array/) | Easy | 15m | ☐ |

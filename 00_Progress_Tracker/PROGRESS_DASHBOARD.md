@@ -1,6 +1,6 @@
 # 📊 PROGRESS DASHBOARD
 
-> Updated by the AI mentor after each session and every Sunday test. **Last updated:** 2026-10-26 (Week 1 Day 1 in progress; policy check ✅)
+> Updated by the AI mentor after each session and every Sunday test. **Last updated:** 2026-10-26 (Week 1 Day 1 in progress — DSA ✅)
 
 ## 🧭 Where am I?
 | Field | Value |
@@ -8,23 +8,23 @@
 | Plan start | Mon 26 Oct 2026 |
 | Plan end | Sun 23 May 2027 (Week 30) |
 | Calendar position (today) | Week 1 · Day 1 (Mon 26 Oct) |
-| **Actual position** | Week 1 · Day 1 (Mon 26 Oct) — in progress: repos ready, 0/4 blocks ticked |
+| **Actual position** | Week 1 · Day 1 (Mon 26 Oct) — in progress: DSA ✅ · Java, AI, SD to go |
 | Season | Season 1 — Foundation Forge |
 | Ahead / behind | On track |
 | Setup | Company laptop ready (Java 25, Python + uv via JFrog, Podman in WSL, Azure/Bicep/Kubernetes VS Code extensions). Policy check ✅ (26 Oct). Open this week: L&D message; personal-laptop items from 9 Nov — Section 3 of `03_SETUP_YOUR_LAPTOP.md` |
-| Current streak | 0 days (best: 0) |
-| XP · Level | 0 XP · L1 Trainee (next: L2 Code Cadet at 500) |
+| Current streak | 0 days (best: 0) — becomes 1 once today's ≥ 30 min of Java is done (minimum viable day) |
+| XP · Level | 20 XP · L1 Trainee (next: L2 Code Cadet at 500) |
 
 ## 📈 Track progress
 | Track | Current week | Sessions done | % of plan | Last test score | Trend |
 |---|---|---|---|---|---|
-| 🧩 DSA | W1 | 0 / 180 | 0% | — | — |
+| 🧩 DSA | W1 | 1 / 180 | 0.6% | — | — |
 | ☕ Java Backend | W1 | 0 / 180 | 0% | — | — |
 | 🤖 AI Engineering | W1 | 0 / 150 | 0% | — | — |
 | 🏗️ System Design | W1 | 0 / 120 | 0% | — | — |
 | ☁️ Azure | W1 | 0 / 120 | 0% | — | — |
 
-DSA problems: **0 / 294 core** · 0 / 202 bonus · 🟢 0 · 🟡 0 · 🔴 0 · re-solves done: 0
+DSA problems: **2 / 294 core** · 0 / 202 bonus · 🟢 1 · 🟡 1 · 🔴 0 · re-solves done: 0
 
 ## 🎓 Certifications
 | Exam | Target | Booked? | Practice score | Result |
@@ -65,7 +65,7 @@ DSA problems: **0 / 294 core** · 0 / 202 bonus · 🟢 0 · 🟡 0 · 🔴 0 ·
 | 👑 Final Boss: The Offer | W30 | — |
 
 ## 🏅 Badges earned
-_None yet._ Available badges:
+🩸 **First Blood** — Mon 26 Oct 2026 (LC 1480). Available badges:
 `First Blood` (first LC solve) · `Century` / `Double Century` / `Triple Century` (100/200/300 problems) · `Streak 7` / `Streak 30` / `Streak 60` / `Streak 100` ·
 `Cloud Cadet` (AZ-900) · `Azure Admin` (AZ-104) · `AI Cloud Dev` (AI-200) · `Shipwright` (first deployment) · `Container Captain` (all services in Docker) ·
 `Kube Commander` (K8s deploy) · `RAG Ranger` (first RAG) · `Agent Smith` (first agent) · `MCP Maker` (first MCP server) · `Eval Engineer` (first eval report) ·

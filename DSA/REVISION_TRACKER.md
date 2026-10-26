@@ -1,6 +1,7 @@
 # 🔁 DSA Revision Tracker (spaced repetition)
 
 > Log every problem right after solving. Your AI mentor reads this file to pick Sunday test problems, remediation work and fix-it items.
+> LeetCode profile: [Ricky_0618](https://leetcode.com/u/Ricky_0618/)
 
 **Legend:** 🟢 solved alone within time · 🟡 needed a hint or over time · 🔴 needed the full solution
 
@@ -58,4 +59,5 @@
 ## 📝 Log
 | Date | LC # | Problem | Pattern | Key insight (1 line) | Time | Result | Re-solves (date · time · 🟢/🟡/🔴) |
 |---|---|---|---|---|---|---|---|
-| _(example — delete this row)_ | 1480 | Running Sum of 1d Array | Prefix sum | running total in place | 6m | 🟢 | 27 Oct · 4m · 🟢 |
+| 26 Oct | 1480 | Running Sum of 1d Array | Prefix sum | `out[i] = out[i-1] + nums[i]` — works in place: `nums[i] += nums[i-1]` from i = 1 | 8m | 🟢 | |
+| 26 Oct | 485 | Max Consecutive Ones | Array scan (running count + max) | update `max` on every 1, not only at a 0 — a run that ends at the last index never meets a 0 | 15m | 🟡 hint | |

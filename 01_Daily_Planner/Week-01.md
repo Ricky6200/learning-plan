@@ -19,7 +19,7 @@
 - [ ] _none yet — the mentor fills this in after each test_
 
 ## Monday · 26 Oct · 3.5 h
-- [ ] 🧩 **DSA · 60m** — Solve: [LC 1480 · Running Sum of 1d Array](https://leetcode.com/problems/running-sum-of-1d-array/) (E) · [LC 485 · Max Consecutive Ones](https://leetcode.com/problems/max-consecutive-ones/) (E)
+- [x] 🧩 **DSA · 60m** — Solve: [LC 1480 · Running Sum of 1d Array](https://leetcode.com/problems/running-sum-of-1d-array/) (E) · [LC 485 · Max Consecutive Ones](https://leetcode.com/problems/max-consecutive-ones/) (E)
 - [ ] ☕ **Java · 60m** — Setup JDK 25 + IDE; javac to bytecode to JVM
 - [ ] 🤖 **AI Engineering · 45m** — Setup: Python 3.12, uv projects, VS Code and Jupyter
 - [ ] 🏗️ **System Design · 45m** — SD rounds decoded + what happens when you type a URL
