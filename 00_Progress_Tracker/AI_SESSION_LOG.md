@@ -109,5 +109,18 @@
   and AKS extensions — the policy allows Microsoft-published extensions (the 24 Oct "blocked" reading was wrong). D25 corrected;
   Azure W1 Sat now uses the Bicep extension + `az bicep build`, Azure W3 Sat Path B runs Azurite through the extension (Codespace
   fallback); Azure README/RESOURCES/cost guide and planner notes refreshed. Open this week: N12 (L&D), N6 (policy), N14 (`ipykernel`).
-- NEXT STEP: Week 1 is running (from Mon 26 Oct) — start each session with the magic prompt; remind N12/N13/N6/N14 until done
-  (AI_MEMORY Section 11).
+- 26 Oct 19:20–19:50 IST: **Week 1 Day 1 started** (this chat hit the model's context limit → user moves to a new chat).
+  Done: `ai-engineering-lab` (Python .gitignore) and `system-design-lab` (Maven .gitignore) created on GitHub and cloned into
+  `C:\dev\personal` — HTTPS remotes, personal noreply identity, no company email (verified); **all four repos now public** (verified).
+  Starter `pom.xml` for `java-mastery`/`system-design-lab` verified on this laptop (Corretto 25 + company JFrog Maven mirror, `mvn
+  test` green): `maven.compiler.release` 25, `junit-bom` 6.1.3 (`junit-jupiter`, test), `assertj-core` 3.27.7 (test),
+  `maven-compiler-plugin` 3.16.0, `maven-surefire-plugin` 3.6.1. Run Maven with `$env:JAVA_HOME` = Corretto 25 in that window;
+  JDK 25 prints harmless warnings from Maven 3.9.6's own libraries (jansi native access, guava Unsafe).
+  **Still to do today (Mon 26 Oct, all 4 blocks unticked):** DSA LC 1480 + 485 (+ start `DSA/REVISION_TRACKER.md`); Java Mon block
+  (`java-mastery` → Maven, `w01.Hello`, `javap -c`, 5 JShell predictions) — `java-mastery` has NO `.gitignore` yet: add `target/`,
+  `.idea/`, `*.iml` before its first Maven commit; AI Mon block (`uv init 00-python-katas`, `uv add --dev ipykernel` = N14, notebook
+  kernel, print `sys.version`); SD Mon block (`system-design-lab` → Maven + `com.sdlab` SmokeTest, folders, `notes/01-url-journey.md`)
+  — add `.idea/` and `*.iml` to its `.gitignore`. Then `log today:` → tick planner, DAILY_LOG, XP (+40 blocks, +10 DSA), streak 1.
+  Open setup: N12 (L&D message), N6 (policy check). Uncommitted plan updates in `learning-plan` → user says "commit", then pushes.
+- NEXT STEP: new chat → magic prompt → continue **Week 1 Day 1** from the "Still to do today" list above (AI_MEMORY Section 11 for
+  reminders).
