@@ -1,26 +1,26 @@
 # 📊 PROGRESS DASHBOARD
 
-> Updated by the AI mentor after each session and every Sunday test. **Last updated:** 2026-10-26 (Week 1 Day 1 in progress — DSA ✅)
+> Updated by the AI mentor after each session and every Sunday test. **Last updated:** 2026-11-02 (W1 Mon: DSA ✅ Java ✅ AI ✅ · SD to go)
 
 ## 🧭 Where am I?
 | Field | Value |
 |---|---|
 | Plan start | Mon 26 Oct 2026 |
 | Plan end | Sun 23 May 2027 (Week 30) |
-| Calendar position (today) | Week 1 · Day 1 (Mon 26 Oct) |
-| **Actual position** | Week 1 · Day 1 (Mon 26 Oct) — in progress: DSA ✅ · Java, AI, SD to go |
+| Calendar position (today) | Week 2 · Day 1 (Mon 2 Nov) |
+| **Actual position** | Week 1 · Day 1 (Mon 26 Oct) — DSA ✅ · Java ✅ · AI ✅ · SD to go |
 | Season | Season 1 — Foundation Forge |
-| Ahead / behind | On track |
+| Ahead / behind | ~1 week behind — learner will catch up before the W2 test (Sun 8 Nov); no re-plan by his choice (AI_MEMORY Section 10, 2 Nov) |
 | Setup | Company laptop ready (Java 25, Python + uv via JFrog, Podman in WSL, Azure/Bicep/Kubernetes VS Code extensions). Policy check ✅ (26 Oct). Open this week: L&D message; personal-laptop items from 9 Nov — Section 3 of `03_SETUP_YOUR_LAPTOP.md` |
-| Current streak | 0 days (best: 0) — becomes 1 once today's ≥ 30 min of Java is done (minimum viable day) |
-| XP · Level | 20 XP · L1 Trainee (next: L2 Code Cadet at 500) |
+| Current streak | 0 days (best: 0) — a day counts when it has ≥ 1 DSA problem + ≥ 30 min of Java (DSA was 26 Oct, Java 2 Nov — no single day had both yet) |
+| XP · Level | 40 XP · L1 Trainee (next: L2 Code Cadet at 500) |
 
 ## 📈 Track progress
 | Track | Current week | Sessions done | % of plan | Last test score | Trend |
 |---|---|---|---|---|---|
 | 🧩 DSA | W1 | 1 / 180 | 0.6% | — | — |
-| ☕ Java Backend | W1 | 0 / 180 | 0% | — | — |
-| 🤖 AI Engineering | W1 | 0 / 150 | 0% | — | — |
+| ☕ Java Backend | W1 | 1 / 180 | 0.6% | — | — |
+| 🤖 AI Engineering | W1 | 1 / 150 | 0.7% | — | — |
 | 🏗️ System Design | W1 | 0 / 120 | 0% | — | — |
 | ☁️ Azure | W1 | 0 / 120 | 0% | — | — |
 
@@ -36,7 +36,7 @@ DSA problems: **2 / 294 core** · 0 / 202 bonus · 🟢 1 · 🟡 1 · 🔴 0 ·
 ## 🚀 Project milestones
 | Milestone | Target week | Status |
 |---|---|---|
-| `java-mastery` repo created | W1 | ☐ |
+| `java-mastery` repo created | W1 | ✅ 2 Nov (Maven + JDK 25, `w01/Hello.java`) |
 | TerminalGPT (AI) | W6 | ☐ |
 | SemanticSearch API (AI, boss) | W9 | ☐ |
 | DocuMind RAG v2 (AI) | W13 | ☐ |

@@ -24,3 +24,15 @@
   build: always test "the answer ends at the last index".
 - XP: +20 so far (DSA block +10 · 2 Easy +10) (total 20)
 - Mood/energy (1–5): _
+
+### 2026-11-02 (W1 · Mon, done on calendar W2 Mon) — streak 0
+- Hours: Java _ · AI _ (W1 Mon blocks, finished late)
+- Done: ☕ Java: `java-mastery` Maven project (JDK 25), `w01/Hello.java` (main + static `add`), javap notes (getstatic/ldc/
+  invokevirtual/return), 5 JShell predictions all correct. Merge conflict on `.gitignore` (GitHub web commit vs local) resolved by
+  the mentor (both lists kept). 🤖 AI: `ai-engineering-lab/00-python-katas` uv project, Python 3.12.4, ipykernel 7.4.0 (dev group),
+  notebook prints `sys.version` ✅ (N14 closed).
+- Not done / carried over: 🏗️ SD W1 Mon (system-design-lab Maven + notes/01-url-journey.md). ~1 week behind; learner catches up
+  before the W2 test (Sun 8 Nov) — no re-plan.
+- Blockers / doubts: `00-python-katas/README.md` is empty while `image.png` is a picture of its text → put the text in README.md.
+- XP: +20 (Java block +10 · AI block +10) (total 40)
+- Mood/energy (1–5): _

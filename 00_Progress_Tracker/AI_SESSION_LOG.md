@@ -146,3 +146,19 @@
   learner logs DSA himself (AI_MEMORY Section 9). NEXT STEP: Java → AI → SD → `log today:`.
 - 21:05 IST: the app auto-committed **and pushed** the N6 edits at 20:24 ("Save uncommitted changes", noreply identity — verified
   via the GitHub API) → AI_MEMORY Section 9 note: privacy-scan the tracked diff before ending every turn (done: 0 hits).
+- 21:10 IST: explained how to use the DSA week file (each concept line is learned through the problems that use it; one video only
+  when stuck; templates re-typed on Mondays; the self-check = Sunday's questions).
+- 21:35 IST: **Java block in progress.** `java-mastery`: the user added `.gitignore` (target/, out/, .idea/, *.iml); the previous reply
+  was cut off mid-`pom.xml` → the mentor wrote the tested starter `pom.xml` into the user's empty file (`mvn -q test` green on Corretto
+  25 through the company Maven mirror; `target/` removed; nothing committed). IntelliJ had not opened the repo yet → File → Open on
+  `C:\dev\personal\java-mastery`, not Get from VCS (D23). NEXT: IntelliJ SDK = Corretto 25 + Maven runner/importer "Use Project JDK"
+  → `w01/Hello.java` (main + a static `add`) → javac/java/javap → 3 annotated bytecode lines + 5 JShell predictions (`10 / 3`,
+  `'a' + 1`, `Integer.MAX_VALUE + 1`, `0.1 + 0.2`, `1 + 2 + "3"`) as comments → user commits + pushes → tick Java (+10 → 30 XP,
+  streak 1). Then AI + SD (or move them per Section 7 if it's late); for SD, write the same starter pom into `system-design-lab`
+  (package `com.sdlab`).
+- **2 Nov 21:15 IST (W2 Mon by calendar):** learner ~1 week behind; asked NOT to change the schedule — catching up before the W2
+  test (AI_MEMORY Section 10). Verified `java-mastery` (unresolved add/add conflict on `.gitignore` after a GitHub-web commit →
+  merged both lists, merge commit 27d89ab, noreply identity; compiles + runs on Corretto 25; javap/JShell notes correct) and
+  `ai-engineering-lab` (3.12.4, ipykernel 7.4.0 → N14 ✅; `.venv` not tracked; `image.png` harmless = README text as a picture).
+  Logged W1 Mon Java + AI (+20 → 40 XP). The mentor can't push personal repos → user runs `git push` in java-mastery (ahead 2).
+  NEXT: SD W1 Mon, then W1 Tue onward; reminders N12 L&D, `az bicep install`.
